@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LapHUB – OTP Verification</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background-color: #0a0d1a;
+      background-image: linear-gradient(135deg, rgba(34,43,89,0.63) 0%, rgba(20,28,70,0.63) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* ── OTP CARD ── */
+    .otp-card {
+      background: #000;
+      border-radius: 12px;
+      padding: 70px 60px 60px;
+      width: 100%;
+      max-width: 660px;
+      text-align: center;
+    }
+
+    .otp-card h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .otp-card p {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.6;
+      margin-bottom: 40px;
+      letter-spacing: .3px;
+    }
+
+    /* OTP Input */
+    .otp-input {
+      width: 100%;
+      max-width: 400px;
+      background: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 18px 20px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #111;
+      text-align: center;
+      letter-spacing: 6px;
+      outline: none;
+      display: block;
+      margin: 0 auto 40px;
+      transition: box-shadow .2s;
+    }
+    .otp-input::placeholder { color: #ccc; letter-spacing: 2px; font-weight: 400; font-size: 1rem; }
+    .otp-input:focus { box-shadow: 0 0 0 3px rgba(74,100,220,.5); }
+
+    /* Verify Button */
+    .btn-verify {
+      background: #4a64dc;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 16px 60px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      cursor: pointer;
+      transition: background .2s, transform .15s;
+      margin-bottom: 36px;
+    }
+    .btn-verify:hover { background: #3a54cc; transform: translateY(-1px); }
+    .btn-verify:active { transform: translateY(0); }
+
+    /* Resend */
+    .resend-text {
+      font-size: .95rem;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 6px;
+    }
+    .resend-link {
+      font-size: .95rem;
+      color: #4a64dc;
+      text-decoration: none;
+      font-weight: 500;
+      display: block;
+      transition: color .2s;
+    }
+    .resend-link:hover { color: #7a94ff; text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 576px) {
+      .otp-card { padding: 50px 28px 44px; }
+      .otp-card h2 { font-size: 1.3rem; }
+      .otp-card p { font-size: .95rem; }
+      .btn-verify { padding: 14px 40px; font-size: 1rem; }
+      .otp-input { font-size: 1.1rem; padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="otp-card">
+    <h2>Enter otp</h2>
+    <p>we have send a &nbsp;otp verification<br>code to your email</p>
+
+    <!-- OTP Input -->
+    <input
+      type="text"
+      class="otp-input"
+      id="otpInput"
+      maxlength="6"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      placeholder="_ _ _ _ _ _"
+      autocomplete="one-time-code"
+    />
+
+    <!-- Verify Button -->
+    <br/>
+    <button class="btn-verify" type="button" onclick="verifyOtp()">verify</button>
+
+    <!-- Resend -->
+    <p class="resend-text">didn't receive the code?</p>
+    <a href="#" class="resend-link" onclick="resendCode(event)">resend code</a>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Allow only numbers in OTP input
+  document.getElementById('otpInput').addEventListener('input', function () {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+
+  function verifyOtp() {
+    const val = document.getElementById('otpInput').value.trim();
+    if (val.length < 4) {
+      document.getElementById('otpInput').style.boxShadow = '0 0 0 3px rgba(220,60,60,.5)';
+      setTimeout(() => {
+        document.getElementById('otpInput').style.boxShadow = '';
+      }, 1500);
+    }
+    // Replace with your actual OTP verification logic
+  }
+
+  function resendCode(e) {
+    e.preventDefault();
+    const link = e.target;
+    link.textContent = 'code sent!';
+    link.style.color = '#4caf7d';
+    setTimeout(() => {
+      link.textContent = 'resend code';
+      link.style.color = '';
+    }, 3000);
+    // Replace with your actual resend logic
+  }
+</script>
+</body>
+</html>

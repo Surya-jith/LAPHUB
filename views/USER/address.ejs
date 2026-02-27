@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LapHUB – Address</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar-top {
+      background: #fff;
+      padding: 10px 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .brand-box {
+      background: #111;
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+      padding: 6px 12px;
+      letter-spacing: 1px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .brand-box .brand-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .6rem;
+    }
+    .navbar-top .nav-link {
+      color: #444;
+      font-weight: 600;
+      font-size: .95rem;
+      padding: 6px 14px;
+    }
+    .navbar-top .nav-link:hover { color: #3a5bd9; }
+    .navbar-icons { display: flex; align-items: center; gap: 16px; }
+    .navbar-icons a {
+      color: #555; font-size: 1.1rem;
+      text-decoration: none; position: relative;
+    }
+    .navbar-icons a:hover { color: #3a5bd9; }
+    .cart-badge {
+      position: absolute; top: -6px; right: -8px;
+      background: #3a5bd9; color: #fff;
+      font-size: .6rem; font-weight: 700;
+      width: 16px; height: 16px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .navbar-username { font-size: .9rem; font-weight: 600; color: #222; }
+
+    /* ── MAIN ── */
+    .main-content { flex: 1; padding: 24px 0 50px; }
+
+    /* ── OUTER DASHED WRAPPER ── */
+    .dashed-wrapper {
+      border: 2px dashed #93c5fd;
+      border-radius: 10px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      overflow: hidden;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; font-size: .88rem; color: #555;
+      cursor: pointer; border: none; background: none;
+      width: 100%; text-align: left;
+      transition: background .15s, color .15s;
+      text-decoration: none;
+    }
+    .sidebar-item:hover { background: #f0f4ff; color: #3a5bd9; }
+    .sidebar-item.active { background: #3a5bd9; color: #fff; font-weight: 600; }
+    .sidebar-item i { width: 18px; text-align: center; font-size: .9rem; }
+
+    /* ── ADDRESS FORM PANEL ── */
+    .address-panel {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      padding: 20px 20px 18px;
+      position: relative;
+    }
+
+    /* ADD button — top right of panel */
+    .btn-add {
+      position: absolute;
+      top: -1px; right: -1px;
+      background: #e53e3e;
+      color: #fff; border: none;
+      border-radius: 0 8px 0 6px;
+      padding: 6px 18px;
+      font-size: .82rem; font-weight: 700;
+      letter-spacing: 1px; cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-add:hover { background: #c53030; }
+
+    /* Form labels */
+    .form-label-sm {
+      font-size: .78rem; color: #555;
+      font-weight: 500; margin-bottom: 5px; display: block;
+    }
+    .form-label-sm .optional {
+      color: #999; font-weight: 400;
+      font-size: .74rem; margin-left: 4px;
+    }
+
+    /* Inputs */
+    .form-ctrl {
+      width: 100%; border: 1px solid #dde;
+      border-radius: 5px; padding: 9px 12px;
+      font-size: .88rem; color: #222; outline: none;
+      background: #fff; transition: border-color .2s, box-shadow .2s;
+      appearance: none; -webkit-appearance: none;
+    }
+    .form-ctrl:focus {
+      border-color: #3a5bd9;
+      box-shadow: 0 0 0 3px rgba(58,91,217,.10);
+    }
+    .form-ctrl::placeholder { color: #c0c4cc; }
+
+    /* Address textarea */
+    .form-ctrl-area {
+      width: 100%; border: 1px solid #dde;
+      border-radius: 5px; padding: 9px 12px;
+      font-size: .88rem; color: #222; outline: none;
+      background: #fff; resize: none; min-height: 58px;
+      font-family: 'Barlow', sans-serif;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-ctrl-area:focus {
+      border-color: #3a5bd9;
+      box-shadow: 0 0 0 3px rgba(58,91,217,.10);
+    }
+
+    /* Select wrapper */
+    .select-wrap { position: relative; }
+    .select-wrap .form-ctrl { padding-right: 30px; }
+    .select-arrow {
+      position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none; color: #aaa; font-size: .75rem;
+    }
+
+    /* Save button */
+    .btn-save-address {
+      background: #3a5bd9; color: #fff; border: none;
+      border-radius: 6px; padding: 10px 22px;
+      font-size: .85rem; font-weight: 700;
+      letter-spacing: .8px; text-transform: uppercase;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-save-address:hover { background: #2a4bc9; }
+
+    /* ── ADDRESS BADGES (saved addresses indicator) ── */
+    .address-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 12px;
+    }
+    .addr-badge {
+      width: 28px; height: 28px;
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 700; color: #fff;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .addr-badge:hover { opacity: .85; }
+    .addr-badge.badge-green { background: #22c55e; }
+    .addr-badge.badge-orange { background: #f97316; }
+    .addr-badge.badge-red { background: #ef4444; }
+
+    /* EDIT / DELETE buttons */
+    .btn-edit {
+      background: #f97316; color: #fff; border: none;
+      border-radius: 5px; padding: 7px 18px;
+      font-size: .82rem; font-weight: 700;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-edit:hover { background: #ea6c0a; }
+    .btn-delete {
+      background: #ef4444; color: #fff; border: none;
+      border-radius: 5px; padding: 7px 18px;
+      font-size: .82rem; font-weight: 700;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-delete:hover { background: #dc2626; }
+
+    /* ── BOTTOM BAR (save + badges + edit/delete) ── */
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 10px;
+    }
+    .bottom-bar-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .bottom-bar-right { display: flex; align-items: center; gap: 8px; }
+
+    /* ── FOOTER ── */
+    footer { background: #111827; color: #ccc; padding: 50px 0 28px; }
+    .footer-feedback {
+      background: #1e2a3a; border-radius: 10px; padding: 24px 22px;
+    }
+    .footer-feedback .badge-fb {
+      font-size: .65rem; color: #4a90d9; letter-spacing: 2px;
+      text-transform: uppercase; font-weight: 700;
+      display: block; margin-bottom: 10px;
+    }
+    .footer-feedback h4 {
+      color: #aaa; font-size: .95rem; font-weight: 400;
+      line-height: 1.5; margin-bottom: 14px;
+    }
+    .footer-feedback h4 strong { color: #fff; font-weight: 700; }
+    .footer-input-wrap { position: relative; margin-bottom: 10px; }
+    .footer-input-icon {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); color: #557; font-size: .82rem;
+    }
+    .footer-input {
+      width: 100%; background: transparent;
+      border: 1px solid #334; border-radius: 6px; color: #ccc;
+      padding: 10px 12px 10px 34px; font-size: .84rem; outline: none;
+      transition: border-color .2s;
+    }
+    .footer-input::placeholder { color: #556; }
+    .footer-input:focus { border-color: #4a90d9; }
+    .btn-send {
+      background: #4a90d9; color: #fff; border: none;
+      padding: 9px 20px; border-radius: 6px; font-weight: 600;
+      font-size: .86rem; cursor: pointer; transition: background .2s; margin-top: 6px;
+    }
+    .btn-send:hover { background: #3a7bc8; }
+    .footer-privacy { font-size: .70rem; color: #445; margin-top: 10px; }
+
+    footer h6 {
+      color: #4a90d9; font-weight: 700; font-size: .70rem;
+      letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px;
+    }
+    footer ul { list-style: none; padding: 0; }
+    footer ul li { margin-bottom: 7px; }
+    footer a { color: #ccc; text-decoration: none; font-size: .86rem; font-weight: 500; }
+    footer a:hover { color: #fff; }
+    .footer-contact p { font-size: .86rem; margin-bottom: 4px; color: #ccc; }
+    .footer-contact a { color: #4a90d9; }
+    .social-icons { display: flex; gap: 10px; margin-top: 18px; }
+    .social-icons a {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #1e2a3a;
+      display: flex; align-items: center; justify-content: center;
+      color: #ccc; font-size: .88rem;
+      transition: background .2s, color .2s;
+    }
+    .social-icons a:hover { background: #4a90d9; color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid #1e2a3a; margin-top: 36px;
+      padding-top: 14px; font-size: .73rem; color: #445; text-align: right;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 767px) {
+      .sidebar { margin-bottom: 16px; }
+      .bottom-bar { flex-direction: column; align-items: flex-start; }
+      .bottom-bar-right { width: 100%; justify-content: flex-end; }
+      .btn-add { position: static; border-radius: 6px; margin-bottom: 12px; align-self: flex-end; }
+      .address-panel { padding: 16px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar-top">
+  <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <a class="brand-box" href="#">
+      <span class="brand-icon">
+        <i class="fa-solid fa-circle-nodes" style="font-size:.6rem"></i>
+      </span>
+      LapHUB
+    </a>
+    <button class="navbar-toggler d-lg-none border-0 bg-transparent" type="button"
+      data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <i class="fa-solid fa-bars" style="font-size:1.1rem;color:#333"></i>
+    </button>
+    <div class="collapse navbar-collapse d-lg-flex align-items-center justify-content-center flex-grow-1" id="mainNav">
+      <div class="d-flex flex-column flex-lg-row gap-1 gap-lg-0 mt-3 mt-lg-0">
+        <a class="nav-link" href="#">Home</a>
+        <a class="nav-link" href="#">Contact</a>
+        <a class="nav-link" href="#">About</a>
+        <a class="nav-link" href="#">Products</a>
+      </div>
+    </div>
+    <div class="navbar-icons">
+      <a href="#"><i class="fa-regular fa-heart"></i></a>
+      <a href="#" style="position:relative">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-badge">1</span>
+      </a>
+      <span class="navbar-username">Surya Jith</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<div class="main-content">
+  <div class="container">
+
+    <!-- Outer dashed border wrapper -->
+    <div class="dashed-wrapper">
+      <div class="row g-3">
+
+        <!-- SIDEBAR -->
+        <div class="col-lg-3 col-md-4">
+          <div class="sidebar">
+            <a class="sidebar-item" href="#"><i class="fa-solid fa-table-cells-large"></i> Dashboard</a>
+            <a class="sidebar-item" href="#"><i class="fa-regular fa-user"></i> Account Details</a>
+            <a class="sidebar-item" href="#"><i class="fa-regular fa-clock"></i> Order History</a>
+            <a class="sidebar-item" href="#"><i class="fa-solid fa-cart-shopping"></i> Shopping Cart</a>
+            <a class="sidebar-item" href="#"><i class="fa-regular fa-heart"></i> Wishlist</a>
+            <a class="sidebar-item active" href="#"><i class="fa-regular fa-credit-card"></i> Address</a>
+            <a class="sidebar-item" href="#"><i class="fa-solid fa-wallet"></i> Wallet</a>
+          </div>
+        </div>
+
+        <!-- ADDRESS FORM -->
+        <div class="col-lg-9 col-md-8">
+          <div class="address-panel">
+
+            <!-- ADD button -->
+            <button class="btn-add" type="button">ADD</button>
+
+            <!-- Row 1: User name + Company Name -->
+            <div class="row g-2 mb-2">
+              <div class="col-md-6">
+                <label class="form-label-sm">User name</label>
+                <div class="row g-2">
+                  <div class="col-6">
+                    <input type="text" class="form-ctrl" placeholder="First name"/>
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-ctrl" placeholder="Last name"/>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label-sm">
+                  Company Name <span class="optional">(Optional)</span>
+                </label>
+                <input type="text" class="form-ctrl" placeholder=""/>
+              </div>
+            </div>
+
+            <!-- Row 2: Address -->
+            <div class="mb-2">
+              <label class="form-label-sm">Address</label>
+              <textarea class="form-ctrl-area" placeholder=""></textarea>
+            </div>
+
+            <!-- Row 3: Country | Region/State | City | PIN Code -->
+            <div class="row g-2 mb-2">
+              <div class="col-6 col-sm-3">
+                <label class="form-label-sm">Country</label>
+                <div class="select-wrap">
+                  <select class="form-ctrl">
+                    <option value="" disabled selected>Select...</option>
+                    <option>India</option>
+                    <option>United States</option>
+                    <option>United Kingdom</option>
+                    <option>Australia</option>
+                    <option>Canada</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down select-arrow"></i>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3">
+                <label class="form-label-sm">Region/State</label>
+                <div class="select-wrap">
+                  <select class="form-ctrl">
+                    <option value="" disabled selected>Select...</option>
+                    <option>Kerala</option>
+                    <option>Tamil Nadu</option>
+                    <option>Karnataka</option>
+                    <option>Maharashtra</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down select-arrow"></i>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3">
+                <label class="form-label-sm">City</label>
+                <div class="select-wrap">
+                  <select class="form-ctrl">
+                    <option value="" disabled selected>Select...</option>
+                    <option>Kochi</option>
+                    <option>Trivandrum</option>
+                    <option>Kozhikode</option>
+                    <option>Thrissur</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down select-arrow"></i>
+                </div>
+              </div>
+              <div class="col-6 col-sm-3">
+                <label class="form-label-sm">PIN Code</label>
+                <input type="text" class="form-ctrl" placeholder="" maxlength="6" inputmode="numeric"/>
+              </div>
+            </div>
+
+            <!-- Row 4: Email + Phone -->
+            <div class="row g-2 mb-2">
+              <div class="col-md-6">
+                <label class="form-label-sm">Email</label>
+                <input type="email" class="form-ctrl" placeholder=""/>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label-sm">Phone Number</label>
+                <input type="tel" class="form-ctrl" placeholder=""/>
+              </div>
+            </div>
+
+            <!-- Bottom bar: Save + Badges + Edit/Delete -->
+            <div class="bottom-bar">
+              <!-- Left: Save button + address slot badges -->
+              <div class="bottom-bar-left">
+                <button class="btn-save-address" type="button">Save Address</button>
+                <div class="address-badges">
+                  <div class="addr-badge badge-green" title="Address 1">1</div>
+                  <div class="addr-badge badge-orange" title="Address 2">2</div>
+                  <div class="addr-badge badge-red" title="Address 3">3</div>
+                </div>
+              </div>
+              <!-- Right: Edit + Delete -->
+              <div class="bottom-bar-right">
+                <button class="btn-edit" type="button">EDIT</button>
+                <button class="btn-delete" type="button">DELETE</button>
+              </div>
+            </div>
+
+          </div><!-- /address-panel -->
+        </div>
+
+      </div><!-- /row -->
+    </div><!-- /dashed-wrapper -->
+
+  </div><!-- /container -->
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="row g-5">
+
+      <!-- Feedback -->
+      <div class="col-lg-3 col-md-6">
+        <div class="footer-feedback">
+          <span class="badge-fb">Feedback</span>
+          <h4>Seeking personalized support? <strong>Request a call from our team</strong></h4>
+          <div class="footer-input-wrap">
+            <i class="fa-regular fa-envelope footer-input-icon"></i>
+            <input class="footer-input" type="email" placeholder="example@email.com"/>
+          </div>
+          <div class="footer-input-wrap">
+            <i class="fa-regular fa-user footer-input-icon"></i>
+            <input class="footer-input" type="text" placeholder="Enter your  Username."/>
+          </div>
+          <button class="btn-send">Send Request</button>
+          <p class="footer-privacy">Privacy</p>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6>Info</h6>
+        <ul>
+          <li><a href="#">Company</a></li>
+          <li><a href="#">Products</a></li>
+          <li><a href="#">Engineering</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">Productions</a></li>
+        </ul>
+      </div>
+
+      <!-- About Us -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6>About Us</h6>
+        <ul>
+          <li><a href="#">Gallery</a></li>
+          <li><a href="#">Technologies</a></li>
+          <li><a href="#">Contacts</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-lg-3 col-md-6 footer-contact">
+        <h6>Contact Us</h6>
+        <p>+91 8848837834</p>
+        <p><a href="mailto:help@laptopSU.com">help@laptopSU.com</a></p>
+        <p>KOCHI, KL, INDIA</p>
+        <div class="social-icons">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-youtube"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+
+    </div>
+    <div class="footer-bottom">© 2025 — ESE</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Address badge selection — clicking a badge highlights it
+  document.querySelectorAll('.addr-badge').forEach(badge => {
+    badge.addEventListener('click', function () {
+      document.querySelectorAll('.addr-badge').forEach(b => b.style.outline = 'none');
+      this.style.outline = '2px solid #3a5bd9';
+      this.style.outlineOffset = '2px';
+    });
+  });
+</script>
+</body>
+</html>

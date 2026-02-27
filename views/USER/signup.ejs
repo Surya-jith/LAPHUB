@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LapHUB – Signup</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --page-bg: rgba(34, 43, 89, 0.63);
+      --card-bg: rgba(34, 43, 89, 0.85);
+      --card-border: rgba(255,255,255,0.12);
+      --input-bg: #ffffff;
+      --label-color: rgba(255,255,255,0.60);
+      --text-white: #ffffff;
+      --link-blue: #4a90d9;
+      --divider: rgba(255,255,255,0.25);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background-color: #0a0d1a;
+      background-image: linear-gradient(135deg, rgba(34,43,89,0.63) 0%, rgba(20,28,70,0.63) 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar-top {
+      background: #ffffff;
+      padding: 10px 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .brand-box {
+      background: #111;
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+      padding: 6px 12px;
+      letter-spacing: 1px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .brand-box .brand-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .6rem;
+    }
+    .navbar-top .nav-link {
+      color: #222;
+      font-weight: 600;
+      font-size: .95rem;
+      padding: 6px 14px;
+    }
+    .navbar-top .nav-link:hover { color: #4a90d9; }
+
+    /* ── PAGE BODY ── */
+    .page-body {
+      flex: 1;
+      background-color: var(--page-bg);
+      display: flex;
+      align-items: center;
+      padding: 50px 20px;
+    }
+
+    /* ── ILLUSTRATION AREA ── */
+    .illustration-wrap {
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 380px;
+      max-width: 420px;
+      width: 100%;
+      position: relative;
+    }
+    .illustration-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+      padding: 40px;
+      width: 100%;
+      min-height: 380px;
+    }
+    /* LapHUB brand inside illustration */
+    .illus-logo-circle {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      background: #111;
+    }
+    .illus-logo-circle i { font-size: 3.5rem; color: #ccc; }
+    .illus-brand-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 3.2rem;
+      color: #fff;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+    .illus-upload-hint {
+      font-size: .75rem;
+      color: #555;
+      border: 1.5px dashed #444;
+      border-radius: 8px;
+      padding: 8px 18px;
+      margin-top: 4px;
+    }
+
+    /* ── SIGNUP CARD ── */
+    .signup-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 40px 44px;
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    }
+    .signup-card h1 {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700;
+      font-size: 2rem;
+      color: var(--text-white);
+      margin-bottom: 24px;
+    }
+
+    /* Labels */
+    .form-label-custom {
+      font-size: .78rem;
+      color: var(--label-color);
+      font-weight: 500;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    /* Inputs */
+    .input-group-custom {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8899bb;
+      font-size: .9rem;
+      z-index: 2;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 42px 12px 40px;
+      font-size: .92rem;
+      color: #333;
+      outline: none;
+      transition: box-shadow .2s;
+    }
+    .form-input::placeholder { color: #aab; }
+    .form-input:focus { box-shadow: 0 0 0 3px rgba(74,144,217,.35); }
+
+    /* Eye toggle */
+    .eye-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #8899bb;
+      font-size: .9rem;
+      background: none;
+      border: none;
+      padding: 0;
+      z-index: 2;
+    }
+    .eye-toggle:hover { color: #4a90d9; }
+
+    /* Signup button */
+    .btn-signup {
+      width: 100%;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 13px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      cursor: pointer;
+      margin: 6px 0 14px;
+      transition: background .2s;
+    }
+    .btn-signup:hover { background: #222; }
+
+    /* Referral */
+    .referral-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: none;
+      border-radius: 8px;
+      padding: 11px 16px;
+      font-size: .88rem;
+      color: #333;
+      outline: none;
+      margin-bottom: 12px;
+      transition: box-shadow .2s;
+    }
+    .referral-input::placeholder { color: #aab; }
+    .referral-input:focus { box-shadow: 0 0 0 3px rgba(74,144,217,.35); }
+
+    /* Already have account */
+    .already-line {
+      font-size: .88rem;
+      color: rgba(255,255,255,0.70);
+      margin-bottom: 12px;
+    }
+    .already-line a {
+      color: #4a90d9;
+      font-weight: 600;
+      text-decoration: none;
+      margin-left: 4px;
+    }
+    .already-line a:hover { text-decoration: underline; }
+
+    /* OR divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .or-line { flex: 1; height: 1px; background: var(--divider); }
+    .or-text { font-size: .8rem; color: rgba(255,255,255,.45); }
+
+    /* Google button */
+    .btn-google {
+      width: 100%;
+      background: #e8eaf0;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: .92rem;
+      font-weight: 600;
+      color: #333;
+      cursor: pointer;
+      transition: background .2s, box-shadow .2s;
+    }
+    .btn-google:hover { background: #d8dae4; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+    .g-blue  { color: #4285F4; }
+    .g-red   { color: #EA4335; }
+    .g-yellow{ color: #FBBC05; }
+    .g-green { color: #34A853; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #111827;
+      color: #ccc;
+      padding: 55px 0 28px;
+    }
+    .footer-feedback {
+      background: #1e2a3a;
+      border-radius: 10px;
+      padding: 26px 24px;
+    }
+    .footer-feedback .badge-fb {
+      font-size: .65rem;
+      color: #4a90d9;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .footer-feedback h4 {
+      color: #ccc;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .footer-feedback h4 strong { color: #fff; font-weight: 700; }
+    .footer-input-wrap {
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .footer-input-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #557;
+      font-size: .85rem;
+    }
+    .footer-input {
+      width: 100%;
+      background: transparent;
+      border: 1px solid #334;
+      border-radius: 6px;
+      color: #ccc;
+      padding: 10px 12px 10px 34px;
+      font-size: .85rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .footer-input::placeholder { color: #556; }
+    .footer-input:focus { border-color: #4a90d9; }
+    .btn-send {
+      background: #4a90d9;
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: .88rem;
+      cursor: pointer;
+      transition: background .2s;
+      margin-top: 6px;
+    }
+    .btn-send:hover { background: #3a7bc8; }
+    .footer-privacy { font-size: .72rem; color: #445; margin-top: 10px; }
+
+    footer h6 {
+      color: #4a90d9;
+      font-weight: 700;
+      font-size: .72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    footer ul { list-style: none; padding: 0; }
+    footer ul li { margin-bottom: 8px; }
+    footer a { color: #ccc; text-decoration: none; font-size: .88rem; font-weight: 500; }
+    footer a:hover { color: #fff; }
+
+    .footer-contact p { font-size: .88rem; margin-bottom: 4px; color: #ccc; }
+    .footer-contact a { color: #4a90d9; }
+
+    .social-icons { display: flex; gap: 12px; margin-top: 20px; }
+    .social-icons a {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: #1e2a3a;
+      display: flex; align-items: center; justify-content: center;
+      color: #ccc;
+      font-size: .9rem;
+      transition: background .2s, color .2s;
+    }
+    .social-icons a:hover { background: #4a90d9; color: #fff; }
+
+    /* Footer brand logo block */
+    .footer-logo-block {
+      background: #000;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 120px;
+    }
+    .footer-logo-circle {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      background: #111;
+    }
+    .footer-logo-circle i { font-size: 1.4rem; color: #ccc; }
+    .footer-brand-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid #1e2a3a;
+      margin-top: 40px;
+      padding-top: 16px;
+      font-size: .75rem;
+      color: #445;
+      text-align: right;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 991px) {
+      .illustration-wrap { display: none; }
+      .signup-card { padding: 32px 24px; }
+      .page-body { padding: 30px 16px; }
+    }
+    @media (max-width: 400px) {
+      .signup-card h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar-top">
+  <div class="container d-flex align-items-center justify-content-between">
+    <a class="brand-box" href="#">
+      <span class="brand-icon">
+        <i class="fa-solid fa-circle-nodes" style="font-size:.6rem"></i>
+      </span>
+      LapHUB
+    </a>
+    <button class="navbar-toggler d-lg-none border-0 bg-transparent" type="button"
+      data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <i class="fa-solid fa-bars" style="font-size:1.2rem;color:#333"></i>
+    </button>
+    <div class="collapse navbar-collapse d-lg-flex justify-content-end" id="mainNav">
+      <div class="d-flex flex-column flex-lg-row gap-1 gap-lg-0 mt-3 mt-lg-0">
+        <a class="nav-link" href="#">Home</a>
+        <a class="nav-link" href="#">Contact</a>
+        <a class="nav-link" href="#">About</a>
+        <a class="nav-link" href="#">Products</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── PAGE BODY ── -->
+<div class="page-body">
+  <div class="container">
+    <div class="row align-items-center justify-content-center g-4 g-lg-5">
+
+      <!-- LEFT: Illustration / Brand Image -->
+      <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+        <div class="illustration-wrap">
+          <!--
+            ════════════════════════════════════════════
+            IMAGE SLOT — replace the div below with:
+            <img src="your-image.png"
+                 alt="LapHUB brand"
+                 style="width:100%;height:100%;object-fit:cover"/>
+            ════════════════════════════════════════════
+          -->
+          <div class="illustration-placeholder">
+            <div class="illus-logo-circle">
+              <i class="fa-solid fa-tree"></i>
+            </div>
+            <div class="illus-brand-name">LapHUB</div>
+            <span class="illus-upload-hint">Replace with your brand image</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Signup Card -->
+      <div class="col-lg-7 d-flex justify-content-center">
+        <div class="signup-card">
+          <h1>Signup</h1>
+
+          <!-- Username -->
+          <label class="form-label-custom">Username</label>
+          <div class="input-group-custom">
+            <i class="fa-regular fa-user input-icon"></i>
+            <input type="text" class="form-input" placeholder="ex: Surya jith"/>
+          </div>
+
+          <!-- Email -->
+          <label class="form-label-custom">Email</label>
+          <div class="input-group-custom">
+            <i class="fa-regular fa-envelope input-icon"></i>
+            <input type="email" class="form-input" placeholder="example@email.com"/>
+          </div>
+
+          <!-- Password -->
+          <label class="form-label-custom">Password</label>
+          <div class="input-group-custom">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" class="form-input" id="passField" placeholder="Enter your password"/>
+            <button class="eye-toggle" type="button" onclick="togglePass('passField','eyePass')">
+              <i class="fa-regular fa-eye" id="eyePass"></i>
+            </button>
+          </div>
+
+          <!-- Confirm Password -->
+          <label class="form-label-custom">Confirm Password</label>
+          <div class="input-group-custom">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" class="form-input" id="confirmField" placeholder="Enter your password"/>
+            <button class="eye-toggle" type="button" onclick="togglePass('confirmField','eyeConfirm')">
+              <i class="fa-regular fa-eye" id="eyeConfirm"></i>
+            </button>
+          </div>
+
+          <!-- Phone -->
+          <label class="form-label-custom">Phone Number (Optional)</label>
+          <div class="input-group-custom">
+            <i class="fa-solid fa-link input-icon"></i>
+            <input type="tel" class="form-input" placeholder="Enter your phone number"/>
+          </div>
+
+          <!-- Signup Button -->
+          <button class="btn-signup" type="button">Signup</button>
+
+          <!-- Referral -->
+          <label class="form-label-custom">Referral code (Optional)</label>
+          <input type="text" class="referral-input" placeholder="Enter code"/>
+
+          <!-- Already have account -->
+          <p class="already-line">
+            Already have an account?
+            <a href="#">Login Now</a>
+          </p>
+
+          <!-- OR + Google -->
+          <div class="or-divider">
+            <div class="or-line"></div>
+            <span class="or-text">OR</span>
+            <div class="or-line"></div>
+          </div>
+
+          <button class="btn-google" type="button">
+            <span style="font-size:1.1rem;font-weight:900;line-height:1">
+              <span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span>
+            </span>
+            Continue with Google
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="row g-5">
+
+      <!-- Feedback Form -->
+      <div class="col-lg-3 col-md-6">
+        <div class="footer-feedback">
+          <span class="badge-fb">Feedback</span>
+          <h4>Seeking personalized support? <strong>Request a call from our team</strong></h4>
+          <div class="footer-input-wrap">
+            <i class="fa-regular fa-envelope footer-input-icon"></i>
+            <input class="footer-input" type="email" placeholder="example@email.com"/>
+          </div>
+          <div class="footer-input-wrap">
+            <i class="fa-regular fa-user footer-input-icon"></i>
+            <input class="footer-input" type="text" placeholder="ex:Surya"/>
+          </div>
+          <button class="btn-send">Send Request</button>
+          <p class="footer-privacy">Privacy</p>
+        </div>
+      </div>
+
+      <!-- Info Links -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6>Info</h6>
+        <ul>
+          <li><a href="#">Company</a></li>
+          <li><a href="#">Products</a></li>
+          <li><a href="#">Engineering</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">Productions</a></li>
+        </ul>
+      </div>
+
+      <!-- About Us -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6>About Us</h6>
+        <ul>
+          <li><a href="#">Gallery</a></li>
+          <li><a href="#">Technologies</a></li>
+          <li><a href="#">Contacts</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-lg-3 col-md-6 footer-contact">
+        <h6>Contact Us</h6>
+        <p>+91 9778238495</p>
+        <p><a href="mailto:help@laptopSU.com">help@laptopSU.com</a></p>
+        <p>KOCHI, KL, INDIA</p>
+        <div class="social-icons">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-youtube"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+
+      <!-- Footer Logo -->
+      <div class="col-lg-2 col-md-6 d-flex align-items-start justify-content-lg-end">
+        <!--
+          ════════════════════════════════
+          IMAGE SLOT — replace below with:
+          <img src="laphub-logo.png"
+               alt="LapHUB"
+               style="width:160px;border-radius:8px"/>
+          ════════════════════════════════
+        -->
+        <div class="footer-logo-block">
+          <div class="footer-logo-circle">
+            <i class="fa-solid fa-tree"></i>
+          </div>
+          <span class="footer-brand-name">LapHUB</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      © 2025 — ESE
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  function togglePass(fieldId, iconId) {
+    const field = document.getElementById(fieldId);
+    const icon  = document.getElementById(iconId);
+    if (field.type === 'password') {
+      field.type = 'text';
+      icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+      field.type = 'password';
+      icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+  }
+</script>
+</body>
+</html>
