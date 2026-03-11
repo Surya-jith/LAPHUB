@@ -226,7 +226,7 @@ const verifyOtp = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (!user || user.otp !== otp) {
+    if (!user || user.otp !== otp.trim()) {
 
       return res.render("user/otppage", {
         title: "Verify OTP",
@@ -248,11 +248,16 @@ const verifyOtp = async (req, res) => {
 
     }
 
+    // clear otp after successful verification
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+
     res.redirect(`/reset-password?email=${email}`);
 
   } catch (error) {
 
-    console.log(error.message);
+    console.log(error);
     res.status(500).send("Server Error");
 
   }
@@ -485,7 +490,7 @@ const sendEmailOtp = async (req, res) => {
       });
     }
 
-    res.render("user/otppage", { email,user:null,error:null });
+    res.render("user/emailotp", { email,user:null,error:null });
 
   } catch (error) {
     console.log(error);

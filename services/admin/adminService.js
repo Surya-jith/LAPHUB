@@ -26,7 +26,15 @@ const getUsers=async (page,search)=>{
     const limit=10;
     const skip=(page-1)*limit;
 
-    const query = search ? { $or: [ { username: { $regex: search, $options: "i" } }, { email: { $regex: search, $options: "i" } } ] } : {};
+  const query = search
+    ? {
+        role: "user",
+        $or: [
+          { username: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } }
+        ]
+      }
+    : { role: "user" };
     const users = await User.find(query)
     .sort({createdAt:-1})
     .skip(skip)
