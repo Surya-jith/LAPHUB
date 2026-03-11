@@ -1,0 +1,77 @@
+<%- include('../partials/header', { title: "Verify OTP" }) %>
+
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/login.css">
+
+<div class="main-container">
+
+  <div class="left-section">
+    <div class="illustration-placeholder">
+      <img src="/images/logo.png" class="logo-img">
+    </div>
+  </div>
+
+  <div class="right-section">
+    <div class="login-card">
+
+      <h2>Verify Signup OTP</h2>
+
+      <% if (error) { %>
+        <div class="error-message">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/verify-signup-otp" method="POST">
+
+        <div class="input-group">
+          <label>Enter OTP</label>
+          <input type="text" name="otp" required>
+        </div>
+
+        <button type="submit" class="login-btn">
+          Verify OTP
+        </button>
+
+      </form>
+
+      <!-- RESEND OTP SECTION -->
+      <div style="margin-top:15px; text-align:center;">
+
+        <p id="timer">Resend OTP in 60s</p>
+
+        <a href="/resend-signup-otp" id="resendBtn" style="display:none;">
+          Resend OTP
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+let time = 60;
+
+const timer = document.getElementById("timer");
+const resendBtn = document.getElementById("resendBtn");
+
+const countdown = setInterval(() => {
+
+  time--;
+
+  timer.innerText = "Resend OTP in " + time + "s";
+
+  if (time <= 0) {
+    clearInterval(countdown);
+    timer.style.display = "none";
+    resendBtn.style.display = "inline";
+  }
+
+}, 1000);
+
+</script>
+
+<%- include('../partials/footer') %>

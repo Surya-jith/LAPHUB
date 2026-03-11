@@ -1,633 +1,159 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LapHUB – India's Largest Laptop Store</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --purple: #5b2d8e;
-      --gold: #f5c518;
-      --dark: #111;
-      --accent: #ff6b00;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Barlow', sans-serif; overflow-x: hidden; }
+<%- include('../partials/header', { title: "Home" }) %>
 
-    /* ── TOP NAVBAR ── */
-    .navbar-top {
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
-      padding: 10px 0;
-    }
-    .navbar-top .nav-link { color: #333; font-weight: 500; font-size: .95rem; }
-    .navbar-top .nav-link:hover { color: var(--purple); }
-    .brand-box {
-      background: #000;
-      color: #fff;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: 1.1rem;
-      padding: 6px 12px;
-      letter-spacing: 1px;
-    }
 
-    /* ── HERO BANNER ── */
-    .hero {
-      background: linear-gradient(135deg, #3a1a6e 0%, #6b34a8 50%, #9b59b6 100%);
-      min-height: 280px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 60px 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="2"/></svg>') repeat;
-      opacity: .4;
-    }
-    .hero-sub {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(1.2rem, 4vw, 2rem);
-      color: #fff;
-      letter-spacing: 8px;
-      text-transform: uppercase;
-    }
-    .hero-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: clamp(3rem, 12vw, 6.5rem);
-      color: var(--gold);
-      line-height: 1;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/home.css">
 
-    /* ── DELIVERY STRIP ── */
-    .delivery-strip {
-      background: #f5f5f5;
-      padding: 40px 20px;
-      text-align: center;
-    }
-    .delivery-strip h2 {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: clamp(2rem, 5vw, 3rem);
-      color: #111;
-    }
+<!-- HERO SECTION -->
+<section class="hero-section">
 
-    /* ── SECOND NAVBAR ── */
-    .navbar-secondary {
-      background: #fff;
-      border-top: 1px solid #eee;
-      border-bottom: 1px solid #eee;
-      padding: 12px 0;
-    }
-    .navbar-secondary .nav-link { color: #333; font-size: .9rem; font-weight: 500; }
-    .navbar-secondary .nav-link:hover { color: var(--purple); }
+  <div class="hero-overlay">
 
-    /* ── BRANDS SECTION ── */
-    .brands-section {
-      padding: 60px 20px;
-      background: #fff;
-      text-align: center;
-    }
-    .brands-section h2 {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: 2rem;
-      margin-bottom: 40px;
-      color: #111;
-    }
-    .brand-circle {
-      width: 120px; height: 120px;
-      border-radius: 50%;
-      background: #fff;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 12px;
-      border: 3px solid transparent;
-      box-shadow: 0 4px 16px rgba(0,0,0,.1);
-      position: relative;
-      transition: transform .3s, box-shadow .3s;
-      background-clip: padding-box;
-    }
-    .brand-circle::before {
-      content: '';
-      position: absolute; inset: -3px;
-      border-radius: 50%;
-      background: conic-gradient(#ff9933 0deg 120deg, #fff 120deg 240deg, #138808 240deg 360deg);
-      z-index: -1;
-    }
-    .brand-circle img { max-width: 70px; max-height: 45px; object-fit: contain; }
-    .brand-circle:hover { transform: scale(1.08); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
-    .brand-name { font-weight: 700; font-size: .85rem; color: #555; }
+    <h3>INDIA'S LARGEST</h3>
 
-    /* Brand logo placeholders using styled text */
-    .logo-asus { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.4rem; color: #1a1a1a; }
-    .logo-dell { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.2rem; color: #007db8; }
-    .logo-apple { font-size: 2rem; color: #111; }
-    .logo-samsung { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1rem; color: #1428a0; letter-spacing: 1px; }
-    .logo-msi { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.6rem; color: #c00; }
-    .logo-acer { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; color: #83b81a; }
+    <h1>LAPTOP STORE</h1>
 
-    /* ── GAMING BANNER ── */
-    .gaming-banner {
-      background: linear-gradient(to bottom, #0a0a0a 0%, #1a0a2e 60%, #0d0d0d 100%);
-      padding: 60px 20px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .gaming-banner::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% 40%, rgba(100,50,200,.3) 0%, transparent 70%);
-    }
-    .gaming-laptops {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 30px;
-      position: relative;
-    }
-    .laptop-card-gaming {
-      background: linear-gradient(145deg, #1e1e2e, #2d1b69);
-      border: 1px solid rgba(150,100,255,.3);
-      border-radius: 12px;
-      padding: 20px;
-      position: relative;
-      box-shadow: 0 0 40px rgba(100,50,255,.2);
-    }
-    .laptop-card-gaming .laptop-name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .85rem;
-      color: rgba(255,255,255,.7);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .laptop-card-gaming .laptop-icon {
-      font-size: 4rem;
-      color: #a78bfa;
-    }
-    .laptop-center { transform: scale(1.15); z-index: 2; }
-    .rog-badge {
-      position: absolute; top: 10px; right: 10px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .7rem;
-      color: #ff0000;
-      letter-spacing: 1px;
-      border: 1px solid #ff0000;
-      padding: 2px 6px;
-    }
-    .gaming-tagline {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: clamp(2rem, 6vw, 4rem);
-      color: #c084fc;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      text-shadow: 0 0 40px rgba(192,132,252,.5);
-    }
-    .gaming-subtitle {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: 1.4rem;
-      color: #fff;
-      letter-spacing: 6px;
-      text-transform: uppercase;
-    }
-    .gaming-desc { color: rgba(255,255,255,.65); font-size: .9rem; margin: 8px 0 20px; }
-    .btn-gaming {
-      border: 1px solid #fff;
-      color: #fff;
-      background: transparent;
-      padding: 8px 30px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      transition: all .3s;
-    }
-    .btn-gaming:hover { background: #fff; color: #000; }
+    <a href="/products" class="hero-btn">
+      Explore Laptops
+    </a>
 
-    /* ── PRODUCT CARDS ── */
-    .products-section {
-      padding: 40px 20px;
-      background: #f8f8f8;
-    }
-    .product-card {
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      overflow: hidden;
-      transition: box-shadow .3s, transform .3s;
-      height: 100%;
-    }
-    .product-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.12); transform: translateY(-4px); }
-    .product-card .badge-gen {
-      position: absolute; top: 12px; left: 12px;
-      background: var(--accent);
-      color: #fff;
-      font-size: .7rem;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 3px;
-    }
-    .product-card .badge-best {
-      position: absolute; top: 12px; right: 12px;
-      background: var(--purple);
-      color: #fff;
-      font-size: .7rem;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 3px;
-    }
-    .product-img-wrap {
-      position: relative;
-      background: #f0f0f0;
-      display: flex; align-items: center; justify-content: center;
-      height: 180px;
-    }
-    .product-img-wrap i { font-size: 5rem; color: #bbb; }
-    /* brand-colored icons */
-    .icon-dell { color: #007db8; }
-    .icon-asus { color: #1a1a1a; }
-    .icon-hp { color: #0096d6; }
-    .icon-acer { color: #83b81a; }
-    .product-body { padding: 16px; }
-    .product-body .brand { font-weight: 700; font-size: .9rem; color: #333; }
-    .product-body .specs { font-size: .78rem; color: #777; line-height: 1.5; margin: 6px 0; }
-    .product-price {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: 1.5rem;
-      color: #111;
-    }
-    .rupee { font-size: 1rem; }
+  </div>
 
-    /* ── FOOTER ── */
-    footer {
-      background: #1a1a1a;
-      color: #ccc;
-      padding: 60px 0 30px;
-    }
-    .footer-feedback {
-      background: #2a2a2a;
-      border-radius: 8px;
-      padding: 28px;
-    }
-    .footer-feedback .badge-fb {
-      font-size: .65rem;
-      color: var(--gold);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 8px;
-    }
-    .footer-feedback h4 { color: #fff; font-size: 1.1rem; line-height: 1.4; }
-    .footer-feedback h4 strong { color: #fff; font-weight: 700; }
-    .footer-input {
-      background: #3a3a3a;
-      border: none;
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 4px;
-      font-size: .85rem;
-      width: 100%;
-    }
-    .footer-input::placeholder { color: #888; }
-    .footer-input:focus { outline: 1px solid var(--purple); }
-    .btn-send {
-      background: #4a90d9;
-      color: #fff;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: .9rem;
-      transition: background .2s;
-    }
-    .btn-send:hover { background: #3a7bc8; }
-    footer h6 {
-      color: #fff;
-      font-weight: 700;
-      font-size: .75rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-    footer a { color: #bbb; text-decoration: none; font-size: .88rem; }
-    footer a:hover { color: #fff; }
-    footer ul { list-style: none; padding: 0; }
-    footer ul li { margin-bottom: 8px; }
-    .footer-contact p { font-size: .88rem; margin-bottom: 4px; }
-    .footer-contact a { color: #4a90d9; }
-    .social-icons a {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 36px; height: 36px;
-      border: 1px solid #444;
-      border-radius: 50%;
-      color: #bbb;
-      font-size: .85rem;
-      margin-right: 8px;
-      transition: all .2s;
-    }
-    .social-icons a:hover { border-color: #fff; color: #fff; }
-    .footer-brand-box {
-      background: #000;
-      color: #fff;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: 1.1rem;
-      padding: 6px 12px;
-      display: inline-block;
-    }
-    .footer-bottom {
-      border-top: 1px solid #333;
-      margin-top: 40px;
-      padding-top: 16px;
-      font-size: .78rem;
-      color: #666;
-    }
-  </style>
-</head>
-<body>
+</section>
 
-<!-- ── TOP NAVBAR ── -->
-<nav class="navbar navbar-top navbar-expand-lg">
-  <div class="container">
-    <a class="navbar-brand brand-box" href="#">LapHUB</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav">
-      <span class="navbar-toggler-icon"></span>
+
+<!-- TAGLINE -->
+<section class="tagline">
+
+  <h2>
+    Get your Laptop <br>
+    as soon as possible !
+  </h2>
+
+</section>
+
+
+<!-- CATEGORY BRANDS -->
+<section class="categories">
+
+  <h2>Choose your Choice !</h2>
+
+  <div class="brand-container">
+
+    <div class="brand-card">
+      <img src="/images/brands/dell.png" alt="Dell">
+    </div>
+
+    <div class="brand-card">
+      <img src="/images/brands/hp.png" alt="HP">
+    </div>
+
+    <div class="brand-card">
+      <img src="/images/brands/asus.png" alt="Asus">
+    </div>
+
+    <div class="brand-card">
+      <img src="/images/brands/lenovo.png" alt="Lenovo">
+    </div>
+
+    <div class="brand-card">
+      <img src="/images/brands/acer.png" alt="Acer">
+    </div>
+
+    <div class="brand-card">
+      <img src="/images/brands/msi.png" alt="MSI">
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- PROMO BANNER -->
+<section class="promo-banner">
+
+  <div class="promo-overlay">
+
+    <h2>BOUNDLESS POWER</h2>
+
+    <p>ROG GAMING 2024</p>
+
+    <button class="promo-btn">
+      Available Now
     </button>
-    <div class="collapse navbar-collapse" id="topNav">
-      <ul class="navbar-nav mx-auto">
-        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Products</a></li>
-      </ul>
-      <span class="navbar-text fw-semibold" style="color:#333">Surya jith</span>
-    </div>
-  </div>
-</nav>
 
-<!-- ── HERO BANNER ── -->
-<section class="hero">
-  <div class="position-relative z-1">
-    <p class="hero-sub mb-2">India's Largest</p>
-    <h1 class="hero-title">Laptop Store</h1>
   </div>
+
 </section>
 
-<!-- ── DELIVERY STRIP ── -->
-<section class="delivery-strip">
-  <div class="container">
-    <div class="brand-box d-inline-block mb-4" style="font-size:.8rem">LapHUB</div>
-    <h2>Get your Laptop<br>as soon as possible !</h2>
+
+<!-- FEATURED PRODUCTS PLACEHOLDER -->
+<section class="products">
+
+  <h2>Featured Laptops</h2>
+
+  <div class="product-grid">
+
+    <div class="product-card">
+
+      <div class="product-image"></div>
+
+      <h4>Dell Inspiron</h4>
+
+      <p>₹53,990</p>
+
+    </div>
+
+
+    <div class="product-card">
+
+      <div class="product-image"></div>
+
+      <h4>HP Pavilion</h4>
+
+      <p>₹61,999</p>
+
+    </div>
+
+
+    <div class="product-card">
+
+      <div class="product-image"></div>
+
+      <h4>ASUS ROG</h4>
+
+      <p>₹95,000</p>
+
+    </div>
+
+
+    <div class="product-card">
+
+      <div class="product-image"></div>
+
+      <h4>Lenovo Legion</h4>
+
+      <p>₹88,999</p>
+
+    </div>
+
   </div>
+
 </section>
 
-<!-- ── SECONDARY NAVBAR ── -->
-<nav class="navbar-secondary">
-  <div class="container d-flex align-items-center gap-4 flex-wrap">
-    <div class="brand-box" style="font-size:.75rem">LapHUB</div>
-    <a class="nav-link" href="#">Home</a>
-    <a class="nav-link" href="#">Contact</a>
-    <a class="nav-link" href="#">About</a>
-  </div>
-</nav>
 
-<!-- ── BRANDS ── -->
-<section class="brands-section">
-  <div class="container">
-    <h2>Choose your Choice !</h2>
-    <div class="row row-cols-3 row-cols-sm-4 row-cols-md-6 g-4 justify-content-center">
+<!-- CALL TO ACTION -->
+<section class="cta-section">
 
-      <div class="col text-center">
-        <div class="brand-circle">
-          <span class="logo-asus">ASUS</span>
-        </div>
-        <div class="brand-name">ASUS</div>
-      </div>
+  <h2>Upgrade Your Power Today</h2>
 
-      <div class="col text-center">
-        <div class="brand-circle">
-          <span class="logo-dell">Dell<br><small style="font-size:.6rem;letter-spacing:1px">Technologies</small></span>
-        </div>
-        <div class="brand-name">Dell</div>
-      </div>
+  <p>Find the perfect laptop for work, gaming, and creativity.</p>
 
-      <div class="col text-center">
-        <div class="brand-circle">
-          <i class="logo-apple fa-brands fa-apple"></i>
-        </div>
-        <div class="brand-name">Apple</div>
-      </div>
+  <a href="/products" class="cta-btn">
+    Shop Now
+  </a>
 
-      <div class="col text-center">
-        <div class="brand-circle">
-          <span class="logo-samsung">SAMSUNG</span>
-        </div>
-        <div class="brand-name">Samsung</div>
-      </div>
-
-      <div class="col text-center">
-        <div class="brand-circle">
-          <span class="logo-msi">msi</span>
-        </div>
-        <div class="brand-name">MSI</div>
-      </div>
-
-      <div class="col text-center">
-        <div class="brand-circle">
-          <span class="logo-acer">acer</span>
-        </div>
-        <div class="brand-name">Acer</div>
-      </div>
-
-    </div>
-  </div>
 </section>
 
-<!-- ── GAMING BANNER ── -->
-<section class="gaming-banner">
-  <div class="container position-relative">
-    <!-- Laptop showcase -->
-    <div class="gaming-laptops">
-      <div class="laptop-card-gaming">
-        <div class="laptop-name">Strix SCAR 16/18</div>
-        <i class="fa-solid fa-laptop laptop-icon"></i>
-      </div>
-      <div class="laptop-card-gaming laptop-center">
-        <div class="laptop-name">Zephyrus G16</div>
-        <i class="fa-solid fa-laptop laptop-icon" style="color:#c084fc;font-size:5rem"></i>
-        <div class="rog-badge">ROG</div>
-      </div>
-      <div class="laptop-card-gaming">
-        <div class="laptop-name">ROG G22CH</div>
-        <i class="fa-solid fa-desktop laptop-icon"></i>
-      </div>
-    </div>
-    <!-- Text -->
-    <div class="gaming-tagline">Boundless Power</div>
-    <div class="gaming-subtitle">ROG Gaming 2024</div>
-    <p class="gaming-desc">Latest Intel® Core™ Ultra CPU, NVIDIA® RTX™ with built in AI Acceleration</p>
-    <a href="#" class="btn btn-gaming">Available Now</a>
-  </div>
-</section>
 
-<!-- ── PRODUCTS ── -->
-<section class="products-section">
-  <div class="container">
-    <div class="row g-4">
-
-      <!-- Dell -->
-      <div class="col-6 col-md-3">
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="badge-gen">13th GEN</span>
-            <i class="fa-solid fa-laptop icon-dell"></i>
-          </div>
-          <div class="product-body">
-            <div class="brand">Dell Technologies</div>
-            <div class="specs">Intel Core i5 13th Gen–1334U, 16GB DDR4, 512GB SSD, FHD, 15.6"/39.62cm, Windows 11, MSO 2024, Grey, 1.66kg [Vostro 3530]</div>
-            <div class="product-price"><span class="rupee">₹</span>53,990</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ASUS -->
-      <div class="col-6 col-md-3">
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <span class="badge-best">BEST OF TECH</span>
-            <i class="fa-solid fa-laptop icon-asus"></i>
-          </div>
-          <div class="product-body">
-            <div class="brand">ASUS Vivobook Go 14</div>
-            <div class="specs">AMD Ryzen 3 7320U, 8GB RAM, 512GB SSD, FHD 14", Windows 11, Office Home 2024, Mixed Black, 1.38 kg, #1404FA-#N3325WS</div>
-            <div class="product-price"><span class="rupee">₹</span>32,000</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- HP -->
-      <div class="col-6 col-md-3">
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <i class="fa-solid fa-laptop icon-hp"></i>
-          </div>
-          <div class="product-body">
-            <div class="brand">HP 15</div>
-            <div class="specs">13th Gen Intel Core i5-1335U (16GB DDR4, 512GB SSD) FHD, Anti-Glare, Micro-Edge, 15.6"/39.6cm, Win11, M365(1yr)* Office24</div>
-            <div class="product-price"><span class="rupee">₹</span>54,990</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Acer -->
-      <div class="col-6 col-md-3">
-        <div class="product-card">
-          <div class="product-img-wrap">
-            <i class="fa-solid fa-laptop icon-acer"></i>
-          </div>
-          <div class="product-body">
-            <div class="brand">Acer Aspire Lite</div>
-            <div class="specs">12th gen, Intel Core i5-12450H Processor, 16 GB, 512GB, Full HD IPS, 15.6"/39.62 cm, Windows 11 Home, MSO, Pure Silver, 1.70 kg</div>
-            <div class="product-price"><span class="rupee">₹</span>48,990</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ── FOOTER ── -->
-<footer>
-  <div class="container">
-    <div class="row g-5">
-
-      <!-- Feedback Form -->
-      <div class="col-lg-3 col-md-6">
-        <div class="footer-feedback">
-          <span class="badge-fb">Feedback</span>
-          <h4>Seeking personalized support? <strong>Request a call from our team</strong></h4>
-          <div class="mt-3 d-flex flex-column gap-2">
-            <div>
-              <label style="font-size:.75rem;color:#aaa">Email</label>
-              <input class="footer-input mt-1" type="email" placeholder="example@email.com"/>
-            </div>
-            <div>
-              <label style="font-size:.75rem;color:#aaa">Username</label>
-              <input class="footer-input mt-1" type="text" placeholder="Enter your Username.."/>
-            </div>
-            <button class="btn-send mt-2 text-start">Send Request</button>
-          </div>
-          <small style="font-size:.7rem;color:#555;display:block;margin-top:10px">Privacy</small>
-        </div>
-      </div>
-
-      <!-- Info Links -->
-      <div class="col-lg-2 col-md-3 col-6">
-        <h6>Info</h6>
-        <ul>
-          <li><a href="#">Company</a></li>
-          <li><a href="#">Products</a></li>
-          <li><a href="#">Engineering</a></li>
-          <li><a href="#">Services</a></li>
-          <li><a href="#">Productions</a></li>
-        </ul>
-      </div>
-
-      <!-- About Links -->
-      <div class="col-lg-2 col-md-3 col-6">
-        <h6>About Us</h6>
-        <ul>
-          <li><a href="#">Gallery</a></li>
-          <li><a href="#">Technologies</a></li>
-          <li><a href="#">Contacts</a></li>
-        </ul>
-      </div>
-
-      <!-- Contact -->
-      <div class="col-lg-3 col-md-6 footer-contact">
-        <h6>Contact Us</h6>
-        <p>+91 8848837834</p>
-        <p><a href="mailto:help@laptopSU.com">help@laptopSU.com</a></p>
-        <p>KOCHI, KL, INDIA</p>
-
-        <div class="social-icons mt-4">
-          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-youtube"></i></a>
-          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-        </div>
-      </div>
-
-      <!-- Brand -->
-      <div class="col-lg-2 col-md-6 text-lg-end">
-        <div class="footer-brand-box">LapHUB</div>
-        <p class="mt-3" style="font-size:.75rem;color:#555">© 2025 — ∂∅</p>
-      </div>
-
-    </div>
-
-    <div class="footer-bottom d-flex flex-wrap justify-content-between">
-      <span>© 2025 LapHUB. All rights reserved.</span>
-      <span>Kochi, Kerala, India</span>
-    </div>
-  </div>
-</footer>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<%- include('../partials/footer') %>

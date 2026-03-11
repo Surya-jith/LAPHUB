@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Customers</title>
+
+<link rel="stylesheet" href="/css/admin/users.css">
+
+</head>
+
+<body>
+
+<div class="admin-container">
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h2 class="logo">LapHub</h2>
+
+<ul class="menu">
+<li><a href="/admin/dashboard">Dashboard</a></li>
+<li class="active"><a href="/admin/users">Customers</a></li>
+<li><a href="/admin/logout">Logout</a></li>
+</ul>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="main-content">
+
+<div class="page-header">
+
+<h2>Customers</h2>
+
+<div class="breadcrumb">
+Dashboard > Customers List
+</div>
+
+</div>
+
+
+<!-- SEARCH -->
+
+<div class="search-bar">
+
+<form method="GET" action="/admin/users">
+
+<input 
+type="text" 
+name="search" 
+placeholder="Search users..."
+value="<%= search || '' %>"
+>
+
+<button type="submit">Search</button>
+
+<a href="/admin/users" class="clear-btn">Clear</a>
+
+</form>
+
+</div>
+
+
+<!-- USERS TABLE -->
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Phone</th>
+<th>Status</th>
+<th>Joined</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+<% users.forEach(user => { %>
+
+<tr>
+
+<td class="user-name">
+
+<div class="avatar"></div>
+
+<span><%= user.username %></span>
+
+</td>
+
+<td><%= user.email %></td>
+
+<td><%= user.phone %></td>
+
+
+<td>
+
+<% if(user.isBlocked){ %>
+
+<span class="status blocked">Blocked</span>
+
+<% }else{ %>
+
+<span class="status active">Active</span>
+
+<% } %>
+
+</td>
+
+
+<td><%= user.createdAt.toDateString() %></td>
+
+
+<td>
+
+<form action="/admin/block-user/<%= user._id %>" method="POST">
+
+<button 
+class="action-btn <%= user.isBlocked ? 'unblock' : 'block' %>"
+onclick="return confirm('Are you sure?')"
+>
+
+<%= user.isBlocked ? 'Unblock' : 'Block' %>
+
+</button>
+
+</form>
+
+</td>
+
+</tr>
+
+<% }) %>
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<!-- PAGINATION -->
+
+<div class="pagination">
+
+<% for(let i = 1; i <= totalPages; i++){ %>
+
+<a 
+href="/admin/users?page=<%= i %>&search=<%= search %>" 
+class="page-btn <%= currentPage === i ? 'active-page' : '' %>"
+>
+<%= i %>
+</a>
+
+<% } %>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

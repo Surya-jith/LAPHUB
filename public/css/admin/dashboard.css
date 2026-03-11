@@ -1,0 +1,49 @@
+body{
+    margin:0;
+    font-family:Arial;
+}
+
+.admin-container{
+    display:flex;
+}
+
+.sidebar{
+    width:220px;
+    height:100vh;
+    background:#1f2945;
+    color:white;
+    padding:20px;
+}
+
+.sidebar ul{
+    list-style:none;
+    padding:0;
+}
+
+.sidebar li{
+    margin:15px 0;
+}
+
+.sidebar a{
+    text-decoration:none;
+    color:white;
+}
+
+.main-content{
+    flex:1;
+    padding:20px;
+    background:#f4f6fb;
+}
+
+.stats{
+    display:flex;
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    width:200px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}

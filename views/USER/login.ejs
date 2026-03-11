@@ -1,409 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LapHUB – Login</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --page-bg: #6b7a99;
-      --card-bg: #5c6b87;
-      --card-border: rgba(255,255,255,0.18);
-      --input-bg: #ffffff;
-      --label-color: rgba(255,255,255,0.75);
-      --text-white: #ffffff;
-      --link-blue: #4a90d9;
-      --divider: rgba(255,255,255,0.35);
-    }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      font-family: 'Barlow', sans-serif;
-      background-color: var(--page-bg);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/login.css">
 
-    /* ── NAVBAR ── */
-    .navbar-top {
-      background: #ffffff;
-      padding: 10px 0;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    }
-    .brand-box {
-      background: #111;
-      color: #fff;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: 1rem;
-      padding: 6px 12px;
-      letter-spacing: 1px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .brand-box .brand-icon {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .6rem;
-    }
-    .navbar-top .nav-link {
-      color: #222;
-      font-weight: 600;
-      font-size: .95rem;
-      padding: 6px 14px;
-    }
-    .navbar-top .nav-link:hover { color: #4a90d9; }
+<div class="main-container">
 
-    /* ── PAGE BODY ── */
-    .page-body {
-      flex: 1;
-      background-color: var(--page-bg);
-      display: flex;
-      align-items: center;
-      padding: 60px 20px;
-    }
-
-    /* ── ILLUSTRATION AREA ── */
-    .illustration-wrap {
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 420px;
-      max-width: 480px;
-      width: 100%;
-      /* 
-        ─────────────────────────────────────────
-        IMAGE PLACEHOLDER
-        Replace the background-image below with
-        your own illustration URL, e.g.:
-          background-image: url('your-image.png');
-          background-size: cover;
-          background-position: center;
-        ─────────────────────────────────────────
-      */
-      position: relative;
-    }
-    .illustration-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      color: #aab;
-      text-align: center;
-      padding: 40px;
-      width: 100%;
-      height: 100%;
-      min-height: 420px;
-    }
-    .illustration-placeholder i { font-size: 4rem; color: #c0cfe8; }
-    .illustration-placeholder p { font-size: .85rem; color: #b0bcd0; margin: 0; }
-    .illustration-placeholder .upload-hint {
-      font-size: .75rem;
-      color: #c5d0e0;
-      border: 1.5px dashed #c5d0e0;
-      border-radius: 8px;
-      padding: 10px 20px;
-      margin-top: 4px;
-    }
-
-    /* ── LOGIN CARD ── */
-    .login-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 48px 44px;
-      width: 100%;
-      max-width: 540px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
-    }
-    .login-card h1 {
-      font-family: 'Barlow', sans-serif;
-      font-weight: 700;
-      font-size: 2.2rem;
-      color: var(--text-white);
-      margin-bottom: 32px;
-    }
-
-    /* Labels */
-    .form-label-custom {
-      font-size: .82rem;
-      color: var(--label-color);
-      font-weight: 500;
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    /* Inputs */
-    .input-group-custom {
-      position: relative;
-      margin-bottom: 20px;
-    }
-    .input-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #8899bb;
-      font-size: .95rem;
-      z-index: 2;
-    }
-    .form-input {
-      width: 100%;
-      background: var(--input-bg);
-      border: none;
-      border-radius: 8px;
-      padding: 13px 44px 13px 42px;
-      font-size: .95rem;
-      color: #333;
-      outline: none;
-      transition: box-shadow .2s;
-    }
-    .form-input::placeholder { color: #aab; }
-    .form-input:focus { box-shadow: 0 0 0 3px rgba(74,144,217,.35); }
-
-    /* Eye toggle */
-    .eye-toggle {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: #8899bb;
-      font-size: .95rem;
-      background: none;
-      border: none;
-      padding: 0;
-      z-index: 2;
-    }
-    .eye-toggle:hover { color: #4a90d9; }
-
-    /* Forgot password */
-    .forgot-link {
-      display: block;
-      text-align: right;
-      color: #4a90d9;
-      font-size: .88rem;
-      font-weight: 600;
-      text-decoration: none;
-      margin-bottom: 20px;
-    }
-    .forgot-link:hover { text-decoration: underline; color: #3a7bc8; }
-
-    /* Login divider button */
-    .login-divider {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      margin-bottom: 28px;
-    }
-    .divider-line {
-      flex: 1;
-      height: 1px;
-      background: var(--divider);
-    }
-    .login-btn-text {
-      background: none;
-      border: none;
-      color: var(--text-white);
-      font-family: 'Barlow', sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 0 20px;
-      cursor: pointer;
-      letter-spacing: .5px;
-      transition: color .2s;
-    }
-    .login-btn-text:hover { color: #4a90d9; }
-
-    /* Google button */
-    .btn-google {
-      width: 100%;
-      background: #e8eaf0;
-      border: none;
-      border-radius: 50px;
-      padding: 13px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: .95rem;
-      font-weight: 600;
-      color: #333;
-      cursor: pointer;
-      transition: background .2s, box-shadow .2s;
-      margin-bottom: 28px;
-    }
-    .btn-google:hover { background: #d8dae4; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
-    .google-g {
-      font-size: 1.1rem;
-      font-weight: 900;
-    }
-    /* Google G multicolor via span trick */
-    .g-blue { color: #4285F4; }
-    .g-red { color: #EA4335; }
-    .g-yellow { color: #FBBC05; }
-    .g-green { color: #34A853; }
-
-    /* Sign up line */
-    .signup-line {
-      text-align: center;
-      color: rgba(255,255,255,0.75);
-      font-size: .9rem;
-    }
-    .signup-line a {
-      color: #4a90d9;
-      font-weight: 600;
-      text-decoration: none;
-      margin-left: 4px;
-    }
-    .signup-line a:hover { text-decoration: underline; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 767px) {
-      .illustration-wrap { display: none; }
-      .login-card { padding: 36px 24px; }
-      .page-body { padding: 30px 16px; }
-    }
-    @media (max-width: 400px) {
-      .login-card h1 { font-size: 1.7rem; }
-    }
-  </style>
-</head>
-<body>
-
-<!-- ── NAVBAR ── -->
-<nav class="navbar-top">
-  <div class="container d-flex align-items-center justify-content-between">
-    <!-- Brand -->
-    <a class="brand-box" href="#">
-      <span class="brand-icon">
-        <i class="fa-solid fa-circle-nodes" style="font-size:.65rem"></i>
-      </span>
-      LapHUB
-    </a>
-    <!-- Nav links (collapse on mobile) -->
-    <button class="navbar-toggler d-lg-none border-0 bg-transparent" type="button"
-      data-bs-toggle="collapse" data-bs-target="#mainNav">
-      <i class="fa-solid fa-bars" style="font-size:1.2rem;color:#333"></i>
-    </button>
-    <div class="collapse navbar-collapse d-lg-flex justify-content-end" id="mainNav">
-      <div class="d-flex flex-column flex-lg-row gap-1 gap-lg-0 mt-3 mt-lg-0">
-        <a class="nav-link" href="#">Home</a>
-        <a class="nav-link" href="#">Contact</a>
-        <a class="nav-link" href="#">About</a>
-        <a class="nav-link" href="#">Products</a>
-      </div>
+  <!-- LEFT IMAGE -->
+  <div class="left-section">
+    <div class="illustration-placeholder">
+      <img src="/images/logo.png" alt="LapHUB Logo" class="logo-img">
     </div>
   </div>
-</nav>
 
-<!-- ── PAGE BODY ── -->
-<div class="page-body">
-  <div class="container">
-    <div class="row align-items-center justify-content-center g-4 g-lg-5">
+  <!-- LOGIN CARD -->
+  <div class="right-section">
+    <div class="login-card">
 
-      <!-- LEFT: Illustration -->
-      <div class="col-lg-6 d-none d-lg-flex justify-content-center">
-        <div class="illustration-wrap">
-          <!--
-            ════════════════════════════════════════════
-            IMAGE SLOT — replace this block with:
-            <img src="your-illustration.png"
-                 alt="Login illustration"
-                 style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>
-            ════════════════════════════════════════════
-          -->
-          <div class="illustration-placeholder">
-            <i class="fa-regular fa-image"></i>
-            <p>Illustration goes here</p>
-            <span class="upload-hint">Replace with your image file</span>
-          </div>
+      <h2>Login</h2>
+
+      <% if (error) { %>
+        <div class="error-message"><%= error %></div>
+      <% } %>
+
+      <form action="/login" method="POST">
+
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="Enter your email" required>
         </div>
-      </div>
 
-      <!-- RIGHT: Login Card -->
-      <div class="col-lg-6 d-flex justify-content-center">
-        <div class="login-card">
-          <h1>Login</h1>
-
-          <!-- Email -->
-          <div class="mb-1">
-            <label class="form-label-custom">Email</label>
-            <div class="input-group-custom">
-              <i class="fa-regular fa-user input-icon"></i>
-              <input type="email" class="form-input" placeholder="Enter your email"/>
-            </div>
-          </div>
-
-          <!-- Password -->
-          <div class="mb-1">
-            <label class="form-label-custom">Password</label>
-            <div class="input-group-custom">
-              <i class="fa-solid fa-lock input-icon"></i>
-              <input type="password" class="form-input" id="passwordField" placeholder="Enter your password"/>
-              <button class="eye-toggle" onclick="togglePassword()" type="button" id="eyeBtn">
-                <i class="fa-regular fa-eye" id="eyeIcon"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Forgot password -->
-          <a href="#" class="forgot-link">Forgot password?</a>
-
-          <!-- Login divider -->
-          <div class="login-divider">
-            <div class="divider-line"></div>
-            <button class="login-btn-text" type="submit">Login</button>
-            <div class="divider-line"></div>
-          </div>
-
-          <!-- Continue with Google -->
-          <button class="btn-google" type="button">
-            <!-- Google G icon using colored letters -->
-            <span style="font-size:1.15rem;font-weight:900;line-height:1">
-              <span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span>
-            </span>
-            Continue with Google
-          </button>
-
-          <!-- Sign up -->
-          <p class="signup-line">
-            Don't have an account?
-            <a href="#">Sign up now</a>
-          </p>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Enter your password" required>
         </div>
-      </div>
+
+        <div class="forgot-password">
+          <a href="/forgot-password">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+
+        <div class="google-section">
+          <a href="/auth/google" class="google-btn">Continue with Google</a>
+        </div>
+
+        <div class="signup-link">
+          Don’t have an account?
+          <a href="/signup">Sign up now</a>
+        </div>
+
+      </form>
 
     </div>
   </div>
+
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-<script>
-  function togglePassword() {
-    const field = document.getElementById('passwordField');
-    const icon = document.getElementById('eyeIcon');
-    if (field.type === 'password') {
-      field.type = 'text';
-      icon.classList.replace('fa-eye', 'fa-eye-slash');
-    } else {
-      field.type = 'password';
-      icon.classList.replace('fa-eye-slash', 'fa-eye');
-    }
-  }
-</script>
-</body>
-</html>

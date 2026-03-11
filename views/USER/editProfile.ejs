@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Edit Profile</title>
+
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/profile.css">
+
+</head>
+
+<body>
+
+<%- include('../partials/header',{ user }) %>
+
+<div class="profile-page">
+
+<!-- SIDEBAR -->
+
+<div class="profile-sidebar">
+
+<ul>
+
+<li><a href="/profile">Dashboard</a></li>
+<li class="active"><a href="/profile/edit">Account Details</a></li>
+<li><a href="/orders">Order History</a></li>
+<li><a href="/cart">Shopping Cart</a></li>
+<li><a href="/wishlist">Wishlist</a></li>
+<li><a href="/address">Address</a></li>
+<li><a href="/wallet">Wallet</a></li>
+
+</ul>
+
+</div>
+
+
+<!-- PROFILE CARD -->
+
+<div class="profile-card">
+
+<div class="card-header">
+
+<h3>ACCOUNT SETTING</h3>
+
+</div>
+
+
+<form class="profile-body" action="/profile/edit" method="POST" enctype="multipart/form-data">
+
+<!-- PROFILE IMAGE -->
+
+<div class="profile-image">
+
+<img src="<%= user.profileImage ? '/uploads/profile/' + user.profileImage : '/images/user.png' %>" alt="User Image">
+
+<input type="file" name="profileImage" class="photo-btn">
+
+</div>
+
+
+<!-- PROFILE FORM -->
+
+<div class="profile-details">
+
+<div class="row">
+
+<div class="field">
+
+<label>Name</label>
+
+<input 
+type="text" 
+name="username"
+value="<%= user.username %>"
+required
+>
+
+</div>
+
+</div>
+
+
+<div class="row">
+
+<div class="field">
+
+<label>Phone Number</label>
+
+<input 
+type="text" 
+name="phone"
+value="<%= user.phone %>"
+required
+>
+
+</div>
+
+</div>
+
+
+<div class="save-section">
+
+<button type="submit" class="save-btn">
+Save Changes
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

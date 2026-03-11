@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Account Settings</title>
+
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/profile.css">
+
+</head>
+
+<body>
+
+<%- include('../partials/header',{ user }) %>
+
+<div class="profile-page">
+
+<!-- LEFT SIDEBAR -->
+
+<div class="profile-sidebar">
+
+<ul>
+
+<li class="active">
+<a href="/profile">Account Details</a>
+</li>
+
+<li>
+<a href="/orders">Order History</a>
+</li>
+
+<li>
+<a href="/cart">Shopping Cart</a>
+</li>
+
+<li>
+<a href="/wishlist">Wishlist</a>
+</li>
+
+<li>
+<a href="/address">Address</a>
+</li>
+
+<li>
+<a href="/wallet">Wallet</a>
+</li>
+
+</ul>
+
+</div>
+
+
+<!-- PROFILE CONTENT -->
+
+<div class="profile-card">
+
+<div class="card-header">
+
+<h3>ACCOUNT SETTING</h3>
+
+<a href="/profile/edit" class="edit-profile-btn">
+EDIT PROFILE
+</a>
+
+</div>
+
+
+<div class="profile-body">
+
+<!-- PROFILE IMAGE -->
+
+<div class="profile-image">
+
+<img src="<%= user.profileImage ? '/uploads/profile/' + user.profileImage : '/images/user.png' %>" alt="User Image">
+
+</div>
+
+
+<!-- PROFILE DETAILS -->
+
+<div class="profile-details">
+
+<div class="row">
+
+<div class="field">
+
+<label>Name</label>
+
+<input type="text" value="<%= user.username %>" readonly>
+
+</div>
+
+
+<div class="field">
+
+<label>Email</label>
+
+<input type="text" value="<%= user.email %>" readonly>
+
+<a href="/edit-email" class="edit-email-btn">
+EDIT EMAIL
+</a>
+
+</div>
+
+</div>
+
+
+<div class="row">
+
+<div class="field">
+
+<label>Phone Number</label>
+
+<input type="text" value="<%= user.phone %>" readonly>
+
+</div>
+
+</div>
+
+
+<div class="referral-section">
+
+<p>Your referral code</p>
+
+<span class="referral-code">
+<%= user.referralCode %>
+</span>
+
+</div>
+
+
+<a href="/change-password" class="change-password-btn">
+Change Password
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+</body>
+</html>

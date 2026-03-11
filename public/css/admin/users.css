@@ -1,0 +1,188 @@
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#f5f7fb;
+}
+
+/* LAYOUT */
+
+.admin-container{
+display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:220px;
+height:100vh;
+background:#1e2a4a;
+color:white;
+padding:20px;
+}
+
+.logo{
+margin-bottom:40px;
+}
+
+.menu{
+list-style:none;
+padding:0;
+}
+
+.menu li{
+margin-bottom:15px;
+}
+
+.menu a{
+color:white;
+text-decoration:none;
+}
+
+.menu .active a{
+font-weight:bold;
+}
+
+/* MAIN CONTENT */
+
+.main-content{
+flex:1;
+padding:30px;
+}
+
+.page-header{
+margin-bottom:20px;
+}
+
+.breadcrumb{
+color:gray;
+font-size:14px;
+}
+
+/* SEARCH */
+
+.search-bar{
+margin-bottom:20px;
+}
+
+.search-bar input{
+padding:8px;
+width:220px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+.search-bar button{
+padding:8px 14px;
+border:none;
+background:#3b5bdb;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+.clear-btn{
+margin-left:10px;
+text-decoration:none;
+color:#555;
+}
+
+/* TABLE */
+
+.table-container{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th, td{
+padding:12px;
+text-align:left;
+border-bottom:1px solid #eee;
+}
+
+tr:hover{
+background:#f7f9ff;
+}
+
+/* USER NAME */
+
+.user-name{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.avatar{
+width:35px;
+height:35px;
+background:#ddd;
+border-radius:6px;
+}
+
+/* STATUS */
+
+.status{
+padding:4px 10px;
+border-radius:6px;
+font-size:12px;
+font-weight:500;
+}
+
+.status.active{
+background:#d4f5e9;
+color:#0c7c59;
+}
+
+.status.blocked{
+background:#ffd6d6;
+color:#c40000;
+}
+
+/* ACTION BUTTON */
+
+.action-btn{
+padding:6px 12px;
+border:none;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
+
+.block{
+background:#e74c3c;
+}
+
+.unblock{
+background:#27ae60;
+}
+
+/* PAGINATION */
+
+.pagination{
+margin-top:20px;
+}
+
+.page-btn{
+padding:8px 12px;
+margin-right:5px;
+background:#eee;
+border-radius:6px;
+text-decoration:none;
+color:black;
+}
+
+.page-btn:hover{
+background:#3b5bdb;
+color:white;
+}
+
+.active-page{
+background:#3b5bdb;
+color:white;
+}

@@ -1,0 +1,148 @@
+/* ===== GENERAL ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+}
+
+/* ===== HERO SECTION ===== */
+.hero-section {
+  height: 380px;
+  background: linear-gradient(rgba(90, 0, 150, 0.6), rgba(90, 0, 150, 0.6)),
+              url('/images/hero.jpg') center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+}
+
+.hero-section h3 {
+  font-size: 26px;
+  letter-spacing: 3px;
+}
+
+.hero-section h1 {
+  font-size: 70px;
+  color: #ffeb3b;
+  margin: 10px 0 0 0;
+}
+
+/* ===== TAGLINE ===== */
+.tagline {
+  background-color: #f2f2f2;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.tagline h2 {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* ===== CATEGORY SECTION ===== */
+.categories {
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.categories h2 {
+  margin-bottom: 30px;
+  font-size: 26px;
+}
+
+.brand-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+.brand-card {
+  width: 130px;
+  height: 130px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.brand-card:hover {
+  transform: scale(1.05);
+}
+
+/* ===== PROMO BANNER ===== */
+.promo-banner {
+  height: 320px;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.promo-overlay h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.promo-overlay p {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.promo-overlay button {
+  padding: 10px 20px;
+  border: none;
+  background-color: white;
+  color: black;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* ===== PRODUCT SECTION ===== */
+.products {
+  padding: 50px 30px;
+  background-color: #f8f8f8;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-image {
+  height: 150px;
+  background-color: #ddd;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.product-card h4 {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.product-card p {
+  font-weight: bold;
+  color: #333;
+}

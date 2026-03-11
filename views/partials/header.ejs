@@ -1,0 +1,36 @@
+<header class="main-header">
+    <div class="header-container">
+
+        <!-- LEFT LOGO -->
+        <div class="logo">
+            <a href="/">
+                <img src="/images/logo.png" alt="LapHUB Logo">
+            </a>
+        </div>
+
+        <!-- CENTER NAVIGATION -->
+        <nav class="nav-links">
+            <a href="/">Home</a>
+            <a href="/products">Products</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+        </nav>
+
+        <!-- RIGHT USER SECTION -->
+        <div class="user-section">
+
+            <% if (user) { %>
+
+                <a href="/profile" class="username"><%= user.username %></a>
+                <a href="/logout" class="logout-btn">Logout</a>
+
+            <% } else { %>
+
+                <a href="/login" class="login-btn">Login</a>
+
+            <% } %>
+
+        </div>
+
+    </div>
+</header>
