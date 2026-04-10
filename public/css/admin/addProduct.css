@@ -1,0 +1,384 @@
+/* ============================= */
+/* Main Layout */
+/* ============================= */
+
+.main-content{
+flex:1;
+padding:24px 32px;
+background:#f5f6fa;
+min-height:100vh;
+}
+
+
+/* Header */
+
+.page-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.page-header h2{
+font-size:22px;
+font-weight:600;
+margin-bottom:4px;
+}
+
+.breadcrumb{
+font-size:13px;
+color:#8a8fa3;
+}
+
+
+/* Product Layout */
+
+.product-layout{
+display:grid;
+grid-template-columns: 1fr 320px;
+gap:25px;
+align-items:start;
+width:100%;
+}
+
+.left-section{
+min-width:0;
+}
+
+.right-section{
+width:320px;
+align-self:start;
+}
+
+
+/* Cards */
+
+.card{
+background:#ffffff;
+border-radius:14px;
+padding:20px;
+margin-bottom:18px;
+box-shadow:0 2px 8px rgba(0,0,0,0.03);
+border:1px solid #f0f1f5;
+width:100%;
+box-sizing:border-box;
+}
+
+.card h4{
+font-size:15px;
+font-weight:600;
+margin-bottom:14px;
+color:#1f2937;
+}
+
+
+/* Inputs */
+
+.card label{
+font-size:13px;
+color:#6b7280;
+margin-bottom:5px;
+display:block;
+}
+
+.card input,
+.card textarea,
+.card select{
+width:100%;
+padding:10px 12px;
+border-radius:8px;
+border:1px solid #e6e8ef;
+background:#f9fafc;
+font-size:14px;
+margin-bottom:14px;
+}
+
+textarea{
+height:120px;
+resize:none;
+}
+
+
+/* Buttons */
+
+.btn-add{
+background:#4f6ef7;
+color:white;
+padding:8px 18px;
+border-radius:6px;
+border:none;
+cursor:pointer;
+font-size:13px;
+}
+
+.btn-cancel{
+background:#f1f3f7;
+padding:8px 18px;
+border-radius:6px;
+text-decoration:none;
+color:#333;
+font-size:13px;
+}
+
+
+/* Submit */
+
+.submit-btn{
+display:flex;
+justify-content:flex-end;
+margin-top:20px;
+}
+
+.submit-btn button{
+background:#4f6ef7;
+color:white;
+border:none;
+padding:10px 28px;
+border-radius:8px;
+cursor:pointer;
+}
+
+
+/* Error */
+
+.alert-error{
+background:#fff2f2;
+border:1px solid #ffcaca;
+color:#d8000c;
+padding:12px;
+border-radius:8px;
+margin-bottom:15px;
+}
+
+
+/* ============================= */
+/* Image Upload */
+/* ============================= */
+
+.image-upload-grid{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+}
+
+.image-upload-box{
+width:150px;
+height:120px;
+border:2px dashed #e6e8ef;
+border-radius:10px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+background:#fafbff;
+cursor:pointer;
+}
+
+.preview-img{
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:8px;
+margin-top:5px;
+}
+
+
+/* ============================= */
+/* Variant Section */
+/* ============================= */
+
+.variant-row{
+background:#fafbff;
+border:1px solid #e6e8ef;
+border-radius:12px;
+padding:16px;
+margin-bottom:16px;
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+
+/* Variant Inputs */
+
+.variant-fields{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:12px;
+}
+
+.variant-fields input{
+margin-bottom:0;
+}
+
+
+/* Variant Image */
+
+.variant-image-box{
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.variant-image-box label{
+font-size:12px;
+color:#6b7280;
+}
+
+.variant-image-box input{
+background:#fff;
+padding:10px;
+border-radius:8px;
+border:1px solid #e6e8ef;
+}
+
+.variant-preview-img{
+width:60px;
+height:60px;
+object-fit:cover;
+border-radius:8px;
+border:1px solid #e6e8ef;
+}
+
+
+/* Variant Actions */
+
+.variant-actions{
+display:flex;
+justify-content:flex-end;
+}
+
+.variant-remove{
+background:#ef4444;
+color:white;
+border:none;
+padding:8px 16px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.variant-remove:hover{
+background:#dc2626;
+}
+
+
+/* Add Variant */
+
+.btn-add-variant{
+background:#4f6ef7;
+color:white;
+padding:10px 16px;
+border-radius:8px;
+border:none;
+cursor:pointer;
+margin-top:6px;
+}
+
+.btn-add-variant:hover{
+background:#3b57d9;
+}
+
+
+/* ============================= */
+/* Crop Modal */
+/* ============================= */
+
+.crop-modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.crop-container{
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+.crop-container img{
+max-width:500px;
+}
+
+.crop-actions{
+margin-top:10px;
+display:flex;
+gap:10px;
+justify-content:flex-end;
+}
+
+
+/* ============================= */
+/* Responsive */
+/* ============================= */
+
+@media(max-width:1200px){
+
+.product-layout{
+grid-template-columns:1fr;
+}
+
+.right-section{
+width:100%;
+}
+
+.variant-fields{
+grid-template-columns:1fr 1fr;
+}
+
+}/* Variant Inputs Fix */
+
+.variant-fields input{
+height:42px;
+padding:10px 12px;
+font-size:14px;
+border-radius:8px;
+border:1px solid #e6e8ef;
+background:#f9fafc;
+}
+
+
+/* Placeholder Visibility */
+
+.variant-fields input::placeholder{
+color:#6b7280;
+font-size:13px;
+font-weight:500;
+}
+
+
+/* Improve Variant Card */
+
+.variant-row{
+background:#fafbff;
+border:1px solid #e6e8ef;
+border-radius:12px;
+padding:18px;
+margin-bottom:16px;
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+
+
+/* Better Spacing */
+
+.variant-fields{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:14px;
+}
+.variant-fields{
+grid-template-columns:repeat(5,minmax(120px,1fr));
+}
+.variant-fields{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}

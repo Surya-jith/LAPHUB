@@ -587,7 +587,130 @@ const deleteAddress = async (req, res) => {
 
 
 
+ const loadProducts = async (req, res) => {
 
+ try {
+
+ 
+  const {
+   search,
+   page,
+   sort,
+   category,
+   minPrice,
+   maxPrice
+  } = req.query
+
+
+  const data = await userService.getProducts({
+   search,
+   page,
+   sort,
+   category,
+   minPrice,
+   maxPrice
+  })
+
+
+  const {
+   products,
+   categories,
+   totalPages,
+   currentPage,
+   totalProducts
+  } = data
+
+
+ res.render('user/productListing', {
+  ...res.locals,
+  products,
+  categories,
+  totalPages,
+  currentPage,
+  selectedCategory: category,
+  sort,
+  search,
+  priceRange: maxPrice,
+  minPrice,
+  totalProducts,
+  user: req.user || req.session.user
+ });
+
+ } catch (error) {
+
+  console.log(error)
+  res.redirect("/pageNotFound")
+
+ }
+
+}
+
+
+
+
+const loadProductDetails = async (req, res) => {
+
+try {
+
+const productId = req.params.id
+
+const error = req.query.error || null
+const success = req.query.success || null
+
+const data = await userService.getProductDetails(productId)
+
+if (!data || !data.product) {
+return res.redirect("/products")
+}
+
+res.render("user/productDetails", {
+...data,
+error,
+success
+})
+
+} catch (error) {
+
+console.log(error)
+res.redirect("/products")
+
+}
+
+}
+
+const addReview = async(req,res)=>{
+
+try{
+
+const userId = req.session.user
+const productId = req.params.id
+
+const { rating , comment } = req.body
+
+// check login
+if(!userId){
+return res.redirect("/login")
+}
+
+await userService.addReview({
+
+userId,
+productId,
+rating,
+comment
+
+})
+
+res.redirect(`/product/${productId}`)
+
+}catch(error){
+
+console.log("Add Review Error:",error)
+res.redirect("/products")
+
+}
+
+}
 
 
 
@@ -622,5 +745,10 @@ export default {
   sendEmailOtp,verifyEmailOtp,
   loadAddressPage,
   saveAddress,
-  deleteAddress
+  deleteAddress,
+
+
+  loadProducts,
+  loadProductDetails,
+  addReview
 };

@@ -1,0 +1,515 @@
+<%- include('../partials/header') %>
+
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/productDetails.css">
+
+<section class="product-details">
+
+<div class="container">
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+<a href="/">Home</a>
+<span>/</span>
+<a href="/products">Products</a>
+<span>/</span>
+<span class="current">
+<%= product.name %>
+</span>
+</div>
+
+<% if (error) { %>
+<div class="error-message">
+<%= error %>
+</div>
+<% } %>
+
+<% if (success) { %>
+<div class="success-message">
+<%= success %>
+</div>
+<% } %>
+
+<%
+let lowestPrice = Math.min(...product.variants.map(v => v.price))
+
+let totalStock = 0
+product.variants.forEach(v=>{
+totalStock += v.stock
+})
+%>
+
+
+<div class="product-details-wrapper">
+
+<!-- LEFT : Images -->
+<div class="product-images">
+
+<div class="main-image">
+<img 
+id="mainImage"
+src="<%= product.images[0] %>"
+alt="<%= product.name %>"
+>
+</div>
+
+<div class="thumbnail-images">
+
+<% product.images.forEach((img,index)=>{ %>
+
+<img 
+src="<%= img %>"
+onclick="changeImage(this)"
+class="<%= index === 0 ? 'active' : '' %>"
+>
+
+<% }) %>
+
+</div>
+
+</div>
+
+
+
+<!-- RIGHT : Info -->
+<div class="product-info">
+
+<!-- Rating -->
+<div class="rating">
+
+<div class="stars">
+
+<% for(let i=1;i<=5;i++){ %>
+
+<% if(i <= Math.round(avgRating)){ %>
+<span class="star filled">★</span>
+<% } else { %>
+<span class="star">★</span>
+<% } %>
+
+<% } %>
+
+</div>
+
+<span class="rating-text">
+<%= avgRating.toFixed(1) %>
+(<%= reviewCount %> reviews)
+</span>
+
+</div>
+
+
+<!-- Title -->
+<h2 class="product-title">
+<%= product.name %>
+</h2>
+
+
+<!-- Availability -->
+<p class="availability">
+
+Availability :
+
+<span class="<%= totalStock > 0 ? 'in-stock' : 'out-stock' %>">
+<%= totalStock > 0 ? "In Stock" : "Out of Stock" %>
+</span>
+
+</p>
+
+
+<!-- Category -->
+<p class="category">
+Category : <%= product.category?.name %>
+</p>
+
+
+<!-- Price -->
+<div class="price-section">
+
+<span class="offer-price" id="offerPrice">
+₹<%= lowestPrice %>
+</span>
+
+<span class="starting-text">
+Starting Price
+</span>
+
+</div>
+
+
+<!-- Coupon -->
+<div class="coupon-box">
+<span class="coupon-title">
+Available Coupon
+</span>
+
+<div class="coupon">
+SAVE10 - Extra 10% Off
+</div>
+</div>
+
+
+
+<!-- Color Variant -->
+<div class="variant-section">
+
+<label>Color</label>
+
+<div class="color-options">
+
+<% product.variants.forEach((v,index)=>{ %>
+
+<button 
+type="button"
+class="variant-btn"
+onclick="selectVariant(<%= index %>)"
+>
+<%= v.color %>
+</button>
+
+<% }) %>
+
+</div>
+
+</div>
+
+
+
+<!-- RAM -->
+<div class="variant-section">
+
+<label>Memory</label>
+
+<select id="ramSelect" onchange="updateVariant()">
+
+<% 
+let ramSet = new Set()
+product.variants.forEach(v=>{
+if(!ramSet.has(v.ram)){
+ramSet.add(v.ram)
+%>
+
+<option value="<%= v.ram %>">
+<%= v.ram %> GB
+</option>
+
+<%
+}
+})
+%>
+
+</select>
+
+</div>
+
+
+
+<!-- Storage -->
+<div class="variant-section">
+
+<label>Storage</label>
+
+<select id="romSelect" onchange="updateVariant()">
+
+<%
+let romSet = new Set()
+product.variants.forEach(v=>{
+if(!romSet.has(v.rom)){
+romSet.add(v.rom)
+%>
+
+<option value="<%= v.rom %>">
+<%= v.rom %> GB
+</option>
+
+<%
+}
+})
+%>
+
+</select>
+
+</div>
+
+
+
+<!-- Highlights -->
+<div class="product-highlights">
+
+<h4>Highlights</h4>
+
+<ul>
+
+<%
+let highlights = product.description
+? product.description.split(/,|\n/)
+: []
+
+highlights.forEach(item=>{
+%>
+
+<li><%= item.trim() %></li>
+
+<%
+})
+%>
+
+</ul>
+
+</div>
+
+
+
+<!-- Buttons -->
+<div class="product-actions">
+
+<button class="buy-now">
+Buy Now
+</button>
+
+
+<form action="/add-to-cart" method="POST">
+
+<input 
+type="hidden"
+name="productId"
+value="<%= product._id %>"
+>
+
+<input 
+type="hidden"
+name="variantId"
+id="variantId"
+>
+
+
+<div class="cart-section">
+
+<% if(totalStock > 0){ %>
+
+<button type="submit" class="add-cart">
+Add To Cart
+</button>
+
+<% } else { %>
+
+<button class="add-cart disabled" disabled>
+Out of Stock
+</button>
+
+<% } %>
+
+<div class="quantity">
+
+<button type="button" id="minusQty">-</button>
+
+<input 
+type="number"
+name="quantity"
+id="qtyInput"
+value="1"
+min="1"
+>
+
+<button type="button" id="plusQty">+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+
+
+<section class="reviews-section">
+
+<h3>Customer Reviews</h3>
+
+<div class="write-review">
+
+<form method="POST" action="/product/review/<%= product._id %>">
+
+<select name="rating" required>
+
+<option value="">Rating</option>
+<option value="5">5 Star</option>
+<option value="4">4 Star</option>
+<option value="3">3 Star</option>
+<option value="2">2 Star</option>
+<option value="1">1 Star</option>
+
+</select>
+
+<textarea 
+name="comment"
+placeholder="Write your review..."
+required
+></textarea>
+
+<button type="submit">
+Submit Review
+</button>
+
+</form>
+
+</div>
+
+
+
+<div class="reviews-list">
+
+<% if(product.reviews && product.reviews.length > 0){ %>
+
+<% product.reviews.forEach(review=>{ %>
+
+<div class="review-card">
+
+<div class="review-header">
+
+<div class="review-user">
+<%= review.user?.username || "User" %>
+</div>
+
+<div class="review-stars">
+
+<% for(let i=1;i<=5;i++){ %>
+
+<% if(i <= review.rating){ %>
+<span class="star filled">★</span>
+<% } else { %>
+<span class="star">★</span>
+<% } %>
+
+<% } %>
+
+</div>
+
+</div>
+
+<p class="review-comment">
+<%= review.comment %>
+</p>
+
+</div>
+
+<% }) %>
+
+<% } else { %>
+
+<p>No Reviews Yet</p>
+
+<% } %>
+
+</div>
+
+</section>
+
+
+
+<section class="related-products">
+
+<div class="container">
+
+<h3>Related Products</h3>
+
+<div class="related-grid">
+
+<% relatedProducts.forEach(p=>{ %>
+
+<a 
+href="/product/<%= p._id %>"
+class="related-card"
+>
+
+<img src="<%= p.images[0] %>">
+
+<h4><%= p.name %></h4>
+
+<p>₹<%= p.offerPrice || p.variants[0].price %></p>
+
+</a>
+
+<% }) %>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<script>
+
+function changeImage(img){
+document.getElementById("mainImage").src = img.src
+}
+
+const variants = <%- JSON.stringify(product.variants) %>
+
+function selectVariant(index){
+
+const variant = variants[index]
+
+if(variant.variantImage){
+document.getElementById("mainImage").src =
+variant.variantImage
+}
+
+}
+
+function updateVariant(){
+
+const ram = document.getElementById("ramSelect").value
+const rom = document.getElementById("romSelect").value
+
+const selected = variants.find(v => 
+v.ram == ram && v.rom == rom
+)
+
+if(selected){
+
+document.getElementById("variantId").value = selected._id
+
+document.getElementById("offerPrice").innerText =
+"₹" + selected.price
+
+if(selected.variantImage){
+document.getElementById("mainImage").src =
+selected.variantImage
+}
+
+}
+
+}
+
+updateVariant()
+
+
+const qtyInput = document.getElementById("qtyInput")
+
+document.getElementById("plusQty").onclick = () => {
+qtyInput.value = parseInt(qtyInput.value) + 1
+}
+
+document.getElementById("minusQty").onclick = () => {
+if(qtyInput.value > 1){
+qtyInput.value = parseInt(qtyInput.value) - 1
+}
+}
+
+</script>
+
+<%- include('../partials/footer') %>

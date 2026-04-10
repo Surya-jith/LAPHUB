@@ -1,0 +1,136 @@
+<link rel="stylesheet" href="/css/admin/sidebar.css">
+<link rel="stylesheet" href="/css/admin/category.css">
+
+<div class="admin-container">
+
+  <!-- SIDEBAR -->
+  <%- include('./partials/sidebar') %>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <h2>Categories</h2>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+
+      <!-- SEARCH -->
+      <form method="GET" action="/admin/category" class="search-form">
+        <input 
+          type="text" 
+          name="search" 
+          placeholder="Search category"
+          value="<%= search || '' %>">
+
+        <button type="submit">Search</button>
+        <a href="/admin/category">Clear</a>
+      </form>
+
+      <!-- ADD CATEGORY BUTTON -->
+      <a href="/admin/add-category" class="btn-add-category">
+        + Add Category
+      </a>
+
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <% if(categories.length > 0){ %>
+
+            <% categories.forEach(cat => { %>
+
+              <tr>
+
+                <td><%= cat.name %></td>
+
+                <td>
+                  <% if(cat.isListed){ %>
+                    <span class="status-listed">Listed</span>
+                  <% } else { %>
+                    <span class="status-unlisted">Unlisted</span>
+                  <% } %>
+                </td>
+
+                <td><%= cat.createdAt.toDateString() %></td>
+
+                <td class="action-btns">
+
+                  <!-- EDIT -->
+                  <a 
+                    href="/admin/edit-category/<%= cat._id %>" 
+                    class="btn-edit">
+                    Edit
+                  </a>
+
+                  <!-- TOGGLE -->
+                  <form action="/admin/toggle-category/<%= cat._id %>" method="POST">
+                    <button type="submit" class="btn-toggle">
+                      <%= cat.isListed ? "Unlist" : "List" %>
+                    </button>
+                  </form>
+
+                  <!-- DELETE -->
+                  <form action="/admin/delete-category/<%= cat._id %>" method="POST">
+                    <button 
+                      type="submit" 
+                      class="btn-delete" 
+                      onclick="return confirm('Delete this category?')">
+                      Delete
+                    </button>
+                  </form>
+
+                </td>
+
+              </tr>
+
+            <% }) %>
+
+          <% } else { %>
+
+            <tr>
+              <td colspan="4" style="text-align:center;">
+                No categories found
+              </td>
+            </tr>
+
+          <% } %>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+
+      <% for(let i = 1; i <= totalPages; i++){ %>
+
+        <a 
+          href="/admin/category?page=<%= i %>&search=<%= search %>" 
+          class="<%= currentPage === i ? 'active-page' : '' %>"
+        >
+          <%= i %>
+        </a>
+
+      <% } %>
+
+    </div>
+
+  </div>
+
+</div>

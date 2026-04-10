@@ -3,20 +3,12 @@ import userController from "../controllers/user/userController.js";
 import passport from "passport";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import upload from "../middlewares/uploadMiddleware.js";
+import cartController from "../controllers/user/cartController.js"
 
 const router = express.Router();
-console.log(authMiddleware);
-
-
-
-
 
 
 router.get("/", userController.loadHomepage);
-
-
-
-
 
 router.get("/signup", authMiddleware.redirectIfLoggedIn, userController.loadSignup);
 router.post("/signup", userController.registerUser);
@@ -25,22 +17,10 @@ router.get("/verify-signup-otp", userController.loadSignupOtp);
 router.post("/verify-signup-otp", userController.verifySignupOtp);
 router.get("/resend-signup-otp", userController.resendSignupOtp);
 
-
-
-
-
 router.get("/login", authMiddleware.redirectIfLoggedIn, userController.loadLogin);
 router.post("/login", userController.loginUser);
 
-
- 
-
-
 router.get("/logout", authMiddleware.isUserLoggedIn, userController.logout);
-
-
-
-
 
 router.get("/forgot-password", userController.loadForgotPassword);
 router.post("/forgot-password", userController.sendOtp);
@@ -52,14 +32,10 @@ router.get("/reset-password", userController.loadResetPassword);
 router.post("/reset-password", userController.resetPassword);
 
 
-
-
-
 router.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-
 router.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
@@ -99,6 +75,15 @@ router.get("/address", authMiddleware.isUserLoggedIn, userController.loadAddress
 router.post("/address/save", authMiddleware.isUserLoggedIn, userController.saveAddress)
 router.post("/address/delete/:id", authMiddleware.isUserLoggedIn, userController.deleteAddress)
 
+router.get("/products",authMiddleware.isUserLoggedIn,userController.loadProducts)
+router.get("/product/:id",authMiddleware.isUserLoggedIn, userController.loadProductDetails)
+router.post("/product/review/:id",userController.addReview)
 
 
-export default router;
+//CART
+router.get("/cart", cartController.loadCart)
+router.post("/add-to-cart", cartController.addToCart)
+router.get("/cart/increase/:id", cartController.increaseQty)
+router.get("/cart/decrease/:id", cartController.decreaseQty)
+router.get("/remove-cart/:id", cartController.removeCartItem)
+export default router;    

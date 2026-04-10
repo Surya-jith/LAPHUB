@@ -1,5 +1,7 @@
 import User from "../../models/user.js";
 import bcrypt  from "bcryptjs";
+import Product from "../../models/productModel.js"
+import Category from "../../models/category.js"
 import sendEmail from "../../utils/sendEmail.js";
 
 
@@ -259,9 +261,204 @@ const deleteAddress=async(userId,addressId)=>{
 
 
 
+ const getProducts = async (filters) => {
+
+ try {
+
+  const {
+   search,
+   page = 1,
+   sort,
+   category,
+   minPrice,
+   maxPrice
+  } = filters
+
+
+  let query = {
+   isDeleted: false,
+   isListed: true
+  }
+
+
+  if (search) {
+   query.name = {
+    $regex: search,
+    $options: "i"
+   }
+  }
+
+
+  if (category) {
+   query.category = category
+  }
+
+
+  if (minPrice && maxPrice) {
+   query.price = {
+    $gte: Number(minPrice),
+    $lte: Number(maxPrice)
+   }
+  }
+
+
+  let sortOption = {}
+
+  switch (sort) {
+
+   case "price_asc":
+    sortOption.price = 1
+    break
+
+   case "price_desc":
+    sortOption.price = -1
+    break
+
+   case "name_asc":
+    sortOption.name = 1
+    break
+
+   case "name_desc":
+    sortOption.name = -1
+    break
+
+   default:
+    sortOption.createdAt = -1
+  }
+
+
+  const limit = 8
+  const skip = (page - 1) * limit
+
+
+  const products = await Product.find(query)
+   .populate("category")
+   .sort(sortOption)
+   .skip(skip)
+   .limit(limit)
+
+
+  const totalProducts = await Product.countDocuments(query)
+
+  const totalPages = Math.ceil(totalProducts / limit)
+
+
+  const categories = await Category.find({
+   isListed: true
+  })
+
+
+  return {
+   products,
+   categories,
+   currentPage: Number(page),
+   totalPages,
+   totalProducts
+  }
+
+ } catch (error) {
+
+  console.log(error)
+  throw error
+
+ }
+
+}
+
+const getProductDetails = async(productId)=>{
+
+try{
+
+const product = await Product.findById(productId)
+.populate("category")
+.populate("brand")
+.populate("reviews.user")   // ⭐ Important
+
+
+// product blocked check
+if(!product || product.isDeleted || !product.isListed){
+return null
+}
+
+
+// related products
+const relatedProducts = await Product.find({
+
+category: product.category,
+_id: { $ne: product._id },
+isDeleted:false,
+isListed:true
+
+}).limit(4)
+
+let avgRating = 0
+let reviewCount = 0
+
+if(product.reviews && product.reviews.length > 0){
+
+reviewCount = product.reviews.length
+
+const total = product.reviews.reduce((sum,review)=>{
+return sum + review.rating
+},0)
+
+avgRating = total / reviewCount
+
+}
+return {
+
+product,
+relatedProducts,
+avgRating,
+reviewCount
+
+}
+
+}catch(error){
+
+console.log(error)
+return null
+
+}
+
+}
 
 
 
+const addReview = async({
+
+userId,
+productId,
+rating,
+comment
+
+})=>{
+
+const product = await Product.findById(productId)
+
+// Check if user already reviewed
+const alreadyReviewed = product.reviews.find(
+r => r.user.toString() === userId.toString()
+)
+
+if(alreadyReviewed){
+
+alreadyReviewed.rating = rating
+alreadyReviewed.comment = comment
+
+}else{
+
+product.reviews.push({
+user:userId,
+rating,
+comment
+})
+
+}
+
+await product.save()
+
+}
 
 
 
@@ -273,5 +470,8 @@ export default {register,login,validateSignup,
   sendEmailOtp,
   verifyEmailOtp,
   saveAddress,
-  deleteAddress
+  deleteAddress,
+  getProducts,
+  getProductDetails,
+  addReview
 };

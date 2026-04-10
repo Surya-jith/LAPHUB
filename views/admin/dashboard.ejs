@@ -3,6 +3,7 @@
 <head>
 
 <title>Admin Dashboard</title>
+<link rel="stylesheet" href="/css/admin/sidebar.css">
 <link rel="stylesheet" href="/css/admin/dashboard.css">
 
 </head>
@@ -12,23 +13,7 @@
 <div class="admin-container">
 
 <!-- Sidebar -->
-
-<div class="sidebar">
-
-<h3>LapHub</h3>
-
-<ul>
-<li><a href="/admin/dashboard">Dashboard</a></li>
-<li><a href="#">Products</a></li>
-<li><a href="#">Category</a></li>
-<li><a href="#">Orders</a></li>
-<li><a href="#">Coupon</a></li>
-<li><a href="#">Banner</a></li>
-<li><a href="/admin/users">Customers</a></li>
-<li><a href="/admin/logout">Logout</a></li>
-</ul>
-
-</div>
+<%- include('./partials/sidebar') %>
 
 <!-- Main Content -->
 

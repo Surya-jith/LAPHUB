@@ -1,0 +1,52 @@
+body{
+margin:0;
+font-family:Arial;
+}
+
+.admin-container{
+display:flex;
+min-height:100vh;
+}
+
+.sidebar{
+width:240px;
+background:#1f2945;
+color:white;
+padding:20px;
+flex-shrink:0;
+}
+
+.sidebar ul{
+list-style:none;
+padding:0;
+}
+
+.sidebar li{
+margin:15px 0;
+}
+
+.sidebar a{
+text-decoration:none;
+color:white;
+}
+
+.main-content{
+flex:1;
+padding:25px 30px;
+background:#f5f6fa;
+}
+
+.stats{
+display:flex;
+gap:20px;
+}
+
+/* Fix Here */
+
+.stats .card{
+background:white;
+padding:20px;
+border-radius:10px;
+width:200px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}

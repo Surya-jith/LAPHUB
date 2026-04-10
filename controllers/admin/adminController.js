@@ -49,7 +49,6 @@ const loadUsers = async(req,res)=>{
     }
 }
 
-
 const toggleBlockUser=async (req,res)=>{
 
     try {
@@ -61,9 +60,6 @@ const toggleBlockUser=async (req,res)=>{
         res.redirect("/admin/users");
         
     }
-
-
-
 }
 
 const logout=(req,res)=>{

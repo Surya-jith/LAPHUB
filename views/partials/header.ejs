@@ -1,36 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="/css/layout.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+
+<title>LapHUB</title>
+
+</head>
+
+<body>
+
 <header class="main-header">
-    <div class="header-container">
 
-        <!-- LEFT LOGO -->
-        <div class="logo">
-            <a href="/">
-                <img src="/images/logo.png" alt="LapHUB Logo">
-            </a>
-        </div>
+<div class="header-container">
 
-        <!-- CENTER NAVIGATION -->
-        <nav class="nav-links">
-            <a href="/">Home</a>
-            <a href="/products">Products</a>
-            <a href="/about">About</a>
-            <a href="/contact">Contact</a>
-        </nav>
+<!-- Logo -->
+<div class="logo">
+<a href="/">
+<img src="/images/logo.png" alt="LapHUB">
+</a>
+</div>
 
-        <!-- RIGHT USER SECTION -->
-        <div class="user-section">
 
-            <% if (user) { %>
+<!-- Navigation -->
+<nav class="nav-links">
 
-                <a href="/profile" class="username"><%= user.username %></a>
-                <a href="/logout" class="logout-btn">Logout</a>
+<a href="/">Home</a>
+<a href="/products">Products</a>
+<a href="/about">About</a>
+<a href="/contact">Contact</a>
 
-            <% } else { %>
+</nav>
 
-                <a href="/login" class="login-btn">Login</a>
 
-            <% } %>
 
-        </div>
+<!-- Right Section -->
+<div class="header-right">
 
-    </div>
+
+<!-- Cart -->
+<a href="/cart" class="cart-icon">
+
+<i class="fa-solid fa-cart-shopping"></i>
+
+<% if (cartCount && cartCount > 0) { %>
+<span class="cart-count"><%= cartCount %></span>
+<% } %>
+
+</a>
+
+
+<!-- User -->
+<div class="user-section">
+
+<% if (user) { %>
+
+<a href="/profile" class="username">
+<i class="fa-solid fa-user"></i>
+<%= user.username %>
+</a>
+
+<a href="/logout" class="logout-btn">
+Logout
+</a>
+
+<% } else { %>
+
+<a href="/login" class="login-btn">
+Login
+</a>
+
+<% } %>
+
+</div>
+
+</div>
+
+</div>
+
 </header>

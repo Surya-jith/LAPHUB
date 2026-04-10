@@ -1,0 +1,52 @@
+<link rel="stylesheet" href="/css/admin/sidebar.css">
+<link rel="stylesheet" href="/css/admin/category.css">
+
+<div class="admin-container">
+
+  <!-- SIDEBAR -->
+  <%- include('./partials/sidebar') %>
+
+  <div class="main-content">
+
+    <div class="page-header">
+      <h2>Edit Category</h2>
+      <a href="/admin/category" class="btn-back">← Back</a>
+    </div>
+
+    <div class="form-container">
+
+      <form action="/admin/edit-category" method="POST">
+
+        <input 
+          type="hidden" 
+          name="id" 
+          value="<%= category._id %>"
+        >
+
+        <div class="form-group">
+          <label>Category Name</label>
+          <input 
+            type="text" 
+            name="name" 
+            value="<%= category.name %>"
+            required
+          >
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-save">
+            Update Category
+          </button>
+
+          <a href="/admin/category" class="btn-cancel">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

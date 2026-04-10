@@ -1,5 +1,5 @@
-<%- include('../partials/header', { title: "Home" }) %>
 
+<%- include('../partials/header', { title: "Home" }) %>
 
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/user/home.css">
@@ -9,13 +9,19 @@
 
   <div class="hero-overlay">
 
-    <h3>INDIA'S LARGEST</h3>
+    <div class="hero-content">
+      <h3 class="hero-subtitle">INDIA'S LARGEST</h3>
 
-    <h1>LAPTOP STORE</h1>
+      <h1 class="hero-title">LAPTOP STORE</h1>
 
-    <a href="/products" class="hero-btn">
-      Explore Laptops
-    </a>
+      <p class="hero-description">
+        Discover high-performance laptops for gaming, work, and creativity.
+      </p>
+
+      <a href="/products" class="hero-btn">
+        Explore Laptops
+      </a>
+    </div>
 
   </div>
 
@@ -25,10 +31,18 @@
 <!-- TAGLINE -->
 <section class="tagline">
 
-  <h2>
-    Get your Laptop <br>
-    as soon as possible !
-  </h2>
+  <div class="tagline-container">
+
+    <h2>
+      Get your Laptop <br>
+      as soon as possible !
+    </h2>
+
+    <p>
+      Premium laptops from the world's leading brands delivered to your door.
+    </p>
+
+  </div>
 
 </section>
 
@@ -36,7 +50,10 @@
 <!-- CATEGORY BRANDS -->
 <section class="categories">
 
-  <h2>Choose your Choice !</h2>
+  <div class="section-header">
+    <h2>Choose your Brand</h2>
+    <p>Select from the most trusted laptop manufacturers</p>
+  </div>
 
   <div class="brand-container">
 
@@ -74,23 +91,28 @@
 
   <div class="promo-overlay">
 
-    <h2>BOUNDLESS POWER</h2>
+    <div class="promo-content">
+      <h2>BOUNDLESS POWER</h2>
 
-    <p>ROG GAMING 2024</p>
+      <p>ROG GAMING 2024</p>
 
-    <button class="promo-btn">
-      Available Now
-    </button>
+      <button class="promo-btn">
+        Available Now
+      </button>
+    </div>
 
   </div>
 
 </section>
 
 
-<!-- FEATURED PRODUCTS PLACEHOLDER -->
+<!-- FEATURED PRODUCTS -->
 <section class="products">
 
-  <h2>Featured Laptops</h2>
+  <div class="section-header">
+    <h2>Featured Laptops</h2>
+    <p>Top selling laptops loved by professionals and gamers</p>
+  </div>
 
   <div class="product-grid">
 
@@ -98,20 +120,10 @@
 
       <div class="product-image"></div>
 
-      <h4>Dell Inspiron</h4>
-
-      <p>₹53,990</p>
-
-    </div>
-
-
-    <div class="product-card">
-
-      <div class="product-image"></div>
-
-      <h4>HP Pavilion</h4>
-
-      <p>₹61,999</p>
+      <div class="product-info">
+        <h4>Dell Inspiron</h4>
+        <p class="price">₹53,990</p>
+      </div>
 
     </div>
 
@@ -120,9 +132,10 @@
 
       <div class="product-image"></div>
 
-      <h4>ASUS ROG</h4>
-
-      <p>₹95,000</p>
+      <div class="product-info">
+        <h4>HP Pavilion</h4>
+        <p class="price">₹61,999</p>
+      </div>
 
     </div>
 
@@ -131,9 +144,22 @@
 
       <div class="product-image"></div>
 
-      <h4>Lenovo Legion</h4>
+      <div class="product-info">
+        <h4>ASUS ROG</h4>
+        <p class="price">₹95,000</p>
+      </div>
 
-      <p>₹88,999</p>
+    </div>
+
+
+    <div class="product-card">
+
+      <div class="product-image"></div>
+
+      <div class="product-info">
+        <h4>Lenovo Legion</h4>
+        <p class="price">₹88,999</p>
+      </div>
 
     </div>
 
@@ -145,15 +171,21 @@
 <!-- CALL TO ACTION -->
 <section class="cta-section">
 
-  <h2>Upgrade Your Power Today</h2>
+  <div class="cta-container">
 
-  <p>Find the perfect laptop for work, gaming, and creativity.</p>
+    <h2>Upgrade Your Power Today</h2>
 
-  <a href="/products" class="cta-btn">
-    Shop Now
-  </a>
+    <p>
+      Find the perfect laptop for work, gaming, and creativity.
+    </p>
+
+    <a href="/products" class="cta-btn">
+      Shop Now
+    </a>
+
+  </div>
 
 </section>
 
-
 <%- include('../partials/footer') %>
+

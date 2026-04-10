@@ -1,0 +1,157 @@
+.cart-page{
+padding:30px;
+background:#f5f6fa;
+min-height:100vh;
+}
+
+.cart-container{
+display:flex;
+gap:25px;
+}
+
+.cart-left{
+flex:2;
+background:#fff;
+padding:20px;
+border-radius:6px;
+}
+
+.cart-right{
+flex:1;
+display:flex;
+flex-direction:column;
+gap:20px;
+}
+
+.cart-header{
+display:grid;
+grid-template-columns:2fr 1fr 1fr 1fr;
+padding:15px 0;
+border-bottom:1px solid #eee;
+font-weight:600;
+color:#777;
+}
+
+.cart-item{
+display:grid;
+grid-template-columns:50px 2fr 1fr 1fr 1fr;
+align-items:center;
+padding:20px 0;
+border-bottom:1px solid #eee;
+}
+
+.cart-product{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.cart-product img{
+width:60px;
+height:60px;
+object-fit:contain;
+}
+
+.product-name{
+font-weight:500;
+}
+
+.old-price{
+text-decoration:line-through;
+color:#999;
+margin-right:8px;
+}
+
+.cart-qty{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.qty-btn{
+width:35px;
+height:35px;
+border:1px solid #ddd;
+background:#fff;
+cursor:pointer;
+}
+
+.cart-qty input{
+width:40px;
+text-align:center;
+border:1px solid #ddd;
+height:35px;
+}
+
+.cart-card{
+background:#fff;
+padding:20px;
+border-radius:6px;
+}
+
+.cart-row{
+display:flex;
+justify-content:space-between;
+margin:10px 0;
+color:#666;
+}
+
+.cart-total{
+display:flex;
+justify-content:space-between;
+font-weight:600;
+margin:15px 0;
+font-size:18px;
+}
+
+.checkout-btn{
+width:100%;
+padding:12px;
+background:#4a6cf7;
+border:none;
+color:#fff;
+cursor:pointer;
+border-radius:5px;
+}
+
+.checkout-btn:disabled{
+background:#ccc;
+cursor:not-allowed;
+}
+
+.cart-card input{
+width:100%;
+padding:10px;
+border:1px solid #ddd;
+margin:10px 0;
+}
+
+.cart-card button{
+padding:10px 15px;
+border:1px solid #4a6cf7;
+background:#fff;
+color:#4a6cf7;
+cursor:pointer;
+border-radius:4px;
+}
+
+.remove-item a{
+color:#999;
+}
+
+.out-stock{
+display:block;
+color:red;
+font-size:12px;
+}
+
+.disabled-product{
+opacity:.5;
+pointer-events:none;
+}
+
+.empty-cart{
+padding:40px;
+text-align:center;
+color:#777;
+}

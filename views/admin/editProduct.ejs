@@ -1,0 +1,333 @@
+<link rel="stylesheet" href="/css/admin/sidebar.css">
+<link rel="stylesheet" href="/css/admin/addProduct.css">
+
+<div class="admin-container">
+
+<!-- Sidebar -->
+<%- include('./partials/sidebar') %>
+
+<div class="main-content">
+
+<!-- Header -->
+
+<div class="page-header">
+
+<div>
+<h2>Edit Product</h2>
+<p class="breadcrumb">
+Dashboard > Product List > Edit Product
+</p>
+</div>
+
+<div class="header-actions">
+
+<a href="/admin/products" class="btn-cancel">
+Cancel
+</a>
+
+<button form="editProductForm" class="btn-add">
+Save Product
+</button>
+
+</div>
+
+</div>
+
+
+
+<form 
+id="editProductForm"
+method="POST"
+action="/admin/edit-product/<%= product._id %>"
+enctype="multipart/form-data"
+>
+
+<div class="product-layout">
+
+<!-- LEFT SIDE -->
+
+<div class="left-section">
+
+<!-- General Info -->
+
+<div class="card">
+
+<h4>General Information</h4>
+
+<label>Product Name</label>
+
+<input 
+type="text" 
+name="name"
+value="<%= product.name %>"
+>
+
+<label>Description</label>
+
+<textarea 
+name="description"><%= product.description %></textarea>
+
+</div>
+
+
+<!-- Pricing -->
+
+<div class="card">
+
+<h4>Pricing</h4>
+
+<label>Base Price</label>
+
+<input 
+type="number"
+name="price"
+value="<%= product.price %>"
+>
+
+<label>Discount Percentage (%)</label>
+
+<input 
+type="number"
+name="discount"
+value="<%= product.discount %>"
+>
+
+</div>
+
+
+<!-- General Images -->
+
+<div class="card">
+
+<h4>General Photos</h4>
+
+<div class="image-upload-grid">
+
+<% if(product.images){ %>
+
+<% product.images.forEach((img,index)=>{ %>
+
+<div class="image-upload-box">
+
+<img 
+src="/<%= img %>" 
+class="preview-img"
+>
+
+<input type="file" name="images">
+
+</div>
+
+<% }) %>
+
+<% } %>
+
+</div>
+
+</div>
+
+
+<!-- Variants -->
+
+<div class="card">
+
+<h4>Variants</h4>
+
+<div id="variantContainer">
+
+<% product.variants.forEach((variant,index)=>{ %>
+
+<div class="variant-row">
+
+<input 
+name="color[]" 
+value="<%= variant.color %>" 
+placeholder="Color"
+>
+
+<input 
+name="ram[]" 
+value="<%= variant.ram %>" 
+placeholder="RAM"
+>
+
+<input 
+name="rom[]" 
+value="<%= variant.rom %>" 
+placeholder="ROM"
+>
+
+<input 
+type="number"
+name="stock[]" 
+value="<%= variant.stock %>" 
+placeholder="Stock"
+>
+
+<input 
+type="number"
+name="variantPrice[]" 
+value="<%= variant.price %>" 
+placeholder="Price"
+>
+
+<div class="variant-image-box">
+
+<% if(variant.variantImage){ %>
+
+<img 
+src="/<%= variant.variantImage %>"
+class="variant-preview-img"
+>
+
+<% } %>
+
+<input 
+type="file" 
+name="variantImages"
+>
+
+</div>
+
+<button 
+type="button" 
+onclick="removeVariant(this)"
+>
+Remove
+</button>
+
+</div>
+
+<% }) %>
+
+</div>
+
+<button 
+type="button" 
+onclick="addVariant()" 
+class="btn-add-variant"
+>
++ Add Variant
+</button>
+
+</div>
+
+
+</div>
+
+
+<!-- RIGHT SIDE -->
+
+<div class="right-section">
+
+<!-- Category -->
+
+<div class="card">
+
+<h4>Category</h4>
+
+<select name="category">
+
+<% categories.forEach(cat => { %>
+
+<option 
+value="<%= cat._id %>"
+<%= product.category.toString() === cat._id.toString() ? 'selected' : '' %>
+>
+
+<%= cat.name %>
+
+</option>
+
+<% }) %>
+
+</select>
+
+</div>
+
+
+<!-- Brand -->
+
+<div class="card">
+
+<h4>Brand</h4>
+
+<select name="brand">
+
+<option value="">Select Brand</option>
+
+<% brands.forEach(brand => { %>
+
+<option 
+value="<%= brand._id %>"
+<%= product.brand && product.brand.toString() === brand._id.toString() ? 'selected' : '' %>
+>
+
+<%= brand.name %>
+
+</option>
+
+<% }) %>
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="submit-btn">
+
+<button type="submit">
+Save Product
+</button>
+
+</div>
+
+
+</form>
+
+</div>
+
+</div>
+
+
+<script>
+
+function addVariant(){
+
+const html=`
+
+<div class="variant-row">
+
+<input name="color[]" placeholder="Color">
+<input name="ram[]" placeholder="RAM">
+<input name="rom[]" placeholder="ROM">
+<input name="stock[]" placeholder="Stock">
+<input name="variantPrice[]" placeholder="Price">
+
+<div class="variant-image-box">
+<input type="file" name="variantImages">
+</div>
+
+<button type="button" onclick="removeVariant(this)">
+Remove
+</button>
+
+</div>
+
+`
+
+document
+.getElementById("variantContainer")
+.insertAdjacentHTML("beforeend",html)
+
+}
+
+function removeVariant(btn){
+btn.parentElement.remove()
+}
+
+</script>

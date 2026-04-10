@@ -40,6 +40,16 @@ const redirectIfLoggedIn = (req, res, next) => {
   next();
 };
 
+const redirectIfLoggedadmin = (req, res, next) => {
+  if (req.session.admin) {
+    return res.redirect("/admin/dashboard");
+  }
+
+  next();
+};
+
+
+
 
 const adminAuth = (req, res, next) => {
 
@@ -53,5 +63,5 @@ const adminAuth = (req, res, next) => {
 export default {
   isUserLoggedIn,
   redirectIfLoggedIn,
-  adminAuth
+  adminAuth,redirectIfLoggedadmin
 };
