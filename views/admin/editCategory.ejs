@@ -15,7 +15,8 @@
 
     <div class="form-container">
 
-      <form action="/admin/edit-category" method="POST">
+      <!-- ✅ ADD FORM ID -->
+      <form id="editCategoryForm" action="/admin/edit-category" method="POST">
 
         <input 
           type="hidden" 
@@ -27,10 +28,11 @@
           <label>Category Name</label>
           <input 
             type="text" 
+            id="editCategoryName"
             name="name" 
             value="<%= category.name %>"
-            required
           >
+          <small class="error-text" id="editNameError"></small>
         </div>
 
         <div class="form-actions">
@@ -50,3 +52,11 @@
   </div>
 
 </div>
+
+
+<!-- 🔥 IMPORT GLOBAL VALIDATION -->
+<script type="module">
+  import { validateCategoryForm } from "/js/validation.js";
+
+  validateCategoryForm("editCategoryForm", "editCategoryName", "editNameError");
+</script>

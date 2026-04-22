@@ -7,7 +7,8 @@
 
 <link rel="stylesheet" href="/css/layout.css">
 
-<link rel="stylesheet"
+<link
+rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 />
 
@@ -21,67 +22,87 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <div class="header-container">
 
-<!-- Logo -->
-<div class="logo">
-<a href="/">
-<img src="/images/logo.png" alt="LapHUB">
-</a>
-</div>
+  <!-- Logo -->
+  <div class="logo">
+    <a href="/">
+      <img
+        src="/images/logo.png"
+        alt="LapHUB"
+      >
+    </a>
+  </div>
 
+  <!-- Navigation -->
+  <nav class="nav-links">
 
-<!-- Navigation -->
-<nav class="nav-links">
+    <a href="/">Home</a>
+    <a href="/products">Products</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
 
-<a href="/">Home</a>
-<a href="/products">Products</a>
-<a href="/about">About</a>
-<a href="/contact">Contact</a>
+  </nav>
 
-</nav>
+  <!-- Right Section -->
+  <div class="header-right">
 
+    <!-- Wishlist -->
+    <a
+      href="/wishlist"
+      class="wishlist-icon"
+    >
+      <i class="fa-regular fa-heart"></i>
+    </a>
 
+    <!-- Cart -->
+    <a
+      href="/cart"
+      class="cart-icon"
+    >
 
-<!-- Right Section -->
-<div class="header-right">
+      <i class="fa-solid fa-cart-shopping"></i>
 
+      <% if (cartCount && cartCount > 0) { %>
+        <span class="cart-count">
+          <%= cartCount %>
+        </span>
+      <% } %>
 
-<!-- Cart -->
-<a href="/cart" class="cart-icon">
+    </a>
 
-<i class="fa-solid fa-cart-shopping"></i>
+    <!-- User -->
+    <div class="user-section">
 
-<% if (cartCount && cartCount > 0) { %>
-<span class="cart-count"><%= cartCount %></span>
-<% } %>
+      <% if (user) { %>
 
-</a>
+        <a
+          href="/profile"
+          class="username"
+        >
+          <i class="fa-solid fa-user"></i>
+          <%= user.username %>
+        </a>
 
+        <a
+          href="/logout"
+          class="logout-btn"
+        >
+          Logout
+        </a>
 
-<!-- User -->
-<div class="user-section">
+      <% } else { %>
 
-<% if (user) { %>
+        <a
+          href="/login"
+          class="login-btn"
+        >
+          Login
+        </a>
 
-<a href="/profile" class="username">
-<i class="fa-solid fa-user"></i>
-<%= user.username %>
-</a>
+      <% } %>
 
-<a href="/logout" class="logout-btn">
-Logout
-</a>
+    </div>
 
-<% } else { %>
-
-<a href="/login" class="login-btn">
-Login
-</a>
-
-<% } %>
-
-</div>
-
-</div>
+  </div>
 
 </div>
 

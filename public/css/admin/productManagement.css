@@ -210,3 +210,31 @@ background:#4a6cf7;
 color:white;
 border:none;
 }
+.status {
+  display: inline-block;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* In Stock */
+
+.status.in-stock {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+/* Low Stock */
+
+.status.low-stock {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+/* Out of Stock */
+
+.status.out-stock {
+  background: #fef2f2;
+  color: #dc2626;
+}

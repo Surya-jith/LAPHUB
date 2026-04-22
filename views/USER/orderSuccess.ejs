@@ -1,0 +1,45 @@
+```ejs
+<%- include('../partials/header', { user: user }) %>
+
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/orderSuccess.css">
+
+<section class="order-success-page">
+
+  <div class="success-container">
+
+    <div class="success-icon">
+      ✓
+    </div>
+
+    <h1>Thank You for Your Order!</h1>
+
+    <p>
+      Your order has been placed successfully.
+      We’ll notify you once your order is processed.
+    </p>
+
+    <div class="success-buttons">
+
+      <a
+        href="/orders/<%= order._id %>"
+        class="view-order-btn"
+      >
+        View Order Details
+      </a>
+
+      <a
+        href="/products"
+        class="continue-btn"
+      >
+        Continue Shopping
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+<%- include('../partials/footer') %>
+```

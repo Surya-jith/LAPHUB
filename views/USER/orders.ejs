@@ -1,0 +1,141 @@
+<%- include('../partials/header', { user: user }) %>
+
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/orders.css">
+
+<% if (error) { %>
+  <div class="error-box">
+    <%= error %>
+  </div>
+<% } %>
+
+<section class="profile-page">
+
+  <div class="page-layout">
+
+    <%- include('../partials/userSidebar', {
+      activePage: 'orders'
+    }) %>
+
+    <div class="main-content">
+
+      <div class="orders-content">
+
+        <div class="orders-header">
+          <h2>Order History</h2>
+
+          <form
+            action="/orders"
+            method="GET"
+            class="search-box"
+          >
+            <input
+              type="text"
+              name="search"
+              placeholder="Search by Order ID"
+              value="<%= search || '' %>"
+            >
+
+            <button type="submit">
+              Search
+            </button>
+          </form>
+        </div>
+
+        <div class="orders-table-box">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Payment</th>
+                <th>Total</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <% if (orders && orders.length > 0) { %>
+
+                <% orders.forEach(order => { %>
+
+                  <tr>
+                    <td><%= order.orderId %></td>
+
+                    <td>
+                      <span class="status <%= order.orderStatus.toLowerCase() %>">
+                        <%= order.orderStatus %>
+                      </span>
+                    </td>
+
+                    <td>
+                      <%= new Date(order.createdAt).toDateString() %>
+                    </td>
+
+                    <td><%= order.paymentMethod %></td>
+
+                    <td>₹<%= order.finalAmount %></td>
+
+                    <td>
+                      <a
+                        href="/orders/<%= order._id %>"
+                        class="view-btn"
+                      >
+                        View Details →
+                      </a>
+                    </td>
+                  </tr>
+
+                <% }) %>
+
+              <% } else { %>
+
+                <tr>
+                  <td
+                    colspan="6"
+                    class="empty-row"
+                  >
+                    No orders found
+                  </td>
+                </tr>
+
+              <% } %>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <% if (totalPages > 1) { %>
+
+          <div class="pagination">
+
+            <% for (let i = 1; i <= totalPages; i++) { %>
+
+              <a
+                href="/orders?page=<%= i %>&search=<%= search || '' %>"
+                class="<%= currentPage === i ? 'active-page' : '' %>"
+              >
+                <%= i %>
+              </a>
+
+            <% } %>
+
+          </div>
+
+        <% } %>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<%- include('../partials/footer') %>

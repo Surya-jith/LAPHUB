@@ -1,0 +1,276 @@
+<link rel="stylesheet" href="/css/admin/orderDetails.css">
+<link rel="stylesheet" href="/css/admin/sidebar.css">
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+ <%- include("./partials/sidebar") %>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <h2>Order Details</h2>
+
+        <div class="breadcrumb">
+          <a href="/admin/dashboard">Dashboard</a>
+          <span>›</span>
+          <a href="/admin/orders">Order List</a>
+          <span>›</span>
+          <span>Order Details</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP GRID -->
+    <div class="top-grid">
+
+      <!-- ORDER INFO -->
+      <div class="info-card">
+        <div class="card-title">
+          <h3>Order #<%= order.orderId %></h3>
+
+          <span class="status-badge <%= order.orderStatus.toLowerCase() %>">
+            <%= order.orderStatus %>
+          </span>
+        </div>
+
+        <div class="info-row">
+          <span>Order Date</span>
+          <strong>
+            <%= new Date(order.createdAt).toDateString() %>
+          </strong>
+        </div>
+
+        <div class="info-row">
+          <span>Payment Method</span>
+          <strong>
+            <%= order.paymentMethod %>
+          </strong>
+        </div>
+
+        <div class="info-row">
+          <span>Payment Status</span>
+          <strong>
+            <%= order.paymentStatus %>
+          </strong>
+        </div>
+      </div>
+
+      <!-- CUSTOMER INFO -->
+      <div class="info-card">
+        <h3>Customer</h3>
+
+        <div class="info-row">
+          <span>Name</span>
+          <strong>
+            <%= order.user?.username || "User Deleted" %>
+          </strong>
+        </div>
+
+        <div class="info-row">
+          <span>Email</span>
+          <strong>
+            <%= order.user?.email || "-" %>
+          </strong>
+        </div>
+
+        <div class="info-row">
+          <span>Phone</span>
+          <strong>
+            <%= order.user?.phone || "-" %>
+          </strong>
+        </div>
+      </div>
+
+      <!-- INVOICE -->
+      <div class="info-card">
+        <h3>Document</h3>
+
+        <a
+          href="/admin/orders/<%= order._id %>/invoice"
+          class="invoice-btn"
+        >
+          Download Invoice
+        </a>
+      </div>
+
+    </div>
+
+    <!-- STATUS UPDATE -->
+    <div class="status-update-card">
+
+      <h3>Edit Order Status</h3>
+
+      <form
+        action="/admin/orders/<%= order._id %>/status"
+        method="POST"
+      >
+
+        <select name="orderStatus" required>
+
+          <option value="Pending"
+            <%= order.orderStatus === "Pending" ? "selected" : "" %>>
+            Pending
+          </option>
+
+          <option value="Shipped"
+            <%= order.orderStatus === "Shipped" ? "selected" : "" %>>
+            Shipped
+          </option>
+
+          <option value="Out for Delivery"
+            <%= order.orderStatus === "Out for Delivery" ? "selected" : "" %>>
+            Out for Delivery
+          </option>
+
+          <option value="Delivered"
+            <%= order.orderStatus === "Delivered" ? "selected" : "" %>>
+            Delivered
+          </option>
+
+          <option value="Cancelled"
+            <%= order.orderStatus === "Cancelled" ? "selected" : "" %>>
+            Cancelled
+          </option>
+
+        </select>
+
+        <button type="submit">
+          Update Status
+        </button>
+
+      </form>
+
+    </div>
+
+    <!-- BOTTOM GRID -->
+    <div class="bottom-grid">
+
+      <!-- ORDER ITEMS -->
+      <div class="table-card">
+
+        <div class="table-header">
+          <h3>Ordered Products</h3>
+        </div>
+
+        <table class="products-table">
+
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <% order.items.forEach(item => { %>
+
+              <tr>
+
+                <td>
+                  <div class="product-cell">
+
+                    <img
+                      src="<%= item.product?.images?.[0] || '/images/no-image.png' %>"
+                      alt="product"
+                    >
+
+                    <div>
+                      <strong>
+                        <%= item.product?.name || "Product Deleted" %>
+                      </strong>
+                    </div>
+
+                  </div>
+                </td>
+
+                <td>
+                  <%= item.quantity %>
+                </td>
+
+                <td>
+                  ₹<%= item.price %>
+                </td>
+
+                <td>
+                  ₹<%= item.totalPrice %>
+                </td>
+
+              </tr>
+
+            <% }) %>
+
+          </tbody>
+
+        </table>
+
+        <!-- TOTAL SUMMARY -->
+        <div class="summary-box">
+
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <strong>₹<%= order.subtotal %></strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Discount</span>
+            <strong>₹<%= order.discount %></strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Shipping</span>
+            <strong>₹<%= order.shippingCharge %></strong>
+          </div>
+
+          <div class="summary-row total">
+            <span>Total</span>
+            <strong>₹<%= order.finalAmount %></strong>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ADDRESS -->
+      <div class="address-card">
+
+        <h3>Delivery Address</h3>
+
+        <p>
+          <strong>
+            <%= order.address.firstName %>
+            <%= order.address.lastName %>
+          </strong>
+        </p>
+
+        <p>
+          <%= order.address.address %>
+        </p>
+
+        <p>
+          <%= order.address.city %>,
+          <%= order.address.state %>
+        </p>
+
+        <p>
+          <%= order.address.country %> -
+          <%= order.address.pincode %>
+        </p>
+
+        <p>
+          Phone: <%= order.address.phone %>
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

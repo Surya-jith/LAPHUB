@@ -1,17 +1,10 @@
 <link rel="stylesheet" href="/css/admin/sidebar.css">
 <link rel="stylesheet" href="/css/admin/addProduct.css">
 
-<link 
-href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" 
-rel="stylesheet"
-/>
-
-<script 
-src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js">
-</script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
 <div class="admin-container">
-
 <%- include('./partials/sidebar') %>
 
 <div class="main-content">
@@ -19,70 +12,46 @@ src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js">
 <div class="page-header">
 <div>
 <h2>Add Product</h2>
-<p class="breadcrumb">
-Dashboard > Product List > Add Product
-</p>
+<p class="breadcrumb">Dashboard > Product List > Add Product</p>
 </div>
 
 <div class="header-actions">
-<a href="/admin/products" class="btn-cancel">
-Cancel
-</a>
-
-<button form="addProductForm" class="btn-add">
-+ Add Product
-</button>
+<a href="/admin/products" class="btn-cancel">Cancel</a>
+<button form="addProductForm" class="btn-add">+ Add Product</button>
 </div>
-
 </div>
-
-
-<% if(typeof error !== 'undefined'){ %>
-<div class="alert-error">
-<%= error %>
-</div>
-<% } %>
-
 
 <form id="addProductForm" method="POST" enctype="multipart/form-data">
 
 <div class="product-layout">
 
-
 <!-- LEFT -->
 <div class="left-section">
 
-<!-- General -->
 <div class="card">
-
 <h4>General Information</h4>
 
 <label>Product Name</label>
-<input type="text" name="name" value="<%= formData?.name || '' %>">
+<input type="text" id="productName" name="name">
+<small id="nameError" class="error-text"></small>
 
 <label>Description</label>
-<textarea name="description"><%= formData?.description || '' %></textarea>
-
+<textarea id="productDescription" name="description"></textarea>
+<small id="descError" class="error-text"></small>
 </div>
 
-
-<!-- Pricing -->
 <div class="card">
-
 <h4>Pricing</h4>
 
 <label>Base Price</label>
-<input type="number" name="price">
+<input type="number" id="productPrice" name="price">
+<small id="priceError" class="error-text"></small>
 
 <label>Discount</label>
 <input type="number" name="discount">
-
 </div>
 
-
-<!-- Images -->
 <div class="card">
-
 <h4>General Photo</h4>
 
 <div class="image-upload-grid">
@@ -103,55 +72,35 @@ Cancel
 </div>
 
 </div>
-
 </div>
 
 </div>
-
 
 <!-- RIGHT -->
 <div class="right-section">
 
 <div class="card">
-
 <h4>Category</h4>
-
-<select name="category">
-
+<select id="productCategory" name="category">
 <option value="">Select Category</option>
-
 <% categories.forEach(cat=>{ %>
-
 <option value="<%= cat._id %>"><%= cat.name %></option>
-
 <% }) %>
-
 </select>
-
+<small id="categoryError" class="error-text"></small>
 </div>
 
-
 <div class="card">
-
 <h4>Brand</h4>
-
 <select name="brand">
-
 <option value="">Select Brand</option>
-
 <% brands.forEach(b=>{ %>
-
 <option value="<%= b._id %>"><%= b.name %></option>
-
 <% }) %>
-
 </select>
-
 </div>
 
-
 <div class="card">
-
 <h4>Variants</h4>
 
 <div id="variantContainer">
@@ -159,31 +108,33 @@ Cancel
 <div class="variant-row">
 
 <div class="variant-fields">
-
 <input name="color[]" placeholder="Color">
 <input name="ram[]" placeholder="RAM">
 <input name="rom[]" placeholder="ROM">
-<input name="stock[]" placeholder="Stock">
-<input name="variantPrice[]" placeholder="Price">
 
+<div class="variant-field">
+<input name="stock[]" placeholder="Stock">
+<small class="error-text stock-error"></small>
+</div>
+
+<div class="variant-field">
+<input name="variantPrice[]" placeholder="Price">
+<small class="error-text price-error"></small>
+</div>
 </div>
 
 <div class="variant-image-box">
-
 <label>Variant Image</label>
-<input type="file" name="variantImages">
-
+<input type="file" name="variantImages" onchange="previewVariantImage(event,this)">
+<img class="variant-preview" style="display:none; width:80px;">
 </div>
 
-<div class="variant-actions">
+<button type="button" onclick="removeVariant(this)">Remove</button>
 
-<button 
-type="button" 
-class="variant-remove"
-onclick="removeVariant(this)"
->
-Remove
-</button>
+</div>
+</div>
+
+<button type="button" onclick="addVariant()">+ Add Variant</button>
 
 </div>
 
@@ -191,180 +142,127 @@ Remove
 
 </div>
 
-<button 
-type="button" 
-class="btn-add-variant"
-onclick="addVariant()"
->
-+ Add Variant
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="submit-btn">
 <button>Add</button>
-</div>
-
 </form>
 
 </div>
-
 </div>
 
-
-<!-- Crop Modal -->
+<!-- 🔥 CROP MODAL (FIXED) -->
 <div id="cropModal" class="crop-modal">
-<div class="crop-container">
-<img id="cropImage">
-<div class="crop-actions">
-<button onclick="cropImage()">Crop</button>
-<button onclick="closeCrop()">Cancel</button>
-</div>
-</div>
-</div>
 
+  <div class="crop-container">
+
+    <div class="crop-header">
+      <h3>Crop Image</h3>
+      <button class="close-btn" onclick="closeCrop()">×</button>
+    </div>
+
+    <div class="crop-body">
+      <img id="cropImage">
+    </div>
+
+    <div class="crop-footer">
+      <button class="btn-cancel" onclick="closeCrop()">Cancel</button>
+      <button class="btn-crop" onclick="cropImage()">Crop & Save</button>
+    </div>
+
+  </div>
+
+</div>
 
 <script>
 
-let cropper
-let currentInput
-let currentIndex
+let cropper;
+let currentInput;
+let currentIndex;
 
-function previewImage(event,index){
+function previewImage(e,i){
+const file=e.target.files[0];
+if(!file) return;
 
-const file = event.target.files[0]
+currentInput=e.target;
+currentIndex=i;
 
-if(!file) return
+const reader=new FileReader();
+reader.onload=()=>{
+document.getElementById("cropModal").style.display="flex";
+document.getElementById("cropImage").src=reader.result;
 
-const allowed = ["image/jpeg","image/png","image/webp"]
-
-if(!allowed.includes(file.type)){
-alert("Only JPG PNG WEBP allowed")
-event.target.value=""
-return
+if(cropper) cropper.destroy();
+cropper=new Cropper(document.getElementById("cropImage"),{aspectRatio:1});
+};
+reader.readAsDataURL(file);
 }
 
-currentInput = event.target
-currentIndex = index
+function previewVariantImage(e,input){
+const file=e.target.files[0];
+if(!file) return;
 
-const reader = new FileReader()
+currentInput=input;
+currentIndex=null;
 
-reader.onload = function(){
+const reader=new FileReader();
+reader.onload=()=>{
+document.getElementById("cropModal").style.display="flex";
+document.getElementById("cropImage").src=reader.result;
 
-document.getElementById("cropModal").style.display="flex"
-
-const image = document.getElementById("cropImage")
-
-image.src = reader.result
-
-if(cropper){
-cropper.destroy()
+if(cropper) cropper.destroy();
+cropper=new Cropper(document.getElementById("cropImage"),{aspectRatio:1});
+};
+reader.readAsDataURL(file);
 }
-
-cropper = new Cropper(image,{
-aspectRatio:1,
-viewMode:1
-})
-
-}
-
-reader.readAsDataURL(file)
-
-}
-
-
 
 function cropImage(){
+const canvas=cropper.getCroppedCanvas();
 
-const canvas = cropper.getCroppedCanvas()
+canvas.toBlob(blob=>{
+const file=new File([blob],"crop.jpg");
+const dt=new DataTransfer();
+dt.items.add(file);
+currentInput.files=dt.files;
 
-canvas.toBlob(function(blob){
-
-const file = new File([blob],"cropped.jpg")
-
-const dt = new DataTransfer()
-
-dt.items.add(file)
-
-currentInput.files = dt.files
-
-const reader = new FileReader()
-
-reader.onload = function(){
-
-document.getElementById(`preview${currentIndex}`).src = reader.result
-
+const reader=new FileReader();
+reader.onload=()=>{
+if(currentIndex!==null){
+document.getElementById(`preview${currentIndex}`).src=reader.result;
+}else{
+const preview=currentInput.closest(".variant-image-box").querySelector(".variant-preview");
+preview.src=reader.result;
+preview.style.display="block";
 }
+};
+reader.readAsDataURL(file);
 
-reader.readAsDataURL(file)
-
-closeCrop()
-
-})
-
+closeCrop();
+});
 }
-
 
 function closeCrop(){
-
-document.getElementById("cropModal").style.display="none"
-
+document.getElementById("cropModal").style.display="none";
 }
 
-
-
 function addVariant(){
-
-const html=`
-
+document.getElementById("variantContainer").insertAdjacentHTML("beforeend",`
 <div class="variant-row">
-
-<div class="variant-fields">
-
 <input name="color[]" placeholder="Color">
 <input name="ram[]" placeholder="RAM">
 <input name="rom[]" placeholder="ROM">
 <input name="stock[]" placeholder="Stock">
 <input name="variantPrice[]" placeholder="Price">
 
-</div>
-
 <div class="variant-image-box">
-
-<label>Variant Image</label>
-<input type="file" name="variantImages">
-
+<input type="file" name="variantImages" onchange="previewVariantImage(event,this)">
+<img class="variant-preview" style="display:none;width:80px;">
 </div>
 
-<div class="variant-actions">
-
-<button 
-type="button"
-class="variant-remove"
-onclick="removeVariant(this)"
->
-Remove
-</button>
-
+<button type="button" onclick="removeVariant(this)">Remove</button>
 </div>
-
-</div>
-
-`
-
-document
-.getElementById("variantContainer")
-.insertAdjacentHTML("beforeend",html)
-
+`);
 }
 
-
 function removeVariant(btn){
-btn.closest(".variant-row").remove()
+btn.closest(".variant-row").remove();
 }
 
 </script>

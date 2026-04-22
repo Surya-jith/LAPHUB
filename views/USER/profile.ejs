@@ -13,132 +13,118 @@
 
 <%- include('../partials/header',{ user }) %>
 
-<div class="profile-page">
+<div class="page-layout">
 
-<!-- LEFT SIDEBAR -->
+  <%- include('../partials/userSidebar', {
+    activePage: 'profile'
+  }) %>
 
-<div class="profile-sidebar">
+  <div class="main-content">
 
-<ul>
+    <div class="profile-card">
 
-<li class="active">
-<a href="/profile">Account Details</a>
-</li>
+      <div class="card-header">
 
-<li>
-<a href="/orders">Order History</a>
-</li>
+        <h3>ACCOUNT SETTING</h3>
 
-<li>
-<a href="/cart">Shopping Cart</a>
-</li>
+        <a href="/profile/edit" class="edit-profile-btn">
+          EDIT PROFILE
+        </a>
 
-<li>
-<a href="/wishlist">Wishlist</a>
-</li>
+      </div>
 
-<li>
-<a href="/address">Address</a>
-</li>
+      <div class="profile-body">
 
-<li>
-<a href="/wallet">Wallet</a>
-</li>
+        <!-- PROFILE IMAGE -->
 
-</ul>
+        <div class="profile-image">
 
-</div>
+          <img
+            src="<%= user.profileImage ? '/uploads/profile/' + user.profileImage : '/images/user.png' %>"
+            alt="User Image"
+          >
 
+        </div>
 
-<!-- PROFILE CONTENT -->
+        <!-- PROFILE DETAILS -->
 
-<div class="profile-card">
+        <div class="profile-details">
 
-<div class="card-header">
+          <div class="row">
 
-<h3>ACCOUNT SETTING</h3>
+            <div class="field">
 
-<a href="/profile/edit" class="edit-profile-btn">
-EDIT PROFILE
-</a>
+              <label>Name</label>
 
-</div>
+              <input
+                type="text"
+                value="<%= user.username %>"
+                readonly
+              >
 
+            </div>
 
-<div class="profile-body">
+            <div class="field">
 
-<!-- PROFILE IMAGE -->
+              <label>Email</label>
 
-<div class="profile-image">
+              <input
+                type="text"
+                value="<%= user.email %>"
+                readonly
+              >
 
-<img src="<%= user.profileImage ? '/uploads/profile/' + user.profileImage : '/images/user.png' %>" alt="User Image">
+              <a
+                href="/edit-email"
+                class="edit-email-btn"
+              >
+                EDIT EMAIL
+              </a>
 
-</div>
+            </div>
 
+          </div>
 
-<!-- PROFILE DETAILS -->
+          <div class="row">
 
-<div class="profile-details">
+            <div class="field">
 
-<div class="row">
+              <label>Phone Number</label>
 
-<div class="field">
+              <input
+                type="text"
+                value="<%= user.phone %>"
+                readonly
+              >
 
-<label>Name</label>
+            </div>
 
-<input type="text" value="<%= user.username %>" readonly>
+          </div>
 
-</div>
+          <div class="referral-section">
 
+            <p>Your referral code</p>
 
-<div class="field">
+            <span class="referral-code">
+              <%= user.referralCode %>
+            </span>
 
-<label>Email</label>
+          </div>
 
-<input type="text" value="<%= user.email %>" readonly>
+          <a
+            href="/change-password"
+            class="change-password-btn"
+          >
+            Change Password
+          </a>
 
-<a href="/edit-email" class="edit-email-btn">
-EDIT EMAIL
-</a>
+        </div>
 
-</div>
+      </div>
 
-</div>
+    </div>
 
-
-<div class="row">
-
-<div class="field">
-
-<label>Phone Number</label>
-
-<input type="text" value="<%= user.phone %>" readonly>
-
-</div>
-
-</div>
-
-
-<div class="referral-section">
-
-<p>Your referral code</p>
-
-<span class="referral-code">
-<%= user.referralCode %>
-</span>
-
-</div>
-
-
-<a href="/change-password" class="change-password-btn">
-Change Password
-</a>
-
-</div>
-
-</div>
-
-</div>
+  </div>
 
 </div>
 

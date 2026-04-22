@@ -153,102 +153,93 @@ return {success:true}
 
 const validateAddress = (data) => {
 
-const nameRegex = /^[A-Za-z]{3,}$/;
-const phoneRegex = /^[0-9]{10}$/;
-const pincodeRegex = /^[0-9]{6}$/;
-const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  const nameRegex = /^[A-Za-z ]{2,}$/;
+  const phoneRegex = /^[0-9]{10}$/;
+  const pincodeRegex = /^[0-9]{6}$/;
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
-if(!nameRegex.test(data.firstName)){
-throw new Error("First name must contain only letters and at least 3 characters");
-}
+  if (!data.firstName || !nameRegex.test(data.firstName.trim())) {
+    throw new Error("First name must contain only letters and at least 2 characters");
+  }
 
-if(!nameRegex.test(data.lastName)){
-throw new Error("Last name must contain only letters and at least 3 characters");
-}
+  if (!data.lastName || !nameRegex.test(data.lastName.trim())) {
+    throw new Error("Last name must contain only letters and at least 2 characters");
+  }
 
-if(!phoneRegex.test(data.phone)){
-throw new Error("Phone number must be exactly 10 digits");
-}
+  if (!phoneRegex.test(data.phone)) {
+    throw new Error("Phone number must be exactly 10 digits");
+  }
 
-if(!pincodeRegex.test(data.pincode)){
-throw new Error("Pincode must be 6 digits");
-}
+  if (!pincodeRegex.test(data.pincode)) {
+    throw new Error("Pincode must be 6 digits");
+  }
 
-if(!emailRegex.test(data.email)){
-throw new Error("Invalid email format");
-}
+  if (!emailRegex.test(data.email)) {
+    throw new Error("Invalid email format");
+  }
 
-if(!data.address || data.address.length < 5){
-throw new Error("Address must be at least 5 characters long");
-}
+  if (!data.address || data.address.trim().length < 5) {
+    throw new Error("Address must be at least 5 characters long");
+  }
 
 };
-
 const saveAddress = async (userId, addressData) => {
 
-  validateAddress(addressData)
+  
 
-const user = await User.findById(userId)
+  validateAddress(addressData);
 
-const { addressId, isDefault } = addressData
+  const user = await User.findById(userId);
 
+  const addressId = addressData.addressId;
+  const isDefault = addressData.isDefault === "true";
 
-// If user sets new default address
-if(isDefault){
+  // reset old default
+  if (isDefault) {
+    user.addresses.forEach(addr => {
+      addr.isDefault = false;
+    });
+  }
 
-user.addresses.forEach(addr=>{
-addr.isDefault = false
-})
+  if (addressId) {
 
-}
+    // EDIT
+    const address = user.addresses.id(addressId);
 
+    if (!address) return;
 
-if(addressId){
+    address.firstName = addressData.firstName;
+    address.lastName = addressData.lastName;
+    address.company = addressData.company;
+    address.address = addressData.address;
+    address.country = addressData.country;
+    address.state = addressData.state;
+    address.city = addressData.city;
+    address.pincode = addressData.pincode;
+    address.email = addressData.email;
+    address.phone = addressData.phone;
+    address.isDefault = isDefault;
 
-// EDIT ADDRESS
+  } else {
 
-const address = user.addresses.id(addressId)
+    // ADD
+    user.addresses.push({
+      firstName: addressData.firstName,
+      lastName: addressData.lastName,
+      company: addressData.company,
+      address: addressData.address,
+      country: addressData.country,
+      state: addressData.state,
+      city: addressData.city,
+      pincode: addressData.pincode,
+      email: addressData.email,
+      phone: addressData.phone,
+      isDefault
+    });
+  }
 
-if(!address) return
-
-address.firstName = addressData.firstName
-address.lastName = addressData.lastName
-address.company = addressData.company
-address.address = addressData.address
-address.country = addressData.country
-address.state = addressData.state
-address.city = addressData.city
-address.pincode = addressData.pincode
-address.email = addressData.email
-address.phone = addressData.phone
-address.isDefault = isDefault ? true : false
-
-}else{
-
-// ADD ADDRESS
-
-user.addresses.push({
-
-firstName: addressData.firstName,
-lastName: addressData.lastName,
-company: addressData.company,
-address: addressData.address,
-country: addressData.country,
-state: addressData.state,
-city: addressData.city,
-pincode: addressData.pincode,
-email: addressData.email,
-phone: addressData.phone,
-isDefault: isDefault ? true : false
-
-})
-
-}
-
-await user.save()
-
-}
-
+  await user.save();
+};
 const deleteAddress=async(userId,addressId)=>{
     const user = await User.findById(userId);
 

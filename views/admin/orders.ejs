@@ -1,0 +1,241 @@
+<link rel="stylesheet" href="/css/admin/sidebar.css">
+<link rel="stylesheet" href="/css/admin/orders.css">
+
+<div class="admin-container">
+
+  <!-- SIDEBAR -->
+  <%- include("./partials/sidebar") %>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <h2>Order Management</h2>
+
+        <div class="breadcrumb">
+          <span>Dashboard</span>
+          <span>›</span>
+          <span>Order List</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER SECTION -->
+    <div class="filter-section">
+
+      <form action="/admin/orders" method="GET" class="filter-form">
+
+        <!-- STATUS FILTER -->
+        <div class="status-filter">
+
+          <a
+            href="/admin/orders"
+            class="<%= !status ? 'active' : '' %>"
+          >
+            All Status
+          </a>
+
+          <a
+            href="/admin/orders?status=Pending"
+            class="<%= status === 'Pending' ? 'active' : '' %>"
+          >
+            Pending
+          </a>
+
+          <a
+            href="/admin/orders?status=Shipped"
+            class="<%= status === 'Shipped' ? 'active' : '' %>"
+          >
+            Shipped
+          </a>
+
+          <a
+            href="/admin/orders?status=Out for Delivery"
+            class="<%= status === 'Out for Delivery' ? 'active' : '' %>"
+          >
+            Out for Delivery
+          </a>
+
+          <a
+            href="/admin/orders?status=Delivered"
+            class="<%= status === 'Delivered' ? 'active' : '' %>"
+          >
+            Delivered
+          </a>
+
+          <a
+            href="/admin/orders?status=Cancelled"
+            class="<%= status === 'Cancelled' ? 'active' : '' %>"
+          >
+            Cancelled
+          </a>
+
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-box">
+          <input
+            type="text"
+            name="search"
+            placeholder="Search by Order ID"
+            value="<%= search || '' %>"
+          >
+        </div>
+
+        <!-- SORT -->
+        <div class="sort-box">
+          <select name="sort">
+
+            <option value="">
+              Latest First
+            </option>
+
+            <option
+              value="oldest"
+              <%= sort === "oldest" ? "selected" : "" %>
+            >
+              Oldest First
+            </option>
+
+          </select>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-buttons">
+
+          <button
+            type="submit"
+            class="filter-btn"
+          >
+            Apply
+          </button>
+
+          <a
+            href="/admin/orders"
+            class="clear-btn"
+          >
+            Clear
+          </a>
+
+        </div>
+
+      </form>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+
+      <div class="table-header">
+        <h3>Orders</h3>
+      </div>
+
+      <table class="orders-table">
+
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>User</th>
+            <th>Email</th>
+            <th>Total</th>
+            <th>Payment</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <% if (orders && orders.length > 0) { %>
+
+            <% orders.forEach(order => { %>
+
+              <tr>
+
+                <td>
+                  <strong><%= order.orderId %></strong>
+                </td>
+
+                <td>
+                  <%= new Date(order.createdAt).toDateString() %>
+                </td>
+
+                <td>
+                  <%= order.user?.username || "User Deleted" %>
+                </td>
+
+                <td>
+                  <%= order.user?.email || "-" %>
+                </td>
+
+                <td>
+                  ₹<%= order.finalAmount %>
+                </td>
+
+                <td>
+                  <span class="payment-badge">
+                    <%= order.paymentMethod %>
+                  </span>
+                </td>
+
+                <td>
+                  <span class="status-badge <%= order.orderStatus.toLowerCase().replace(/\s+/g, '-') %>">
+                    <%= order.orderStatus %>
+                  </span>
+                </td>
+
+                <td>
+                  <a
+                    href="/admin/orders/<%= order._id %>"
+                    class="view-btn"
+                  >
+                    View Details
+                  </a>
+                </td>
+
+              </tr>
+
+            <% }) %>
+
+          <% } else { %>
+
+            <tr>
+              <td colspan="8" class="empty-row">
+                No Orders Found
+              </td>
+            </tr>
+
+          <% } %>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <% if (totalPages > 1) { %>
+
+      <div class="pagination">
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+
+          <a
+            href="/admin/orders?page=<%= i %>&search=<%= search || '' %>&status=<%= status || '' %>&sort=<%= sort || '' %>"
+            class="<%= currentPage === i ? 'active-page' : '' %>"
+          >
+            <%= i %>
+          </a>
+
+        <% } %>
+
+      </div>
+
+    <% } %>
+
+  </div>
+
+</div>

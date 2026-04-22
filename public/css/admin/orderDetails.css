@@ -1,0 +1,295 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f6fa;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+}
+
+/* PAGE HEADER */
+
+.page-header {
+  margin-bottom: 30px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.breadcrumb {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+  color: #4a6cf7;
+}
+
+/* TOP GRID */
+
+.top-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1.3fr 1fr;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+/* INFO CARDS */
+
+.info-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.info-card h3 {
+  margin: 0 0 18px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 14px 0;
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.info-row strong {
+  color: #111827;
+}
+
+/* STATUS BADGE */
+
+.status-badge {
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.status-badge.shipped {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.status-badge.delivered {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.status-badge.cancelled {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.status-badge.processing {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.status-badge.out\ for\ delivery {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+/* INVOICE BUTTON */
+
+.invoice-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 12px 20px;
+  background: #4a6cf7;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.invoice-btn:hover {
+  background: #3451d1;
+}
+
+/* STATUS UPDATE */
+
+.status-update-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.status-update-card h3 {
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.status-update-card form {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.status-update-card select {
+  min-width: 260px;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.status-update-card button {
+  background: #4a6cf7;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.status-update-card button:hover {
+  background: #3451d1;
+}
+
+/* BOTTOM GRID */
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+/* TABLE CARD */
+
+.table-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.table-header h3 {
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* PRODUCTS TABLE */
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.products-table thead th {
+  text-align: left;
+  padding: 16px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.products-table tbody td {
+  padding: 18px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.product-cell img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* SUMMARY BOX */
+
+.summary-box {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 14px 0;
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.summary-row strong {
+  color: #111827;
+}
+
+.summary-row.total {
+  margin-top: 24px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.summary-row.total strong {
+  font-size: 22px;
+}
+
+/* ADDRESS CARD */
+
+.address-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  height: fit-content;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.address-card h3 {
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.address-card p {
+  margin: 10px 0;
+  font-size: 15px;
+  color: #374151;
+  line-height: 1.7;
+}

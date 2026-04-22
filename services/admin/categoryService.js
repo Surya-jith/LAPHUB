@@ -29,25 +29,43 @@ const getCategories = async (page, search) => {
 
 const createCategory = async (name) => {
 
+  // ❌ Block empty / spaces
+  if (!name || !name.trim()) {
+    throw new Error("Category name is required");
+  }
+
+  // ✅ Normalize
+  const formattedName = name.trim().toLowerCase();
+
+  // 🔍 Duplicate check (safe + normalized)
   const exist = await Category.findOne({
-    name: { $regex: `^${name}$`, $options: "i" }
+    name: { $regex: new RegExp(`^${formattedName}$`, "i") }
   });
 
   if (exist) {
     throw new Error("Category already exists");
   }
 
-  return await Category.create({ name });
-};
-
-const getCategoryById = async (id) => {
-  return await Category.findById(id);
+  try {
+    return await Category.create({ name: formattedName });
+  } catch (error) {
+    if (error.code === 11000) {
+      throw new Error("Category already exists");
+    }
+    throw error;
+  }
 };
 
 const updateCategory = async (id, name) => {
 
+  if (!name || !name.trim()) {
+    throw new Error("Category name is required");
+  }
+
+  const formattedName = name.trim().toLowerCase();
+
   const exist = await Category.findOne({
-    name: { $regex: `^${name.trim()}$`, $options: "i" },
+    name: { $regex: new RegExp(`^${formattedName}$`, "i") },
     _id: { $ne: id }
   });
 
@@ -57,7 +75,7 @@ const updateCategory = async (id, name) => {
 
   return await Category.findByIdAndUpdate(
     id,
-    { name: name.trim() },
+    { name: formattedName },
     { new: true }
   );
 };
@@ -82,6 +100,11 @@ const deleteCategory = async (id) => {
   });
 };
 
+
+
+const getCategoryById = async (id) => {
+  return await Category.findById(id);
+};
 export default {
   getCategories,
   createCategory,

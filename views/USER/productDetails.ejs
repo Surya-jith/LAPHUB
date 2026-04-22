@@ -1,3 +1,4 @@
+```ejs
 <%- include('../partials/header') %>
 
 <link rel="stylesheet" href="/css/layout.css">
@@ -34,11 +35,10 @@
 let lowestPrice = Math.min(...product.variants.map(v => v.price))
 
 let totalStock = 0
-product.variants.forEach(v=>{
+product.variants.forEach(v => {
 totalStock += v.stock
 })
 %>
-
 
 <div class="product-details-wrapper">
 
@@ -46,7 +46,7 @@ totalStock += v.stock
 <div class="product-images">
 
 <div class="main-image">
-<img 
+<img
 id="mainImage"
 src="<%= product.images[0] %>"
 alt="<%= product.name %>"
@@ -57,7 +57,7 @@ alt="<%= product.name %>"
 
 <% product.images.forEach((img,index)=>{ %>
 
-<img 
+<img
 src="<%= img %>"
 onclick="changeImage(this)"
 class="<%= index === 0 ? 'active' : '' %>"
@@ -68,8 +68,6 @@ class="<%= index === 0 ? 'active' : '' %>"
 </div>
 
 </div>
-
-
 
 <!-- RIGHT : Info -->
 <div class="product-info">
@@ -98,12 +96,10 @@ class="<%= index === 0 ? 'active' : '' %>"
 
 </div>
 
-
 <!-- Title -->
 <h2 class="product-title">
 <%= product.name %>
 </h2>
-
 
 <!-- Availability -->
 <p class="availability">
@@ -116,12 +112,10 @@ Availability :
 
 </p>
 
-
 <!-- Category -->
 <p class="category">
 Category : <%= product.category?.name %>
 </p>
-
 
 <!-- Price -->
 <div class="price-section">
@@ -136,7 +130,6 @@ Starting Price
 
 </div>
 
-
 <!-- Coupon -->
 <div class="coupon-box">
 <span class="coupon-title">
@@ -148,8 +141,6 @@ SAVE10 - Extra 10% Off
 </div>
 </div>
 
-
-
 <!-- Color Variant -->
 <div class="variant-section">
 
@@ -159,7 +150,7 @@ SAVE10 - Extra 10% Off
 
 <% product.variants.forEach((v,index)=>{ %>
 
-<button 
+<button
 type="button"
 class="variant-btn"
 onclick="selectVariant(<%= index %>)"
@@ -173,8 +164,6 @@ onclick="selectVariant(<%= index %>)"
 
 </div>
 
-
-
 <!-- RAM -->
 <div class="variant-section">
 
@@ -182,9 +171,9 @@ onclick="selectVariant(<%= index %>)"
 
 <select id="ramSelect" onchange="updateVariant()">
 
-<% 
+<%
 let ramSet = new Set()
-product.variants.forEach(v=>{
+product.variants.forEach(v => {
 if(!ramSet.has(v.ram)){
 ramSet.add(v.ram)
 %>
@@ -202,8 +191,6 @@ ramSet.add(v.ram)
 
 </div>
 
-
-
 <!-- Storage -->
 <div class="variant-section">
 
@@ -213,7 +200,7 @@ ramSet.add(v.ram)
 
 <%
 let romSet = new Set()
-product.variants.forEach(v=>{
+product.variants.forEach(v => {
 if(!romSet.has(v.rom)){
 romSet.add(v.rom)
 %>
@@ -231,8 +218,6 @@ romSet.add(v.rom)
 
 </div>
 
-
-
 <!-- Highlights -->
 <div class="product-highlights">
 
@@ -245,7 +230,7 @@ let highlights = product.description
 ? product.description.split(/,|\n/)
 : []
 
-highlights.forEach(item=>{
+highlights.forEach(item => {
 %>
 
 <li><%= item.trim() %></li>
@@ -258,30 +243,61 @@ highlights.forEach(item=>{
 
 </div>
 
-
-
 <!-- Buttons -->
 <div class="product-actions">
 
-<button class="buy-now">
-Buy Now
-</button>
+<!-- BUY NOW -->
+<form action="/buy-now" method="POST">
 
-
-<form action="/add-to-cart" method="POST">
-
-<input 
+<input
 type="hidden"
 name="productId"
 value="<%= product._id %>"
 >
 
-<input 
+<input
+type="hidden"
+name="variantId"
+id="buyNowVariantId"
+>
+
+<input
+type="hidden"
+name="quantity"
+id="buyNowQty"
+value="1"
+>
+
+<% if(totalStock > 0){ %>
+
+<button type="submit" class="buy-now">
+Buy Now
+</button>
+
+<% } else { %>
+
+<button class="buy-now disabled" disabled>
+Out of Stock
+</button>
+
+<% } %>
+
+</form>
+
+<!-- ADD TO CART -->
+<form action="/add-to-cart" method="POST">
+
+<input
+type="hidden"
+name="productId"
+value="<%= product._id %>"
+>
+
+<input
 type="hidden"
 name="variantId"
 id="variantId"
 >
-
 
 <div class="cart-section">
 
@@ -303,7 +319,7 @@ Out of Stock
 
 <button type="button" id="minusQty">-</button>
 
-<input 
+<input
 type="number"
 name="quantity"
 id="qtyInput"
@@ -319,6 +335,23 @@ min="1"
 
 </form>
 
+<!-- ADD TO WISHLIST -->
+
+<form
+  action="/wishlist/add/<%= product._id %>"
+  method="POST"
+  class="wishlist-form"
+>
+
+  <button
+    type="submit"
+    class="add-wishlist"
+  >
+    ♡ Add To Wishlist
+  </button>
+
+</form>
+
 </div>
 
 </div>
@@ -328,10 +361,6 @@ min="1"
 </div>
 
 </section>
-
-
-
-
 
 <section class="reviews-section">
 
@@ -352,7 +381,7 @@ min="1"
 
 </select>
 
-<textarea 
+<textarea
 name="comment"
 placeholder="Write your review..."
 required
@@ -366,13 +395,11 @@ Submit Review
 
 </div>
 
-
-
 <div class="reviews-list">
 
 <% if(product.reviews && product.reviews.length > 0){ %>
 
-<% product.reviews.forEach(review=>{ %>
+<% product.reviews.forEach(review => { %>
 
 <div class="review-card">
 
@@ -416,8 +443,6 @@ Submit Review
 
 </section>
 
-
-
 <section class="related-products">
 
 <div class="container">
@@ -426,9 +451,9 @@ Submit Review
 
 <div class="related-grid">
 
-<% relatedProducts.forEach(p=>{ %>
+<% relatedProducts.forEach(p => { %>
 
-<a 
+<a
 href="/product/<%= p._id %>"
 class="related-card"
 >
@@ -448,8 +473,6 @@ class="related-card"
 </div>
 
 </section>
-
-
 
 <script>
 
@@ -475,13 +498,14 @@ function updateVariant(){
 const ram = document.getElementById("ramSelect").value
 const rom = document.getElementById("romSelect").value
 
-const selected = variants.find(v => 
+const selected = variants.find(v =>
 v.ram == ram && v.rom == rom
 )
 
 if(selected){
 
 document.getElementById("variantId").value = selected._id
+document.getElementById("buyNowVariantId").value = selected._id
 
 document.getElementById("offerPrice").innerText =
 "₹" + selected.price
@@ -495,21 +519,36 @@ selected.variantImage
 
 }
 
-updateVariant()
-
-
 const qtyInput = document.getElementById("qtyInput")
+
+function syncBuyNowData() {
+document.getElementById("buyNowVariantId").value =
+document.getElementById("variantId").value
+
+document.getElementById("buyNowQty").value =
+document.getElementById("qtyInput").value
+}
 
 document.getElementById("plusQty").onclick = () => {
 qtyInput.value = parseInt(qtyInput.value) + 1
+syncBuyNowData()
 }
 
 document.getElementById("minusQty").onclick = () => {
 if(qtyInput.value > 1){
 qtyInput.value = parseInt(qtyInput.value) - 1
+syncBuyNowData()
 }
 }
+
+document.getElementById("qtyInput").addEventListener("input", () => {
+syncBuyNowData()
+})
+
+updateVariant()
+syncBuyNowData()
 
 </script>
 
 <%- include('../partials/footer') %>
+```

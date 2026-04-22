@@ -268,3 +268,31 @@ text-decoration:none;
 color:#4a6cf7;
 font-weight:500;
 }
+.error-box{
+  background: #ffe5e5;
+  color: #d8000c;
+  border: 1px solid #ffb3b3;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+.error-box{
+  animation: fadeOut 4s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; display:none; }
+}
+.error-text{
+  color: #d8000c;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.input-error{
+  border: 1px solid #d8000c !important;
+}

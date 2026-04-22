@@ -1,0 +1,253 @@
+<%- include('../partials/header', { user: user }) %>
+
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/orderDetails.css">
+
+<section class="order-details-page">
+
+  <div class="page-layout">
+
+    <%- include('../partials/userSidebar', {
+      activePage: 'orders'
+    }) %>
+
+    <div class="main-content">
+
+      <div class="container">
+
+        <div class="page-header">
+          <a href="/orders" class="back-link">
+            ← Back to Orders
+          </a>
+
+          <div class="top-actions">
+
+            <% if (
+              order.orderStatus !== "Cancelled" &&
+              order.orderStatus !== "Returned"
+            ) { %>
+
+            <form
+              action="/orders/<%= order._id %>/cancel"
+              method="POST"
+            >
+              <button
+                type="submit"
+                class="cancel-order-btn"
+              >
+                Cancel Order
+              </button>
+            </form>
+
+            <% } %>
+
+
+            <% if (order.orderStatus === "Delivered") { %>
+
+            <form
+              action="/orders/<%= order._id %>/return"
+              method="POST"
+              class="return-form"
+            >
+
+              <input
+                type="text"
+                name="returnReason"
+                placeholder="Enter return reason"
+                required
+              >
+
+              <button
+                type="submit"
+                class="cancel-order-btn"
+              >
+                Return Order
+              </button>
+
+            </form>
+
+            <% } %>
+
+
+            <a
+              href="/orders/<%= order._id %>/invoice"
+              class="invoice-btn"
+            >
+              Download Invoice
+            </a>
+
+          </div>
+        </div>
+
+
+        <div class="summary-card">
+
+          <div>
+            <h2><%= order.orderId %></h2>
+
+            <p>
+              <%= new Date(order.createdAt).toDateString() %>
+              • <%= order.items.length %> Products
+            </p>
+          </div>
+
+          <div class="summary-right">
+            <h3>₹<%= order.finalAmount %></h3>
+
+            <span class="status <%= order.orderStatus.toLowerCase() %>">
+              <%= order.orderStatus %>
+            </span>
+          </div>
+
+        </div>
+
+
+        <div class="products-card">
+
+          <h3>Ordered Products</h3>
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <% order.items.forEach(item => { %>
+
+              <tr>
+
+                <td class="product-cell">
+
+                  <img
+                    src="<%= item.product.images?.[0] || '/images/no-image.png' %>"
+                    alt="product"
+                  >
+
+                  <div>
+                    <h4><%= item.product.name %></h4>
+                    <p>Status: <%= item.status %></p>
+                  </div>
+
+                </td>
+
+                <td>x<%= item.quantity %></td>
+
+                <td>₹<%= item.totalPrice %></td>
+
+                <td>
+
+                  <% if (
+                    item.status !== "Cancelled" &&
+                    order.orderStatus !== "Cancelled"
+                  ) { %>
+
+                  <form
+                    action="/orders/<%= order._id %>/items/<%= item._id %>/cancel"
+                    method="POST"
+                  >
+
+                    <button
+                      type="submit"
+                      class="cancel-item-btn"
+                    >
+                      Cancel Item
+                    </button>
+
+                  </form>
+
+                  <% } %>
+
+                </td>
+
+              </tr>
+
+              <% }) %>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div class="bottom-grid">
+
+          <div class="address-card">
+
+            <h3>Delivery Address</h3>
+
+            <p>
+              <strong>
+                <%= order.address.firstName %>
+                <%= order.address.lastName %>
+              </strong>
+            </p>
+
+            <p><%= order.address.address %></p>
+
+            <p>
+              <%= order.address.city %>,
+              <%= order.address.state %>
+            </p>
+
+            <p><%= order.address.pincode %></p>
+
+            <p><%= order.address.phone %></p>
+
+          </div>
+
+
+          <div class="payment-card">
+
+            <h3>Payment Summary</h3>
+
+            <div class="row">
+              <span>Payment Method</span>
+              <span><%= order.paymentMethod %></span>
+            </div>
+
+            <div class="row">
+              <span>Payment Status</span>
+              <span><%= order.paymentStatus %></span>
+            </div>
+
+            <div class="row">
+              <span>Subtotal</span>
+              <span>₹<%= order.subtotal %></span>
+            </div>
+
+            <div class="row">
+              <span>Discount</span>
+              <span>₹<%= order.discount %></span>
+            </div>
+
+            <div class="row">
+              <span>Shipping</span>
+              <span>₹<%= order.shippingCharge %></span>
+            </div>
+
+            <div class="row total">
+              <span>Total</span>
+              <span>₹<%= order.finalAmount %></span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<%- include('../partials/footer') %>

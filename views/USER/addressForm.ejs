@@ -1,0 +1,133 @@
+<%- include('../partials/header', { user: user }) %>
+
+<link rel="stylesheet" href="/css/user/addressForm.css">
+
+<section class="address-form">
+
+  <div class="form-card">
+
+    <h2><%= address ? "Edit Address" : "Add Address" %></h2>
+
+   <form method="POST" action="/add-address?<%= redirect ? 'redirect=' + redirect : '' %>">
+
+      <!-- 🔥 IMPORTANT: for edit -->
+      <% if(address){ %>
+        <input type="hidden" name="addressId" value="<%= address._id %>">
+      <% } %>
+
+      <!-- NAME -->
+      <div class="grid">
+        <input 
+          type="text" 
+          name="firstName" 
+          placeholder="First Name"
+          value="<%= address?.firstName || '' %>" 
+          required
+        >
+
+        <input 
+          type="text" 
+          name="lastName" 
+          placeholder="Last Name"
+          value="<%= address?.lastName || '' %>" 
+          required
+        >
+      </div>
+
+      <!-- COMPANY -->
+      <input 
+        type="text" 
+        name="company" 
+        placeholder="Company (optional)"
+        value="<%= address?.company || '' %>"
+      >
+
+      <!-- ADDRESS -->
+      <input 
+        type="text" 
+        name="address" 
+        placeholder="Street Address"
+        value="<%= address?.address || '' %>" 
+        required
+      >
+
+      <!-- COUNTRY / STATE -->
+      <div class="grid">
+        <input 
+          type="text" 
+          name="country" 
+          placeholder="Country"
+          value="<%= address?.country || '' %>" 
+          required
+        >
+
+        <input 
+          type="text" 
+          name="state" 
+          placeholder="State"
+          value="<%= address?.state || '' %>" 
+          required
+        >
+      </div>
+
+      <!-- CITY / PINCODE -->
+      <div class="grid">
+        <input 
+          type="text" 
+          name="city" 
+          placeholder="City"
+          value="<%= address?.city || '' %>" 
+          required
+        >
+
+        <input 
+          type="text" 
+          name="pincode" 
+          placeholder="Pincode"
+          value="<%= address?.pincode || '' %>" 
+          required
+        >
+      </div>
+
+      <!-- EMAIL / PHONE -->
+      <div class="grid">
+        <input 
+          type="email" 
+          name="email" 
+          placeholder="Email"
+          value="<%= address?.email || '' %>" 
+          required
+        >
+
+        <input 
+          type="text" 
+          name="phone" 
+          placeholder="Phone"
+          value="<%= address?.phone || '' %>" 
+          required
+        >
+      </div>
+
+      <!-- DEFAULT -->
+      <label class="default-check">
+        <input 
+          type="checkbox" 
+          name="isDefault" 
+          value="true"
+          <%= address?.isDefault ? 'checked' : '' %>
+        >
+        Set as default address
+      </label>
+
+      <!-- SUBMIT -->
+      <button type="submit">
+        <%= address ? "Update Address" : "Add Address" %>
+      </button>
+
+    </form>
+
+  </div>
+
+</section>
+
+<%- include('../partials/footer') %>

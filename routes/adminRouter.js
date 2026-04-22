@@ -4,6 +4,7 @@ import categoryController from "../controllers/admin/categoryController.js"
 import authMiddleware from "../middlewares/authMiddleware.js";
 import productController from "../controllers/admin/productController.js"
 import productUpload from "../middlewares/productUpload.js"
+import orderController from "../controllers/admin/orderController.js";
 const router=express.Router();
 import upload from "../config/multerCloudinary.js"
 
@@ -66,4 +67,30 @@ productController.editProduct
 router.post("/delete-product/:id",authMiddleware.adminAuth,productController.deleteProduct)
 
 
+
+
+// =========================
+// ORDER MANAGEMENT
+// =========================
+
+// Order List Page
+router.get(
+  "/orders",
+  authMiddleware.adminAuth,
+  orderController.loadOrders
+);
+
+// Order Details Page
+router.get(
+  "/orders/:id",
+  authMiddleware.adminAuth,
+  orderController.loadOrderDetails
+);
+
+// Update Order Status
+router.post(
+  "/orders/:id/status",
+  authMiddleware.adminAuth,
+  orderController.updateOrderStatus
+);
 export default router;

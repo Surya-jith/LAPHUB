@@ -1,0 +1,227 @@
+.checkout {
+  background: #f8f9fb;
+  padding: 40px;
+  min-height: 100vh;
+}
+
+/* LAYOUT */
+.checkout-wrapper form {
+  display: flex;
+  gap: 25px;
+  align-items: flex-start;
+}
+
+/* LEFT / RIGHT */
+.checkout-left {
+  flex: 2;
+}
+
+.checkout-right {
+  flex: 1;
+  position: sticky;
+  top: 20px;
+}
+
+/* CARD */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+/* HEADER */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* ADD BUTTON */
+.add-address-btn {
+  font-size: 13px;
+  color: #4a6cf7;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ADDRESS LIST */
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ADDRESS CARD */
+.address-item {
+  display: flex;
+  gap: 12px;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  cursor: pointer;
+  transition: 0.2s ease;
+  background: #fff;
+}
+
+/* HOVER */
+.address-item:hover {
+  border-color: #4a6cf7;
+  background: #f5f7ff;
+}
+
+/* RADIO */
+.address-item input {
+  margin-top: 6px;
+  pointer-events: none;
+}
+
+/* SELECTED STATE (SAFE FOR ALL BROWSERS) */
+.address-item.selected {
+  border: 2px solid #4a6cf7;
+  background: #f5f7ff;
+}
+
+/* ADDRESS CONTENT */
+.address-content {
+  flex: 1;
+}
+
+/* TOP ROW */
+.address-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* EDIT */
+.edit-btn {
+  font-size: 12px;
+  color: #4a6cf7;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* TEXT */
+.address-content h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.address-content p {
+  margin: 2px 0;
+  font-size: 13px;
+  color: #555;
+}
+
+/* BOTTOM ROW */
+.address-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+
+/* PHONE */
+.address-bottom span {
+  font-size: 13px;
+  color: #777;
+}
+
+/* DEFAULT BADGE */
+.default-badge {
+  font-size: 11px;
+  background: #4a6cf7;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* ORDER */
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.order-item img {
+  width: 55px;
+  height: 55px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.order-item .info {
+  flex: 1;
+}
+
+.order-item .info p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.order-item .info span {
+  font-size: 12px;
+  color: #777;
+}
+
+.order-item .price {
+  font-weight: 600;
+}
+
+/* SUMMARY */
+.summary {
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.row.total {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* PAYMENT */
+.payment {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+/* BUTTON */
+.place-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  border: none;
+  background: #4a6cf7;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.place-btn:hover {
+  background: #3b5bdb;
+}
+
+.place-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}

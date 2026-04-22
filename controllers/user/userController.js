@@ -561,17 +561,23 @@ res.render("user/address",{user,selectedAddress})
 
 const saveAddress = async (req, res) => {
   try {
+    const userId = req.session.user;
 
-    await userService.saveAddress(req.session.user, req.body);
+    await userService.saveAddress(userId, req.body);
 
-    res.redirect("/address");
+    // 🔥 dynamic redirect
+    const redirectTo = req.query.redirect || "/address";
+
+    res.redirect(redirectTo);
 
   } catch (error) {
     console.log(error);
-    res.redirect("/address");
+
+    const redirectTo = req.query.redirect || "/address";
+
+    res.redirect(redirectTo);
   }
 };
-
 const deleteAddress = async (req, res) => {
   try {
 
@@ -712,6 +718,33 @@ res.redirect("/products")
 
 }
 
+const loadAddAddress = (req, res) => {
+  res.render("user/addressForm", {
+    address: null,
+    redirect: req.query.redirect || null
+  });
+};
+
+const loadEditAddress = async (req, res) => {
+  try {
+    const user = await userService.getUser(req.session.user);
+
+    const address = user.addresses.id(req.params.id);
+
+    res.render("user/addressForm", {
+      address,
+      redirect: req.query.redirect || null
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.redirect("/checkout");
+  }
+};
+
+
+
+
 
 
 
@@ -750,5 +783,8 @@ export default {
 
   loadProducts,
   loadProductDetails,
-  addReview
+  addReview,
+
+  loadEditAddress,
+  loadAddAddress
 };

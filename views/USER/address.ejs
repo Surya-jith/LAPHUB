@@ -13,275 +13,273 @@
 
 <%- include('../partials/header',{ user }) %>
 
-<div class="address-page">
+<div class="page-layout">
 
-<!-- SIDEBAR -->
+  <%- include('../partials/userSidebar', {
+    activePage: 'address'
+  }) %>
 
-<div class="profile-sidebar">
-<ul>
+  <div class="main-content">
 
-<li><a href="/profile">Dashboard</a></li>
-<li><a href="/profile">Account Details</a></li>
-<li><a href="/orders">Order History</a></li>
-<li><a href="/cart">Shopping Cart</a></li>
-<li><a href="/wishlist">Wishlist</a></li>
-<li class="active"><a href="/address">Address</a></li>
-<li><a href="/wallet">Wallet</a></li>
+    <div class="address-card">
 
-</ul>
+      <div class="address-header">
+
+        <h3>Address</h3>
+
+        <button type="button" class="add-btn">
+          ADD
+        </button>
+
+      </div>
+
+      <form
+        class="address-form"
+        action="/address/save"
+        method="POST"
+      >
+
+        <input
+          type="hidden"
+          name="addressId"
+          value="<%= selectedAddress?._id || '' %>"
+        >
+
+        <!-- NAME -->
+
+        <div class="row">
+
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First name"
+            value="<%= selectedAddress?.firstName || '' %>"
+            pattern="[A-Za-z]{3,}"
+            title="First name must contain only letters and at least 3 characters"
+            required
+          >
+
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last name"
+            value="<%= selectedAddress?.lastName || '' %>"
+            pattern="[A-Za-z]{3,}"
+            title="Last name must contain only letters and at least 3 characters"
+            required
+          >
+
+          <input
+            type="text"
+            name="company"
+            placeholder="Company Name (Optional)"
+            value="<%= selectedAddress?.company || '' %>"
+          >
+
+        </div>
+
+        <!-- ADDRESS -->
+
+        <div class="row">
+
+          <input
+            type="text"
+            name="address"
+            placeholder="Address"
+            value="<%= selectedAddress?.address || '' %>"
+            minlength="5"
+            required
+          >
+
+        </div>
+
+        <!-- LOCATION -->
+
+        <div class="row">
+
+          <input
+            type="text"
+            name="country"
+            placeholder="Country"
+            value="<%= selectedAddress?.country || '' %>"
+            pattern="[A-Za-z ]{3,}"
+            required
+          >
+
+          <input
+            type="text"
+            name="state"
+            placeholder="State"
+            value="<%= selectedAddress?.state || '' %>"
+            pattern="[A-Za-z ]{3,}"
+            required
+          >
+
+          <input
+            type="text"
+            name="city"
+            placeholder="City"
+            value="<%= selectedAddress?.city || '' %>"
+            pattern="[A-Za-z ]{3,}"
+            required
+          >
+
+          <input
+            type="text"
+            name="pincode"
+            placeholder="PIN Code"
+            value="<%= selectedAddress?.pincode || '' %>"
+            pattern="[0-9]{6}"
+            maxlength="6"
+            title="Pincode must be 6 digits"
+            required
+          >
+
+        </div>
+
+        <!-- CONTACT -->
+
+        <div class="row">
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value="<%= selectedAddress?.email || '' %>"
+            required
+          >
+
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone Number"
+            value="<%= selectedAddress?.phone || '' %>"
+            pattern="[0-9]{10}"
+            maxlength="10"
+            title="Phone number must be exactly 10 digits"
+            required
+          >
+
+        </div>
+
+        <label class="default-check">
+
+          <input
+            type="checkbox"
+            name="isDefault"
+            <%= selectedAddress?.isDefault ? "checked" : "" %>
+          >
+
+          Set as Default Address
+
+        </label>
+
+        <button
+          type="submit"
+          class="save-btn"
+        >
+          SAVE ADDRESS
+        </button>
+
+      </form>
+
+      <!-- ADDRESS LIST -->
+
+      <div class="address-list">
+
+        <% if(user.addresses && user.addresses.length > 0){ %>
+
+          <% user.addresses.forEach((addr)=>{ %>
+
+            <div class="address-item">
+
+              <p>
+                <strong>
+                  <%= addr.firstName %> <%= addr.lastName %>
+                </strong>
+
+                <% if(addr.isDefault){ %>
+
+                  <span class="default-badge">
+                    Default
+                  </span>
+
+                <% } %>
+              </p>
+
+              <p>
+                <%= addr.address %>, <%= addr.city %>
+              </p>
+
+              <p>
+                <%= addr.state %>, <%= addr.country %> - <%= addr.pincode %>
+              </p>
+
+              <p>
+                📞 <%= addr.phone %>
+              </p>
+
+              <div class="address-actions">
+
+                <a
+                  href="/address?selected=<%= addr._id %>"
+                  class="edit-btn"
+                >
+                  Edit
+                </a>
+
+                <form
+                  action="/address/delete/<%= addr._id %>"
+                  method="POST"
+                >
+
+                  <button
+                    type="submit"
+                    class="delete-btn"
+                  >
+                    Delete
+                  </button>
+
+                </form>
+
+              </div>
+
+            </div>
+
+          <% }) %>
+
+        <% } else { %>
+
+          <p>No addresses added yet.</p>
+
+        <% } %>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
-
-
-<!-- ADDRESS CARD -->
-
-<div class="address-card">
-
-<div class="address-header">
-
-<h3>Address</h3>
-
-<button type="button" class="add-btn">
-ADD
-</button>
-
-</div>
-
-
-<form class="address-form" action="/address/save" method="POST">
-
-<input type="hidden" name="addressId" value="<%= selectedAddress?._id || '' %>">
-
-
-<!-- NAME -->
-
-<div class="row">
-
-<input 
-type="text"
-name="firstName"
-placeholder="First name"
-value="<%= selectedAddress?.firstName || '' %>"
-pattern="[A-Za-z]{3,}"
-title="First name must contain only letters and at least 3 characters"
-required
->
-
-<input 
-type="text"
-name="lastName"
-placeholder="Last name"
-value="<%= selectedAddress?.lastName || '' %>"
-pattern="[A-Za-z]{3,}"
-title="Last name must contain only letters and at least 3 characters"
-required
->
-
-<input 
-type="text"
-name="company"
-placeholder="Company Name (Optional)"
-value="<%= selectedAddress?.company || '' %>"
->
-
-</div>
-
-
-<!-- ADDRESS -->
-
-<div class="row">
-
-<input 
-type="text"
-name="address"
-placeholder="Address"
-value="<%= selectedAddress?.address || '' %>"
-minlength="5"
-required
->
-
-</div>
-
-
-<!-- LOCATION -->
-
-<div class="row">
-
-<input 
-type="text"
-name="country"
-placeholder="Country"
-value="<%= selectedAddress?.country || '' %>"
-pattern="[A-Za-z ]{3,}"
-required
->
-
-<input 
-type="text"
-name="state"
-placeholder="State"
-value="<%= selectedAddress?.state || '' %>"
-pattern="[A-Za-z ]{3,}"
-required
->
-
-<input 
-type="text"
-name="city"
-placeholder="City"
-value="<%= selectedAddress?.city || '' %>"
-pattern="[A-Za-z ]{3,}"
-required
->
-
-<input 
-type="text"
-name="pincode"
-placeholder="PIN Code"
-value="<%= selectedAddress?.pincode || '' %>"
-pattern="[0-9]{6}"
-maxlength="6"
-title="Pincode must be 6 digits"
-required
->
-
-</div>
-
-
-<!-- CONTACT -->
-
-<div class="row">
-
-<input 
-type="email"
-name="email"
-placeholder="Email"
-value="<%= selectedAddress?.email || '' %>"
-required
->
-
-<input 
-type="text"
-name="phone"
-placeholder="Phone Number"
-value="<%= selectedAddress?.phone || '' %>"
-pattern="[0-9]{10}"
-maxlength="10"
-title="Phone number must be exactly 10 digits"
-required
->
-
-</div>
-
-
-<label class="default-check">
-
-<input 
-type="checkbox"
-name="isDefault"
-<%= selectedAddress?.isDefault ? "checked" : "" %>
->
-
-Set as Default Address
-
-</label>
-
-
-<button type="submit" class="save-btn">
-SAVE ADDRESS
-</button>
-
-</form>
-
-
-<!-- ADDRESS LIST -->
-
-<div class="address-list">
-
-<% if(user.addresses && user.addresses.length > 0){ %>
-
-<% user.addresses.forEach((addr)=>{ %>
-
-<div class="address-item">
-
-<p>
-<strong>
-<%= addr.firstName %> <%= addr.lastName %>
-</strong>
-
-<% if(addr.isDefault){ %>
-
-<span class="default-badge">
-Default
-</span>
-
-<% } %>
-
-</p>
-
-<p>
-<%= addr.address %>, <%= addr.city %>
-</p>
-
-<p>
-<%= addr.state %>, <%= addr.country %> - <%= addr.pincode %>
-</p>
-
-<p>
-📞 <%= addr.phone %>
-</p>
-
-<div class="address-actions">
-
-<a href="/address?selected=<%= addr._id %>" class="edit-btn">
-Edit
-</a>
-
-<form action="/address/delete/<%= addr._id %>" method="POST">
-
-<button type="submit" class="delete-btn">
-Delete
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-<% }) %>
-
-<% } else { %>
-
-<p>No addresses added yet.</p>
-
-<% } %>
-
-</div>
-
-</div>
-
-</div>
-
 
 <%- include('../partials/footer') %>
 
-
 <script>
+const addBtn = document.querySelector(".add-btn");
 
-const addBtn = document.querySelector(".add-btn")
+addBtn.addEventListener("click", () => {
+  document.querySelector('input[name="addressId"]').value = "";
 
-addBtn.addEventListener("click",()=>{
+  document.querySelectorAll(".address-form input").forEach(input => {
+    if (input.type !== "hidden" && input.type !== "checkbox") {
+      input.value = "";
+    }
 
-document.querySelector('input[name="addressId"]').value=""
-
-document.querySelectorAll(".address-form input").forEach(input=>{
-if(input.type !== "hidden"){
-input.value=""
-}
-})
-
-})
-
+    if (input.type === "checkbox") {
+      input.checked = false;
+    }
+  });
+});
 </script>
 
 </body>

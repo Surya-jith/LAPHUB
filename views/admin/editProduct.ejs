@@ -1,333 +1,550 @@
 <link rel="stylesheet" href="/css/admin/sidebar.css">
 <link rel="stylesheet" href="/css/admin/addProduct.css">
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
 <div class="admin-container">
+  <%- include('./partials/sidebar') %>
 
-<!-- Sidebar -->
-<%- include('./partials/sidebar') %>
+  <div class="main-content">
 
-<div class="main-content">
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <h2>Edit Product</h2>
+        <p class="breadcrumb">
+          Dashboard > Product List > Edit Product
+        </p>
+      </div>
 
-<!-- Header -->
+      <div class="header-actions">
+        <a href="/admin/products" class="btn-cancel">
+          Cancel
+        </a>
 
-<div class="page-header">
+        <button
+          form="editProductForm"
+          type="submit"
+          class="btn-add"
+        >
+          Update Product
+        </button>
+      </div>
+    </div>
 
-<div>
-<h2>Edit Product</h2>
-<p class="breadcrumb">
-Dashboard > Product List > Edit Product
-</p>
-</div>
+    <!-- ERROR -->
+    <% if (typeof error !== "undefined") { %>
+      <div class="alert-error">
+        <%= error %>
+      </div>
+    <% } %>
 
-<div class="header-actions">
+    <!-- FORM -->
+    <form
+      id="editProductForm"
+      method="POST"
+      enctype="multipart/form-data"
+    >
 
-<a href="/admin/products" class="btn-cancel">
-Cancel
-</a>
+      <div class="product-layout">
 
-<button form="editProductForm" class="btn-add">
-Save Product
-</button>
+        <!-- LEFT SECTION -->
+        <div class="left-section">
 
-</div>
+          <!-- GENERAL INFO -->
+          <div class="card">
+            <h4>General Information</h4>
 
-</div>
+            <label>Product Name</label>
+            <input
+              type="text"
+              id="productName"
+              name="name"
+              value="<%= product.name %>"
+            >
+            <small class="error-text" id="nameError"></small>
 
+            <label>Description</label>
+            <textarea
+              id="productDescription"
+              name="description"
+            ><%= product.description %></textarea>
+            <small class="error-text" id="descError"></small>
+          </div>
 
+          <!-- PRICING -->
+          <div class="card">
+            <h4>Pricing</h4>
 
-<form 
-id="editProductForm"
-method="POST"
-action="/admin/edit-product/<%= product._id %>"
-enctype="multipart/form-data"
+            <label>Base Price</label>
+            <input
+              type="number"
+              id="productPrice"
+              name="price"
+              value="<%= product.price %>"
+            >
+            <small class="error-text" id="priceError"></small>
+
+            <label>Discount</label>
+            <input
+              type="number"
+              name="discount"
+              value="<%= product.discount %>"
+            >
+          </div>
+
+          <!-- PRODUCT IMAGES -->
+          <div class="card">
+            <h4>Product Images</h4>
+
+            <div class="image-upload-grid">
+
+              <% product.images.forEach((img, index) => { %>
+
+                <div class="image-upload-box">
+
+                  <img
+                    src="<%= img %>"
+                    id="preview<%= index %>"
+                    class="preview-img"
+                    alt="Product Image"
+                  >
+
+                  <input
+                    type="file"
+                    name="images"
+                    onchange="previewImage(event, <%= index %>)"
+                  >
+
+                </div>
+
+              <% }) %>
+
+              <% for (let i = product.images.length; i < 3; i++) { %>
+
+                <div class="image-upload-box">
+
+                  <img
+                    id="preview<%= i %>"
+                    class="preview-img"
+                    alt="Preview Image"
+                  >
+
+                  <input
+                    type="file"
+                    name="images"
+                    onchange="previewImage(event, <%= i %>)"
+                  >
+
+                </div>
+
+              <% } %>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT SECTION -->
+        <div class="right-section">
+
+          <!-- CATEGORY -->
+          <div class="card">
+            <h4>Category</h4>
+
+            <select
+              id="productCategory"
+              name="category"
+            >
+              <option value="">
+                Select Category
+              </option>
+
+              <% categories.forEach(cat => { %>
+
+                <option
+                  value="<%= cat._id %>"
+                  <%= product.category.toString() === cat._id.toString() ? 'selected' : '' %>
+                >
+                  <%= cat.name %>
+                </option>
+
+              <% }) %>
+
+            </select>
+
+            <small class="error-text" id="categoryError"></small>
+          </div>
+
+          <!-- BRAND -->
+          <div class="card">
+            <h4>Brand</h4>
+
+            <select name="brand">
+              <option value="">
+                Select Brand
+              </option>
+
+              <% brands.forEach(b => { %>
+
+                <option
+                  value="<%= b._id %>"
+                  <%= product.brand?.toString() === b._id.toString() ? 'selected' : '' %>
+                >
+                  <%= b.name %>
+                </option>
+
+              <% }) %>
+
+            </select>
+          </div>
+
+          <!-- VARIANTS -->
+          <div class="card">
+            <h4>Variants</h4>
+
+            <div id="variantContainer">
+
+              <% product.variants.forEach(v => { %>
+
+                <div class="variant-row">
+
+                  <div class="variant-fields">
+
+                    <input
+                      name="color[]"
+                      value="<%= v.color %>"
+                      placeholder="Color"
+                    >
+
+                    <input
+                      name="ram[]"
+                      value="<%= v.ram %>"
+                      placeholder="RAM"
+                    >
+
+                    <input
+                      name="rom[]"
+                      value="<%= v.rom %>"
+                      placeholder="ROM"
+                    >
+
+                    <div class="variant-field">
+                      <input
+                        name="stock[]"
+                        value="<%= v.stock %>"
+                        placeholder="Stock"
+                      >
+                      <small class="error-text stock-error"></small>
+                    </div>
+
+                    <div class="variant-field">
+                      <input
+                        name="variantPrice[]"
+                        value="<%= v.price %>"
+                        placeholder="Price"
+                      >
+                      <small class="error-text price-error"></small>
+                    </div>
+
+                  </div>
+
+                  <div class="variant-image-box">
+                    <label>Variant Image</label>
+
+                 <img
+  src="<%= v.variantImage && v.variantImage.startsWith('http')
+    ? v.variantImage
+    : (v.variantImage ? '/uploads/' + v.variantImage : '/images/no-image.png') %>"
+  class="variant-preview"
+  style="width:80px; margin-bottom:5px;"
+  alt="Variant Image"
 >
 
-<div class="product-layout">
+                    <input
+                      type="file"
+                      name="variantImages"
+                      onchange="previewVariantImage(event, this)"
+                    >
+                  </div>
 
-<!-- LEFT SIDE -->
+                  <div class="variant-actions">
+                    <button
+                      type="button"
+                      onclick="removeVariant(this)"
+                    >
+                      Remove
+                    </button>
+                  </div>
 
-<div class="left-section">
+                </div>
 
-<!-- General Info -->
+              <% }) %>
 
-<div class="card">
+            </div>
 
-<h4>General Information</h4>
+            <button
+              type="button"
+              onclick="addVariant()"
+            >
+              + Add Variant
+            </button>
 
-<label>Product Name</label>
+          </div>
 
-<input 
-type="text" 
-name="name"
-value="<%= product.name %>"
->
+        </div>
 
-<label>Description</label>
+      </div>
 
-<textarea 
-name="description"><%= product.description %></textarea>
+      <div class="submit-btn">
+        <button type="submit">
+          Update
+        </button>
+      </div>
 
+    </form>
+
+  </div>
 </div>
 
+<!-- VALIDATION -->
+<script type="module">
+  import { validateProductForm } from "/js/validation.js";
+  validateProductForm("editProductForm");
+</script>
 
-<!-- Pricing -->
+<!-- CROP MODAL -->
+<div id="cropModal" class="crop-modal">
 
-<div class="card">
+  <div class="crop-container">
 
-<h4>Pricing</h4>
+    <div class="crop-header">
+      <h3>Crop Image</h3>
 
-<label>Base Price</label>
+      <button
+        type="button"
+        class="close-btn"
+        onclick="closeCrop()"
+      >
+        ×
+      </button>
+    </div>
 
-<input 
-type="number"
-name="price"
-value="<%= product.price %>"
->
+    <div class="crop-body">
+      <img id="cropImage">
+    </div>
 
-<label>Discount Percentage (%)</label>
+    <div class="crop-footer">
 
-<input 
-type="number"
-name="discount"
-value="<%= product.discount %>"
->
+      <button
+        type="button"
+        class="btn-cancel"
+        onclick="closeCrop()"
+      >
+        Cancel
+      </button>
 
-</div>
+      <button
+        type="button"
+        class="btn-crop"
+        onclick="cropImageHandler()"
+      >
+        Crop & Save
+      </button>
 
+    </div>
 
-<!-- General Images -->
-
-<div class="card">
-
-<h4>General Photos</h4>
-
-<div class="image-upload-grid">
-
-<% if(product.images){ %>
-
-<% product.images.forEach((img,index)=>{ %>
-
-<div class="image-upload-box">
-
-<img 
-src="/<%= img %>" 
-class="preview-img"
->
-
-<input type="file" name="images">
-
-</div>
-
-<% }) %>
-
-<% } %>
+  </div>
 
 </div>
-
-</div>
-
-
-<!-- Variants -->
-
-<div class="card">
-
-<h4>Variants</h4>
-
-<div id="variantContainer">
-
-<% product.variants.forEach((variant,index)=>{ %>
-
-<div class="variant-row">
-
-<input 
-name="color[]" 
-value="<%= variant.color %>" 
-placeholder="Color"
->
-
-<input 
-name="ram[]" 
-value="<%= variant.ram %>" 
-placeholder="RAM"
->
-
-<input 
-name="rom[]" 
-value="<%= variant.rom %>" 
-placeholder="ROM"
->
-
-<input 
-type="number"
-name="stock[]" 
-value="<%= variant.stock %>" 
-placeholder="Stock"
->
-
-<input 
-type="number"
-name="variantPrice[]" 
-value="<%= variant.price %>" 
-placeholder="Price"
->
-
-<div class="variant-image-box">
-
-<% if(variant.variantImage){ %>
-
-<img 
-src="/<%= variant.variantImage %>"
-class="variant-preview-img"
->
-
-<% } %>
-
-<input 
-type="file" 
-name="variantImages"
->
-
-</div>
-
-<button 
-type="button" 
-onclick="removeVariant(this)"
->
-Remove
-</button>
-
-</div>
-
-<% }) %>
-
-</div>
-
-<button 
-type="button" 
-onclick="addVariant()" 
-class="btn-add-variant"
->
-+ Add Variant
-</button>
-
-</div>
-
-
-</div>
-
-
-<!-- RIGHT SIDE -->
-
-<div class="right-section">
-
-<!-- Category -->
-
-<div class="card">
-
-<h4>Category</h4>
-
-<select name="category">
-
-<% categories.forEach(cat => { %>
-
-<option 
-value="<%= cat._id %>"
-<%= product.category.toString() === cat._id.toString() ? 'selected' : '' %>
->
-
-<%= cat.name %>
-
-</option>
-
-<% }) %>
-
-</select>
-
-</div>
-
-
-<!-- Brand -->
-
-<div class="card">
-
-<h4>Brand</h4>
-
-<select name="brand">
-
-<option value="">Select Brand</option>
-
-<% brands.forEach(brand => { %>
-
-<option 
-value="<%= brand._id %>"
-<%= product.brand && product.brand.toString() === brand._id.toString() ? 'selected' : '' %>
->
-
-<%= brand.name %>
-
-</option>
-
-<% }) %>
-
-</select>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="submit-btn">
-
-<button type="submit">
-Save Product
-</button>
-
-</div>
-
-
-</form>
-
-</div>
-
-</div>
-
 
 <script>
+let cropper;
+let currentInput;
+let currentIndex;
 
-function addVariant(){
+function previewImage(event, index) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-const html=`
+  const allowed = ["image/jpeg", "image/png", "image/webp"];
 
-<div class="variant-row">
+  if (!allowed.includes(file.type)) {
+    alert("Only JPG, PNG and WEBP allowed");
+    event.target.value = "";
+    return;
+  }
 
-<input name="color[]" placeholder="Color">
-<input name="ram[]" placeholder="RAM">
-<input name="rom[]" placeholder="ROM">
-<input name="stock[]" placeholder="Stock">
-<input name="variantPrice[]" placeholder="Price">
+  currentInput = event.target;
+  currentIndex = index;
 
-<div class="variant-image-box">
-<input type="file" name="variantImages">
-</div>
+  const reader = new FileReader();
 
-<button type="button" onclick="removeVariant(this)">
-Remove
-</button>
+  reader.onload = function () {
+    const modal = document.getElementById("cropModal");
+    const image = document.getElementById("cropImage");
 
-</div>
+    modal.style.display = "flex";
+    image.src = reader.result;
 
-`
+    if (cropper) {
+      cropper.destroy();
+    }
 
-document
-.getElementById("variantContainer")
-.insertAdjacentHTML("beforeend",html)
+    cropper = new Cropper(image, {
+      aspectRatio: 1,
+      viewMode: 1
+    });
+  };
 
+  reader.readAsDataURL(file);
 }
 
-function removeVariant(btn){
-btn.parentElement.remove()
+function previewVariantImage(event, input) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const allowed = ["image/jpeg", "image/png", "image/webp"];
+
+  if (!allowed.includes(file.type)) {
+    alert("Only JPG, PNG and WEBP allowed");
+    input.value = "";
+    return;
+  }
+
+  currentInput = input;
+  currentIndex = null;
+
+  const reader = new FileReader();
+
+  reader.onload = function () {
+    const modal = document.getElementById("cropModal");
+    const image = document.getElementById("cropImage");
+
+    modal.style.display = "flex";
+    image.src = reader.result;
+
+    if (cropper) {
+      cropper.destroy();
+    }
+
+    cropper = new Cropper(image, {
+      aspectRatio: 1,
+      viewMode: 1
+    });
+  };
+
+  reader.readAsDataURL(file);
 }
 
+function cropImageHandler() {
+  if (!cropper) return;
+
+  const canvas = cropper.getCroppedCanvas({
+    width: 500,
+    height: 500
+  });
+
+  canvas.toBlob(function (blob) {
+    const file = new File([blob], "cropped-image.jpg", {
+      type: "image/jpeg"
+    });
+
+    const dt = new DataTransfer();
+    dt.items.add(file);
+
+    currentInput.files = dt.files;
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+      if (currentIndex !== null) {
+        const preview = document.getElementById(`preview${currentIndex}`);
+        if (preview) {
+          preview.src = reader.result;
+        }
+      } else {
+        const preview = currentInput
+          .closest(".variant-image-box")
+          .querySelector(".variant-preview");
+
+        if (preview) {
+          preview.src = reader.result;
+          preview.style.display = "block";
+        }
+      }
+    };
+
+    reader.readAsDataURL(file);
+    closeCrop();
+  }, "image/jpeg");
+}
+
+function closeCrop() {
+  document.getElementById("cropModal").style.display = "none";
+
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+}
+
+function addVariant() {
+  const html = `
+    <div class="variant-row">
+
+      <div class="variant-fields">
+
+        <input name="color[]" placeholder="Color">
+        <input name="ram[]" placeholder="RAM">
+        <input name="rom[]" placeholder="ROM">
+
+        <div class="variant-field">
+          <input name="stock[]" placeholder="Stock">
+          <small class="error-text stock-error"></small>
+        </div>
+
+        <div class="variant-field">
+          <input name="variantPrice[]" placeholder="Price">
+          <small class="error-text price-error"></small>
+        </div>
+
+      </div>
+
+      <div class="variant-image-box">
+        <label>Variant Image</label>
+
+        <input
+          type="file"
+          name="variantImages"
+          onchange="previewVariantImage(event, this)"
+        >
+
+        <img
+          class="variant-preview"
+          style="display:none; width:80px; margin-top:5px;"
+        >
+      </div>
+
+      <div class="variant-actions">
+        <button
+          type="button"
+          onclick="removeVariant(this)"
+        >
+          Remove
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById("variantContainer")
+    .insertAdjacentHTML("beforeend", html);
+}
+
+function removeVariant(button) {
+  button.closest(".variant-row").remove();
+}
 </script>

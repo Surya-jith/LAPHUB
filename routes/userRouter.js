@@ -4,7 +4,9 @@ import passport from "passport";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import upload from "../middlewares/uploadMiddleware.js";
 import cartController from "../controllers/user/cartController.js"
-
+import checkoutController from "../controllers/user/checkoutController.js";
+import orderController from "../controllers/user/orderController.js";
+import wishlistController from "../controllers/user/wishlistController.js";
 const router = express.Router();
 
 
@@ -86,4 +88,54 @@ router.post("/add-to-cart", cartController.addToCart)
 router.get("/cart/increase/:id", cartController.increaseQty)
 router.get("/cart/decrease/:id", cartController.decreaseQty)
 router.get("/remove-cart/:id", cartController.removeCartItem)
+
+//checkout
+router.get("/checkout", checkoutController.loadCheckout);
+router.get("/edit-address/:id", userController.loadEditAddress);
+router.get("/add-address", userController.loadAddAddress);
+router.post("/add-address", userController.saveAddress);
+router.post( "/buy-now",authMiddleware.isUserLoggedIn,checkoutController.buyNow);
+router.post("/place-order",authMiddleware.isUserLoggedIn,checkoutController.placeOrder);
+
+// ORDER MANAGEMENT
+
+router.get(
+  "/orders",
+  authMiddleware.isUserLoggedIn,
+  orderController.loadOrders
+);
+
+router.get(
+  "/orders/:id",
+  authMiddleware.isUserLoggedIn,
+  orderController.loadOrderDetails
+);
+router.get(
+  "/order-success/:id",
+  authMiddleware.isUserLoggedIn,
+  checkoutController.loadOrderSuccess
+);
+router.post(
+  "/orders/:id/cancel",
+  authMiddleware.isUserLoggedIn,
+  orderController.cancelOrder
+);
+
+router.post(
+  "/orders/:orderId/items/:itemId/cancel",
+  authMiddleware.isUserLoggedIn,
+  orderController.cancelOrderItem
+);
+router.post(
+  "/orders/:id/return",
+  authMiddleware.isUserLoggedIn,
+  orderController.returnOrder);
+router.get("/orders/:id/invoice",authMiddleware.isUserLoggedIn,orderController.downloadInvoice);
+
+// WISHLIST
+router.get( "/wishlist",authMiddleware.isUserLoggedIn,wishlistController.loadWishlist);
+router.post("/wishlist/add/:productId",authMiddleware.isUserLoggedIn,wishlistController.addToWishlist);
+router.get("/wishlist/remove/:productId",authMiddleware.isUserLoggedIn,wishlistController.removeFromWishlist);
+router.post("/wishlist/move-to-cart/:productId", authMiddleware.isUserLoggedIn,wishlistController.moveToCart);
+
 export default router;    

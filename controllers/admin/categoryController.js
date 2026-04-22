@@ -1,21 +1,25 @@
 import categoryService from "../../services/admin/categoryService.js"
 
 
-const loadCategory = async (req,res)=>{
+const loadCategory = async (req, res) => {
   try {
 
-    const page = parseInt(req.query.page) || 1
-    const search = req.query.search || ""
+    const page = parseInt(req.query.page) || 1;
+    const search = req.query.search || "";
+    const error = req.query.error || null;
 
-    const data = await categoryService.getCategories(page,search)
+    const data = await categoryService.getCategories(page, search);
 
-    res.render("admin/category", data)
+    res.render("admin/category", {
+      ...data,
+      error
+    });
 
   } catch (err) {
-    console.log("Load Category Error:", err)
-    res.redirect("/admin/category")
+    console.log("Load Category Error:", err);
+    res.redirect("/admin/category");
   }
-}
+};
 
 
 // Load Add Category Page
@@ -32,20 +36,30 @@ const loadAddCategory = async (req,res)=>{
 
 
 // Add Category
-const addCategory = async (req,res)=>{
+const addCategory = async (req, res) => {
   try {
 
-    const { name } = req.body
+    const { name } = req.body;
 
-    await categoryService.createCategory(name)
+    await categoryService.createCategory(name);
 
-    res.redirect("/admin/category")
+    res.redirect("/admin/category");
 
   } catch (err) {
-    console.log("Add Category Error:", err)
-    res.redirect("/admin/category")
+   
+
+    // 🔥 SHOW ERROR TO USER
+    const page = 1;
+    const search = "";
+
+    const data = await categoryService.getCategories(page, search);
+
+    res.render("admin/category", {
+      ...data,
+      error: err.message
+    });
   }
-}
+};
 
 
 // Load Edit Category Page
@@ -66,20 +80,26 @@ const loadEditCategory = async (req,res)=>{
 
 
 // Edit Category
-const editCategory = async (req,res)=>{
+const editCategory = async (req, res) => {
   try {
 
-    const { id, name } = req.body
+    const { id, name } = req.body;
 
-    await categoryService.updateCategory(id, name)
+    await categoryService.updateCategory(id, name);
 
-    res.redirect("/admin/category")
+    res.redirect("/admin/category");
 
   } catch (err) {
-    console.log("Edit Category Error:", err)
-    res.redirect("/admin/category")
+    console.log("Edit Category Error:", err);
+
+    const category = await categoryService.getCategoryById(req.body.id);
+
+    res.render("admin/editCategory", {
+      category,
+      error: err.message
+    });
   }
-}
+};
 
 
 const toggleCategory = async (req,res)=>{

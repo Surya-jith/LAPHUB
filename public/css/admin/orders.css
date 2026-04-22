@@ -1,0 +1,265 @@
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f6fa;
+}
+
+/* MAIN CONTENT */
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+}
+
+/* PAGE HEADER */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.breadcrumb {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* FILTER SECTION */
+
+.filter-section {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+/* STATUS FILTER */
+
+.status-filter {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-filter a {
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.status-filter a:hover,
+.status-filter a.active {
+  background: #4a6cf7;
+  color: #ffffff;
+}
+
+/* SEARCH */
+
+.search-box input {
+  min-width: 240px;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+
+/* SORT */
+
+.sort-box select {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+}
+
+/* ACTION BUTTONS */
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.filter-btn {
+  background: #4a6cf7;
+  color: #ffffff;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.clear-btn {
+  text-decoration: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  border: 1px solid #4a6cf7;
+  color: #4a6cf7;
+  font-weight: 600;
+  background: #fff;
+}
+
+/* TABLE CARD */
+
+.table-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.table-header h3 {
+  margin: 0 0 20px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* TABLE */
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders-table thead th {
+  text-align: left;
+  padding: 16px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.orders-table tbody td {
+  padding: 18px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+  color: #111827;
+  vertical-align: middle;
+}
+
+.orders-table tbody tr:hover {
+  background: #fafafa;
+}
+
+/* BADGES */
+
+.payment-badge {
+  background: #eef2ff;
+  color: #4a6cf7;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-badge {
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* STATUS COLORS */
+
+.status-badge.pending {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.status-badge.shipped {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.status-badge.delivered {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.status-badge.cancelled {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.status-badge.out-for-delivery {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+/* VIEW BUTTON */
+
+.view-btn {
+  text-decoration: none;
+  background: #4a6cf7;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* EMPTY */
+
+.empty-row {
+  text-align: center;
+  padding: 40px !important;
+  color: #9ca3af;
+}
+
+/* PAGINATION */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.pagination a {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #374151;
+  font-weight: 600;
+}
+
+.pagination a:hover,
+.pagination .active-page {
+  background: #4a6cf7;
+  color: #ffffff;
+  border-color: #4a6cf7;
+}

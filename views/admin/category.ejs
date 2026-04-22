@@ -9,6 +9,13 @@
   <!-- MAIN CONTENT -->
   <div class="main-content">
 
+    <!-- 🔥 ERROR MESSAGE -->
+    <% if (error) { %>
+      <div class="error-box">
+        <%= error %>
+      </div>
+    <% } %>
+
     <h2>Categories</h2>
 
     <!-- TOP BAR -->
@@ -33,7 +40,7 @@
 
     </div>
 
-    <!-- TABLE CARD -->
+    <!-- TABLE -->
     <div class="table-container">
 
       <table>
@@ -49,7 +56,7 @@
 
         <tbody>
 
-          <% if(categories.length > 0){ %>
+          <% if (categories && categories.length > 0) { %>
 
             <% categories.forEach(cat => { %>
 
@@ -58,14 +65,16 @@
                 <td><%= cat.name %></td>
 
                 <td>
-                  <% if(cat.isListed){ %>
+                  <% if (cat.isListed) { %>
                     <span class="status-listed">Listed</span>
                   <% } else { %>
                     <span class="status-unlisted">Unlisted</span>
                   <% } %>
                 </td>
 
-                <td><%= cat.createdAt.toDateString() %></td>
+                <td>
+                  <%= new Date(cat.createdAt).toDateString() %>
+                </td>
 
                 <td class="action-btns">
 
@@ -77,14 +86,14 @@
                   </a>
 
                   <!-- TOGGLE -->
-                  <form action="/admin/toggle-category/<%= cat._id %>" method="POST">
+                  <form action="/admin/toggle-category/<%= cat._id %>" method="POST" style="display:inline;">
                     <button type="submit" class="btn-toggle">
                       <%= cat.isListed ? "Unlist" : "List" %>
                     </button>
                   </form>
 
                   <!-- DELETE -->
-                  <form action="/admin/delete-category/<%= cat._id %>" method="POST">
+                  <form action="/admin/delete-category/<%= cat._id %>" method="POST" style="display:inline;">
                     <button 
                       type="submit" 
                       class="btn-delete" 
@@ -118,14 +127,17 @@
     <!-- PAGINATION -->
     <div class="pagination">
 
-      <% for(let i = 1; i <= totalPages; i++){ %>
+      <% if (totalPages > 1) { %>
 
-        <a 
-          href="/admin/category?page=<%= i %>&search=<%= search %>" 
-          class="<%= currentPage === i ? 'active-page' : '' %>"
-        >
-          <%= i %>
-        </a>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+
+          <a 
+            href="/admin/category?page=<%= i %>&search=<%= search %>" 
+            class="<%= currentPage === i ? 'active-page' : '' %>">
+            <%= i %>
+          </a>
+
+        <% } %>
 
       <% } %>
 

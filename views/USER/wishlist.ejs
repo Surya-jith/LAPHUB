@@ -1,0 +1,157 @@
+<%- include('../partials/header', { user: user }) %>
+
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/user/wishlist.css">
+
+<% if (error) { %>
+  <div class="error-box">
+    <%= error %>
+  </div>
+<% } %>
+
+<section class="wishlist-page">
+
+  <div class="page-layout">
+
+    <%- include('../partials/userSidebar', {
+      activePage: 'wishlist'
+    }) %>
+
+    <div class="main-content">
+
+      <div class="wishlist-content">
+
+        <div class="wishlist-header">
+          <h2>Wishlist</h2>
+        </div>
+
+        <% if (wishlistItems && wishlistItems.length > 0) { %>
+
+          <div class="wishlist-table">
+
+            <!-- HEADER -->
+            <div class="wishlist-head">
+              <div>Products</div>
+              <div>Price</div>
+              <div>Status</div>
+              <div>Action</div>
+              <div></div>
+            </div>
+
+            <!-- ITEMS -->
+            <% wishlistItems.forEach(item => { %>
+
+              <div class="wishlist-row">
+
+                <!-- PRODUCT -->
+                <div class="wishlist-product">
+
+                  <img
+                    src="<%= item.product?.images?.[0] || '/images/no-image.png' %>"
+                    alt="product"
+                  >
+
+                  <h4>
+                    <%= item.product?.name || "Product unavailable" %>
+                  </h4>
+
+                </div>
+
+                <!-- PRICE -->
+                <div class="price-box">
+
+                  <% if (item.product?.regularPrice) { %>
+                    <span class="old-price">
+                      ₹<%= item.product.regularPrice %>
+                    </span>
+                  <% } %>
+
+                 <span class="new-price">
+  ₹<%= item.product?.variants?.[0]?.price || 0 %>
+</span>
+
+                </div>
+
+                <!-- STOCK STATUS -->
+                <div>
+
+                  <% if (
+                    item.product &&
+                    item.product.variants &&
+                    item.product.variants.length > 0 &&
+                    item.product.variants.some(v => v.stock > 0)
+                  ) { %>
+
+                    <span class="in-stock">
+                      In Stock
+                    </span>
+
+                  <% } else { %>
+
+                    <span class="out-stock">
+                      Out of Stock
+                    </span>
+
+                  <% } %>
+
+                </div>
+
+                <!-- MOVE TO CART -->
+                <div>
+
+                  <form
+                    action="/wishlist/move-to-cart/<%= item.product._id %>"
+                    method="POST"
+                  >
+
+                    <button
+                      type="submit"
+                      class="move-btn"
+                      <%= (
+                        !item.product ||
+                        !item.product.variants ||
+                        !item.product.variants.some(v => v.stock > 0)
+                      ) ? "disabled" : "" %>
+                    >
+                      Add to Cart
+                    </button>
+
+                  </form>
+
+                </div>
+
+                <!-- REMOVE -->
+                <div>
+
+                  <a
+                    href="/wishlist/remove/<%= item.product._id %>"
+                    class="remove-btn"
+                  >
+                    ×
+                  </a>
+
+                </div>
+
+              </div>
+
+            <% }) %>
+
+          </div>
+
+        <% } else { %>
+
+          <div class="empty-wishlist">
+            No products in wishlist
+          </div>
+
+        <% } %>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<%- include('../partials/footer') %>

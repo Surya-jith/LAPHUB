@@ -318,3 +318,100 @@ display:flex;
 align-items:center;
 gap:12px;
 }
+/* =================================
+USER PROFILE SIDEBAR
+================================= */
+
+.page-layout {
+  max-width: 1200px;
+  margin: 40px auto;
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.profile-sidebar {
+  width: 300px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: fit-content;
+}
+
+.profile-sidebar a {
+  text-decoration: none;
+  color: #111827;
+  font-size: 17px;
+  font-weight: 500;
+  padding: 18px 22px;
+  border-radius: 12px;
+  transition: 0.3s;
+}
+
+.profile-sidebar a:hover {
+  background: #f3f6ff;
+  color: #2f4da3;
+}
+
+.profile-sidebar a.active {
+  background: #4a63e7;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* =================================
+MAIN CONTENT AREA
+================================= */
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* =================================
+RESPONSIVE
+================================= */
+
+@media (max-width: 992px) {
+  .page-layout {
+    flex-direction: column;
+  }
+
+  .profile-sidebar {
+    width: 100%;
+  }
+
+  .main-content {
+    width: 100%;
+  }
+}
+.wishlist-icon {
+  font-size: 24px;
+  text-decoration: none;
+  color: #374151;
+  transition: 0.3s;
+}
+
+.wishlist-icon:hover {
+  color: #4a63e7;
+}
+.page-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.profile-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
