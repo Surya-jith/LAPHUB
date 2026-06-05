@@ -49,6 +49,7 @@ const orderSchema = new mongoose.Schema({
           "Processing",
           "Shipped",
           "Delivered",
+          "Return Requested",
           "Cancelled",
           "Returned"
         ],
@@ -58,41 +59,41 @@ const orderSchema = new mongoose.Schema({
   ],
 
   address: {
-  firstName: {
-    type: String,
-    required: true
-  },
+    firstName: {
+      type: String,
+      required: true
+    },
 
-  lastName: {
-    type: String,
-    required: true
-  },
+    lastName: {
+      type: String,
+      required: true
+    },
 
-  phone: {
-    type: String,
-    required: true
-  },
+    phone: {
+      type: String,
+      required: true
+    },
 
-  address: {
-    type: String,
-    required: true
-  },
+    address: {
+      type: String,
+      required: true
+    },
 
-  city: {
-    type: String,
-    required: true
-  },
+    city: {
+      type: String,
+      required: true
+    },
 
-  state: {
-    type: String,
-    required: true
-  },
+    state: {
+      type: String,
+      required: true
+    },
 
-  pincode: {
-    type: String,
-    required: true
-  }
-},
+    pincode: {
+      type: String,
+      required: true
+    }
+  },
 
   paymentMethod: {
     type: String,
@@ -105,6 +106,20 @@ const orderSchema = new mongoose.Schema({
     enum: ["Pending", "Paid", "Failed"],
     default: "Pending"
   },
+  razorpayOrderId: {
+  type: String,
+  default: ""
+},
+
+razorpayPaymentId: {
+  type: String,
+  default: ""
+},
+
+razorpaySignature: {
+  type: String,
+  default: ""
+},
 
   subtotal: {
     type: Number,
@@ -112,6 +127,11 @@ const orderSchema = new mongoose.Schema({
   },
 
   discount: {
+    type: Number,
+    default: 0
+  },
+
+  gst: {
     type: Number,
     default: 0
   },
@@ -133,6 +153,7 @@ const orderSchema = new mongoose.Schema({
       "Processing",
       "Shipped",
       "Delivered",
+      "Return Requested",
       "Cancelled",
       "Returned"
     ],

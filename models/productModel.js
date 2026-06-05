@@ -38,7 +38,39 @@ const productSchema = new mongoose.Schema({
   offerPrice: {
     type: Number
   },
+/*
+=================================
+PRODUCT OFFER
+=================================
+*/
 
+productOffer: {
+  percentage: {
+    type: Number,
+    default: 0
+  },
+
+  expiryDate: {
+    type: Date,
+    default: null
+  }
+},
+
+/*
+=================================
+FINAL BEST OFFER
+=================================
+*/
+
+finalOffer: {
+  type: Number,
+  default: 0
+},
+
+finalPrice: {
+  type: Number,
+  default: 0
+},
 
   variants: [
     {
@@ -86,6 +118,10 @@ const productSchema = new mongoose.Schema({
       }
     }
   ],
+  isBlocked: {
+  type: Boolean,
+  default: false
+},
 
 
   isDeleted: {

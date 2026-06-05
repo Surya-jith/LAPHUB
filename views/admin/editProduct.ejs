@@ -86,12 +86,29 @@
             >
             <small class="error-text" id="priceError"></small>
 
-            <label>Discount</label>
-            <input
-              type="number"
-              name="discount"
-              value="<%= product.discount %>"
-            >
+            <label>Product Offer (%)</label>
+
+<input
+  type="number"
+  name="discount"
+  min="0"
+  max="90"
+  value="<%= product.productOffer?.percentage || 0 %>"
+>
+
+<label>Offer Expiry Date</label>
+
+<input
+  type="date"
+  name="offerExpiryDate"
+  value="<%=
+    product.productOffer?.expiryDate
+      ? new Date(
+          product.productOffer.expiryDate
+        ).toISOString().split('T')[0]
+      : ''
+  %>"
+>
           </div>
 
           <!-- PRODUCT IMAGES -->
@@ -265,6 +282,7 @@
                     <input
                       type="file"
                       name="variantImages"
+                      accept= ".jpg,.png,.jpeg,.webp" 
                       onchange="previewVariantImage(event, this)"
                     >
                   </div>

@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
-<title>Admin Dashboard</title>
-<link rel="stylesheet" href="/css/admin/sidebar.css">
-<link rel="stylesheet" href="/css/admin/dashboard.css">
+  <title>
+    Admin Dashboard
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/admin/sidebar.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="/css/admin/dashboard.css"
+  >
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -12,37 +25,303 @@
 
 <div class="admin-container">
 
-<!-- Sidebar -->
-<%- include('./partials/sidebar') %>
+  <!-- SIDEBAR -->
+  <%- include('./partials/sidebar') %>
 
-<!-- Main Content -->
+  <!-- MAIN -->
+  <div class="main-content">
 
-<div class="main-content">
+    <!-- HEADER -->
+    <div class="dashboard-header">
 
-<h2>Dashboard</h2>
+      <h2>
+        Dashboard Analytics
+      </h2>
 
-<div class="stats">
+      <!-- FILTER -->
+      <form
+        method="GET"
+        action="/admin/dashboard"
+      >
 
-<div class="card">
-<h3>Today's Sales</h3>
-<p>₹100,999</p>
+        <select
+          name="filter"
+          onchange="this.form.submit()"
+        >
+
+          <option
+            value="weekly"
+            <%= filter === "weekly"
+              ? "selected"
+              : ""
+            %>
+          >
+            Weekly
+          </option>
+
+          <option
+            value="monthly"
+            <%= filter === "monthly"
+              ? "selected"
+              : ""
+            %>
+          >
+            Monthly
+          </option>
+
+          <option
+            value="yearly"
+            <%= filter === "yearly"
+              ? "selected"
+              : ""
+            %>
+          >
+            Yearly
+          </option>
+
+        </select>
+
+      </form>
+
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+
+      <!-- REVENUE -->
+      <div class="stat-card">
+
+        <h4>
+          Total Revenue
+        </h4>
+
+        <h2>
+          ₹<%= totalRevenue.toFixed(2) %>
+        </h2>
+
+      </div>
+
+      <!-- ORDERS -->
+      <div class="stat-card">
+
+        <h4>
+          Total Orders
+        </h4>
+
+        <h2>
+          <%= totalOrders %>
+        </h2>
+
+      </div>
+
+      <!-- USERS -->
+      <div class="stat-card">
+
+        <h4>
+          Total Users
+        </h4>
+
+        <h2>
+          <%= totalUsers %>
+        </h2>
+
+      </div>
+
+    </div>
+
+    <!-- CHART -->
+    <div class="chart-card">
+
+      <h3>
+        Sales Analytics
+      </h3>
+
+      <canvas id="salesChart"></canvas>
+
+    </div>
+
+    <!-- TABLES -->
+    <div class="analytics-grid">
+
+      <!-- PRODUCTS -->
+      <div class="analytics-card">
+
+        <h3>
+          Best Selling Products
+        </h3>
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Product</th>
+              <th>Sold</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <% bestProducts.forEach(item => { %>
+
+              <tr>
+
+                <td>
+                  <%= item.product.name %>
+                </td>
+
+                <td>
+                  <%= item.totalSold %>
+                </td>
+
+              </tr>
+
+            <% }) %>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="analytics-card">
+
+        <h3>
+          Best Selling Categories
+        </h3>
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Category</th>
+              <th>Sold</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <% bestCategories.forEach(item => { %>
+
+              <tr>
+
+                <td>
+                  <%= item.category.name %>
+                </td>
+
+                <td>
+                  <%= item.totalSold %>
+                </td>
+
+              </tr>
+
+            <% }) %>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <!-- BRANDS -->
+      <div class="analytics-card">
+
+        <h3>
+          Best Selling Brands
+        </h3>
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Brand</th>
+              <th>Sold</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <% bestBrands.forEach(item => { %>
+
+              <tr>
+
+                <td>
+                  <%= item.brand.name %>
+                </td>
+
+                <td>
+                  <%= item.totalSold %>
+                </td>
+
+              </tr>
+
+            <% }) %>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
 
-<div class="card">
-<h3>Today's Revenue</h3>
-<p>₹30,000</p>
-</div>
+<script>
 
-<div class="card">
-<h3>Total Users</h3>
-<p>20390</p>
-</div>
+const salesChart =
+  <%- JSON.stringify(salesChart) %>;
 
-</div>
+const labels =
+  salesChart.map(
+    item => item._id
+  );
 
-</div>
+const sales =
+  salesChart.map(
+    item => item.sales
+  );
 
-</div>
+new Chart(
+
+  document.getElementById(
+    "salesChart"
+  ),
+
+  {
+
+    type: "line",
+
+    data: {
+
+      labels,
+
+      datasets: [
+
+        {
+
+          label: "Sales",
+
+          data: sales,
+
+          borderWidth: 2,
+
+          tension: 0.3
+        }
+      ]
+    }
+  }
+);
+
+</script>
 
 </body>
 </html>

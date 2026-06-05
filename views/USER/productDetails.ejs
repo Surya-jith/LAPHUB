@@ -1,9 +1,16 @@
-```ejs
-<%- include('../partials/header') %>
 
+<%- include('../partials/header') %>
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/user/productDetails.css">
-
+<% if (error) { %>
+  <div class="error-message">
+    <%= error %>
+  </div>
+<% } %>
 <section class="product-details">
 
 <div class="container">
@@ -130,16 +137,57 @@ Starting Price
 
 </div>
 
-<!-- Coupon -->
-<div class="coupon-box">
-<span class="coupon-title">
-Available Coupon
-</span>
+<!-- COUPONS -->
 
-<div class="coupon">
-SAVE10 - Extra 10% Off
+<% if (
+  availableCoupons &&
+  availableCoupons.length > 0
+) { %>
+
+<div class="coupon-box">
+
+  <span class="coupon-title">
+    Available Coupons
+  </span>
+
+  <div class="coupon-list">
+
+    <% availableCoupons.forEach(coupon => { %>
+
+      <div class="coupon">
+
+        <strong>
+          <%= coupon.code %>
+        </strong>
+
+        -
+
+        <% if (
+          coupon.discountType
+          === "percentage"
+        ) { %>
+
+          Extra
+          <%= coupon.discountValue %>%
+          Off
+
+        <% } else { %>
+
+          Flat ₹
+          <%= coupon.discountValue %>
+          Off
+
+        <% } %>
+
+      </div>
+
+    <% }) %>
+
+  </div>
+
 </div>
-</div>
+
+<% } %>
 
 <!-- Color Variant -->
 <div class="variant-section">
@@ -268,7 +316,7 @@ id="buyNowQty"
 value="1"
 >
 
-<% if(totalStock > 0){ %>
+<% if(totalStock > 0 && !product.isBlocked){ %>
 
 <button type="submit" class="buy-now">
 Buy Now
@@ -277,7 +325,7 @@ Buy Now
 <% } else { %>
 
 <button class="buy-now disabled" disabled>
-Out of Stock
+<%= product.isBlocked ? "Currently Unavailable" : "Out of Stock" %>
 </button>
 
 <% } %>
@@ -301,7 +349,7 @@ id="variantId"
 
 <div class="cart-section">
 
-<% if(totalStock > 0){ %>
+<% if(totalStock > 0 && !product.isBlocked){ %>
 
 <button type="submit" class="add-cart">
 Add To Cart
@@ -310,7 +358,7 @@ Add To Cart
 <% } else { %>
 
 <button class="add-cart disabled" disabled>
-Out of Stock
+<%= product.isBlocked ? "Currently Unavailable" : "Out of Stock" %>
 </button>
 
 <% } %>
@@ -551,4 +599,3 @@ syncBuyNowData()
 </script>
 
 <%- include('../partials/footer') %>
-```

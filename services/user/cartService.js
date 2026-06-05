@@ -133,7 +133,15 @@ i => i.product.toString() === productId
 
 const product = await Product.findById(productId)
 
+if (product.isBlocked) {
+throw new Error("This product is currently unavailable")
+}
+
 const variant = product.variants.id(item.variant)
+
+ if (item.quantity >= MAX_LIMIT) {
+    throw new Error(`Maximum ${MAX_LIMIT} items allowed`);
+  }
 
 if(item.quantity + 1 > variant.stock){
 throw new Error("Stock limit reached")

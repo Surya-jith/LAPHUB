@@ -2,29 +2,26 @@ import productService from "../../services/admin/productService.js"
 
 
 // Load Product Management Page
-const loadProducts = async (req,res)=>{
+const loadProducts = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1
+    const selectedCategory = req.query.category || ""
+    const search = req.query.search?.trim() || ""
 
-try{
+    const data = await productService.getProducts({
+      page,
+      selectedCategory,
+      search
+    })
 
-const page = parseInt(req.query.page) || 1
-const selectedCategory = req.query.category || ""
+    res.render("admin/productManagement", {
+      ...data,
+      search
+    })
 
-const data = await productService.getProducts({
-page,
-selectedCategory
-})
-
-
-res.render("admin/productManagement",{
-...data
-})
-
-}catch(error){
-
-console.log(error)
-
-}
-
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 
@@ -174,6 +171,14 @@ console.log(error)
 
 }
 
+const toggleProductBlock = async (req, res) => {
+  try {
+    await productService.toggleProductBlock(req.params.id)
+    res.redirect("/admin/products")
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 
 export default {
@@ -183,6 +188,7 @@ loadAddProduct,
 addProduct,
 loadEditProduct,
 editProduct,
-deleteProduct
+deleteProduct,
+toggleProductBlock
 
 }

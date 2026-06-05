@@ -1,5 +1,8 @@
 <%- include('../partials/header', { user: user }) %>
-
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/user/wishlist.css">
 
@@ -26,8 +29,11 @@
         </div>
 
         <% if (wishlistItems && wishlistItems.length > 0) { %>
+          
 
-          <div class="wishlist-table">
+          <div class="table-wrapper">
+
+  <div class="wishlist-table">
 
             <!-- HEADER -->
             <div class="wishlist-head">
@@ -136,6 +142,7 @@
 
             <% }) %>
 
+          </div>
           </div>
 
         <% } else { %>

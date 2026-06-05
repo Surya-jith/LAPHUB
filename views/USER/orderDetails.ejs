@@ -1,8 +1,24 @@
 <%- include('../partials/header', { user: user }) %>
-
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/user/orderDetails.css">
 
+
+<% if (error) { %>
+  <div style="
+    background: #ffe6e6;
+    color: #d8000c;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+  ">
+    <%= error %>
+  </div>
+<% } %>
 <section class="order-details-page">
 
   <div class="page-layout">
@@ -16,87 +32,159 @@
       <div class="container">
 
         <div class="page-header">
+
           <a href="/orders" class="back-link">
             ← Back to Orders
           </a>
 
           <div class="top-actions">
 
-            <% if (
-              order.orderStatus !== "Cancelled" &&
-              order.orderStatus !== "Returned"
-            ) { %>
+            <% if (order.orderStatus === "Return Requested") { %>
+              <p class="pending-return-message">
+                Your return request has been submitted and is waiting for admin approval.
+              </p>
+            <% } %>
 
-            <form
-              action="/orders/<%= order._id %>/cancel"
-              method="POST"
-            >
-              <button
-                type="submit"
-                class="cancel-order-btn"
+            <% if (
+  order.orderStatus !== "Cancelled" &&
+  order.orderStatus !== "Returned" &&
+  order.orderStatus !== "Return Requested" &&
+  order.orderStatus !== "Delivered"
+) { %>
+
+              <form
+                action="/orders/<%= order._id %>/cancel"
+                method="POST"
               >
-                Cancel Order
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  class="cancel-order-btn"
+                >
+                  Cancel Order
+                </button>
+              </form>
 
             <% } %>
 
 
             <% if (order.orderStatus === "Delivered") { %>
 
-            <form
-              action="/orders/<%= order._id %>/return"
-              method="POST"
-              class="return-form"
-            >
+              <form
+  action="/orders/<%= order._id %>/return"
+  method="POST"
+  class="return-form"
+>
 
-              <input
-                type="text"
-                name="returnReason"
-                placeholder="Enter return reason"
-                required
-              >
+  <select
+    name="returnReason"
+    required
+    class="return-reason-select"
+  >
+    <option value="">
+      Select Return Reason
+    </option>
 
-              <button
-                type="submit"
-                class="cancel-order-btn"
-              >
-                Return Order
-              </button>
+    <option value="Wrong product delivered">
+      Wrong product delivered
+    </option>
 
-            </form>
+    <option value="Product damaged">
+      Product damaged
+    </option>
+
+    <option value="Size issue">
+      Size issue
+    </option>
+
+    <option value="Quality issue">
+      Quality issue
+    </option>
+
+    <option value="Delayed delivery">
+      Delayed delivery
+    </option>
+
+    <option value="Changed my mind">
+      Changed my mind
+    </option>
+
+    <option value="Other">
+      Other
+    </option>
+  </select>
+
+  <button
+    type="submit"
+    class="cancel-order-btn"
+  >
+    Return Order
+  </button>
+
+</form>
 
             <% } %>
 
 
-            <a
-              href="/orders/<%= order._id %>/invoice"
-              class="invoice-btn"
-            >
-              Download Invoice
-            </a>
+            <% if (order.orderStatus === "Delivered") { %>
+
+              <a
+                href="/orders/<%= order._id %>/invoice"
+                class="invoice-btn"
+              >
+                Download Invoice
+              </a>
+
+            <% } %>
 
           </div>
+
         </div>
+
+
+        <%
+  let updatedSubtotal = 0
+
+  order.items.forEach(item => {
+    if (
+      item.status !== "Cancelled" &&
+      item.status !== "Returned"
+    ) {
+      updatedSubtotal += item.totalPrice
+    }
+  })
+
+  let updatedGst =
+    order.gst || 0
+
+  let updatedFinalAmount =
+    updatedSubtotal +
+    updatedGst -
+    (order.discount || 0) +
+    (order.shippingCharge || 0)
+%>
 
 
         <div class="summary-card">
 
           <div>
+
             <h2><%= order.orderId %></h2>
 
             <p>
               <%= new Date(order.createdAt).toDateString() %>
               • <%= order.items.length %> Products
             </p>
+
           </div>
 
           <div class="summary-right">
-            <h3>₹<%= order.finalAmount %></h3>
+
+            <h3>₹<%= updatedFinalAmount %></h3>
 
             <span class="status <%= order.orderStatus.toLowerCase() %>">
               <%= order.orderStatus %>
             </span>
+
           </div>
 
         </div>
@@ -121,52 +209,127 @@
 
               <% order.items.forEach(item => { %>
 
-              <tr>
+                <tr>
 
-                <td class="product-cell">
+                  <td class="product-cell">
 
-                  <img
-                    src="<%= item.product.images?.[0] || '/images/no-image.png' %>"
-                    alt="product"
-                  >
-
-                  <div>
-                    <h4><%= item.product.name %></h4>
-                    <p>Status: <%= item.status %></p>
-                  </div>
-
-                </td>
-
-                <td>x<%= item.quantity %></td>
-
-                <td>₹<%= item.totalPrice %></td>
-
-                <td>
-
-                  <% if (
-                    item.status !== "Cancelled" &&
-                    order.orderStatus !== "Cancelled"
-                  ) { %>
-
-                  <form
-                    action="/orders/<%= order._id %>/items/<%= item._id %>/cancel"
-                    method="POST"
-                  >
-
-                    <button
-                      type="submit"
-                      class="cancel-item-btn"
+                    <img
+                      src="<%= item.product.images?.[0] || '/images/no-image.png' %>"
+                      alt="product"
                     >
-                      Cancel Item
-                    </button>
 
-                  </form>
+                    <div>
+                      <h4><%= item.product.name %></h4>
+                   <p>
+  Status:
+  <%= item.status === "Pending" &&
+      order.orderStatus === "Delivered"
+      ? "Delivered"
+      : item.status %>
+</p>
+                    </div>
 
-                  <% } %>
+                  </td>
 
-                </td>
+                  <td>x<%= item.quantity %></td>
 
-              </tr>
+                  <td>₹<%= item.totalPrice %></td>
+
+                  <td>
+
+  <% if (
+    item.status !== "Cancelled" &&
+    item.status !== "Returned" &&
+    item.status !== "Delivered" &&
+    order.orderStatus !== "Cancelled" &&
+    order.orderStatus !== "Return Requested" &&
+    order.orderStatus !== "Delivered"
+  ) { %>
+
+    <form
+      action="/orders/<%= order._id %>/items/<%= item._id %>/cancel"
+      method="POST"
+    >
+
+      <button
+        type="submit"
+        class="cancel-item-btn"
+      >
+        Cancel Item
+      </button>
+
+    </form>
+
+  <% } %>
+
+ <% if (
+  order.orderStatus === "Delivered" &&
+  item.status !== "Cancelled" &&
+  item.status !== "Returned" &&
+  item.status !== "Return Requested"
+) { %>
+
+  <% if (item.status === "Return Requested") { %>
+
+  <span
+    style="
+      color: orange;
+      font-weight: 600;
+    "
+  >
+    Return Request Submitted
+  </span>
+
+<% } %>
+
+    <form
+      action="/orders/<%= order._id %>/items/<%= item._id %>/return"
+      method="POST"
+    >
+
+      <select
+        name="returnReason"
+        required
+      >
+        <option value="">
+          Select Return Reason
+        </option>
+
+        <option value="Wrong product delivered">
+          Wrong product delivered
+        </option>
+
+        <option value="Product damaged">
+          Product damaged
+        </option>
+
+        <option value="Quality issue">
+          Quality issue
+        </option>
+
+        <option value="Size issue">
+          Size issue
+        </option>
+
+        <option value="Changed my mind">
+          Changed my mind
+        </option>
+      </select>
+
+      <button
+        type="submit"
+        class="cancel-item-btn"
+      >
+        Return Item
+      </button>
+
+    </form>
+
+  <% } %>
+
+</td>
+
+                </tr>
 
               <% }) %>
 
@@ -214,29 +377,57 @@
             </div>
 
             <div class="row">
-              <span>Payment Status</span>
-              <span><%= order.paymentStatus %></span>
-            </div>
+  <span>Payment Status</span>
+
+  <span>
+    <%= order.paymentStatus %>
+
+    <% if (
+      order.paymentMethod === "Razorpay" &&
+      order.paymentStatus === "Failed"
+    ) { %>
+
+      <button
+        id="retryPaymentBtn"
+        class="retry-payment-btn"
+        data-order-id="<%= order._id %>"
+      >
+        Retry Payment
+      </button>
+
+    <% } %>
+
+  </span>
+</div>
 
             <div class="row">
-              <span>Subtotal</span>
-              <span>₹<%= order.subtotal %></span>
-            </div>
+  <span>Subtotal</span>
+  <span>₹<%= updatedSubtotal.toFixed(2) %></span>
+</div>
 
-            <div class="row">
-              <span>Discount</span>
-              <span>₹<%= order.discount %></span>
-            </div>
+<div class="row">
+  <span>GST (2%)</span>
+  <span>₹<%= updatedGst.toFixed(2) %></span>
+</div>
 
-            <div class="row">
-              <span>Shipping</span>
-              <span>₹<%= order.shippingCharge %></span>
-            </div>
+<div class="row">
+  <span>Discount</span>
+  <span>₹<%= (order.discount || 0).toFixed(2) %></span>
+</div>
 
-            <div class="row total">
-              <span>Total</span>
-              <span>₹<%= order.finalAmount %></span>
-            </div>
+<div class="row">
+  <span>Shipping</span>
+  <span>
+    <%= order.shippingCharge > 0
+      ? `₹${order.shippingCharge.toFixed(2)}`
+      : "Free" %>
+  </span>
+</div>
+
+<div class="row total">
+  <span>Total</span>
+  <span>₹<%= updatedFinalAmount.toFixed(2) %></span>
+</div>
 
           </div>
 
@@ -249,5 +440,136 @@
   </div>
 
 </section>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+const retryBtn =
+  document.getElementById(
+    "retryPaymentBtn"
+  );
+
+if (retryBtn) {
+
+  retryBtn.addEventListener(
+    "click",
+    async () => {
+
+      try {
+
+        const orderId =
+          retryBtn.dataset.orderId;
+
+        const response =
+          await fetch(
+            `/retry-payment/${orderId}`,
+            {
+              method: "POST"
+            }
+          );
+
+        const result =
+          await response.json();
+
+        if (!result.success) {
+
+          alert(result.message);
+          return;
+        }
+
+        const options = {
+
+          key:
+            result.razorpayKey,
+
+          amount:
+            result.razorpayOrder.amount,
+
+          currency:
+            result.razorpayOrder.currency,
+
+          name: "LAPHUB",
+
+          description:
+            "Retry Payment",
+
+          order_id:
+            result.razorpayOrder.id,
+
+          handler: async function (
+            response
+          ) {
+
+            const verifyResponse =
+              await fetch(
+                "/verify-payment",
+                {
+                  method: "POST",
+
+                  headers: {
+                    "Content-Type":
+                      "application/json"
+                  },
+
+                  body: JSON.stringify({
+
+                    razorpay_order_id:
+                      response.razorpay_order_id,
+
+                    razorpay_payment_id:
+                      response.razorpay_payment_id,
+
+                    razorpay_signature:
+                      response.razorpay_signature,
+
+                    orderId
+                  })
+                }
+              );
+
+            const verifyResult =
+              await verifyResponse.json();
+
+            if (
+              verifyResult.success
+            ) {
+
+              window.location.reload();
+            }
+
+            else {
+
+              alert(
+                "Payment verification failed"
+              );
+            }
+          },
+
+          theme: {
+            color: "#2f4da3"
+          }
+        };
+
+        const razorpay =
+          new Razorpay(options);
+
+        razorpay.open();
+
+      } catch (error) {
+
+        console.log(
+          "Retry Payment Error:",
+          error
+        );
+
+        alert(
+          "Unable to retry payment"
+        );
+      }
+    }
+  );
+}
+
+</script>
 
 <%- include('../partials/footer') %>

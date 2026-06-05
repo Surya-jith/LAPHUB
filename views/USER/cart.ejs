@@ -1,8 +1,15 @@
 <%- include('../partials/header', { user: user }) %>
-
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/user/cart.css">
-
+<% if (typeof error !== "undefined" && error) { %>
+  <div class="error-message">
+    <%= error %>
+  </div>
+<% } %>
 <section class="cart-page">
 
   <div class="page-layout">
@@ -114,12 +121,18 @@
                           >
 
                           <button
-                            class="qty-btn plus"
-                            data-id="<%= item.productId %>"
-                            <%= (!item.product || !item.variant || item.variant.stock === 0 || item.quantity >= item.variant.stock) ? 'disabled' : '' %>
-                          >
-                            +
-                          </button>
+  class="qty-btn plus"
+  data-id="<%= item.productId %>"
+  <%= (
+    !item.product ||
+    !item.variant ||
+    item.variant.stock === 0 ||
+    item.quantity >= item.variant.stock ||
+    item.quantity >= 5
+  ) ? 'disabled' : '' %>
+>
+  +
+</button>
 
                         </div>
 
@@ -194,7 +207,7 @@
 
           </div>
 
-          <!-- COUPON -->
+          <!-- COUPON
           <div class="cart-card">
 
             <h3>Coupon Code</h3>
@@ -216,7 +229,7 @@
 
             </form>
 
-          </div>
+          </div> -->
 
         </div>
 

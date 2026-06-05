@@ -1,7 +1,11 @@
 import User from "../../models/user.js";
 import userService from "../../services/user/userService.js";
+import homeService
+from "../../services/user/homeService.js";
 import sendEmail from "../../utils/sendEmail.js";
 import bcrypt from "bcryptjs";
+import Wallet from "../../models/walletModel.js";
+import Coupon from "../../models/couponModel.js";
 
 
 
@@ -16,7 +20,28 @@ const loadSignup = (req, res) => {
   });
 };
 
+const loadAbout = (req,res)=>{
 
+  res.render(
+    "user/about",
+    {
+      title:"About Us"
+    }
+  );
+
+};
+
+
+const loadContact = (req,res)=>{
+
+  res.render(
+    "user/Contact",
+    {
+      title:"Contact"
+    }
+  );
+
+};
 
 const registerUser = async (req, res) => {
   try {
@@ -105,21 +130,54 @@ const loadHomepage = async (req, res) => {
     let user = null;
 
     if (req.session.user) {
-      user = await User.findById(req.session.user);
-    }
 
-    res.render("user/homepage", {
-      user,
-      title: "Home"
-    });
+      user =
+        await User.findById(
+          req.session.user
+        );
+    }
+const data =
+  await homeService.getHomeData();
+
+
+
+res.render(
+  "user/homepage",
+  {
+    user,
+
+    title: "Home",
+
+    error:
+      req.query.error || null,
+
+    topProducts:
+      data.topProducts,
+
+    topCategories:
+      data.topCategories
+  }
+);
 
   } catch (error) {
 
-    console.log("Error loading homepage:", error.message);
-    res.status(500).send("Server Error");
+    console.log(error);
+res.render(
+  "user/homepage",
+  {
+    user: null,
 
+    title: "Home",
+
+    error:
+      "Unable to load homepage",
+
+    topProducts: [],
+
+    topCategories: []
   }
-
+);
+  }
 };
 
 
@@ -365,7 +423,153 @@ const verifySignupOtp = async (req, res) => {
 
     }
 
-    await userService.register(req.session.signupData);
+    /*
+=================================
+REGISTER USER
+=================================
+*/
+
+const newUser =
+  await userService.register(
+    req.session.signupData
+  );
+
+/*
+=================================
+REFERRAL REWARD
+=================================
+*/
+
+const referralCode =
+  req.session.signupData
+    .referralCode;
+
+if (referralCode) {
+
+  /*
+  =================================
+  FIND REFERRER
+  =================================
+  */
+
+  const referrer =
+    await User.findOne({
+      referralCode
+    });
+
+  /*
+  =================================
+  VALID REFERRAL
+  =================================
+  */
+
+  if (
+
+    referrer &&
+
+    referrer._id.toString() !==
+    newUser._id.toString()
+
+  ) {
+
+    /*
+    =================================
+    UPDATE REFERRED USER
+    =================================
+    */
+
+    newUser.referredBy =
+      referrer._id;
+
+    await newUser.save();
+
+    /*
+    =================================
+    FIND OR CREATE WALLETS
+    =================================
+    */
+
+    let referrerWallet =
+      await Wallet.findOne({
+        user: referrer._id
+      });
+
+    if (!referrerWallet) {
+
+      referrerWallet =
+        await Wallet.create({
+          user: referrer._id,
+          balance: 0,
+          transactions: []
+        });
+    }
+
+    let newUserWallet =
+      await Wallet.findOne({
+        user: newUser._id
+      });
+
+    if (!newUserWallet) {
+
+      newUserWallet =
+        await Wallet.create({
+          user: newUser._id,
+          balance: 0,
+          transactions: []
+        });
+    }
+
+    /*
+    =================================
+    REWARD AMOUNTS
+    =================================
+    */
+
+    const referrerReward = 200;
+    const newUserReward = 100;
+
+    /*
+    =================================
+    CREDIT REFERRER
+    =================================
+    */
+
+    referrerWallet.balance +=
+      referrerReward;
+
+    referrerWallet.transactions.push({
+
+      type: "Credit",
+
+      amount: referrerReward,
+
+      description:
+        "Referral reward"
+    });
+
+    /*
+    =================================
+    CREDIT NEW USER
+    =================================
+    */
+
+    newUserWallet.balance +=
+      newUserReward;
+
+    newUserWallet.transactions.push({
+
+      type: "Credit",
+
+      amount: newUserReward,
+
+      description:
+        "Welcome referral reward"
+    });
+
+    await referrerWallet.save();
+    await newUserWallet.save();
+  }
+}
 
     req.session.signupData = null;
     req.session.signupOtp = null;
@@ -415,13 +619,23 @@ const resendSignupOtp = async (req, res) => {
   }
 
 };
+const loadProfile = async (req, res) => {
+  try {
+    const user = await userService.getUser(req.session.user)
 
+    res.render("user/profile", {
+      user,
+      error: req.query.error || null,
+      success: req.query.success || null
+    })
 
-const loadProfile=async (req,res)=>{
+  } catch (error) {
+    console.log(error)
 
-  const user = await userService.getUser(req.session.user)
-
-res.render("user/profile",{user})
+    res.redirect(
+      `/?error=${encodeURIComponent("Unable to load profile")}`
+    )
+  }
 }
 
 const loadEditProfile=async (req,res)=>{
@@ -531,32 +745,32 @@ const verifyEmailOtp=async (req,res)=>{
 
 
 
-const loadAddressPage = async (req,res)=>{
-
+const loadAddressPage = async (req, res) => {
   try {
     const user = await userService.getUser(req.session.user)
 
-let selectedAddress = null
+    let selectedAddress = null
 
-if(req.query.selected){
+    if (req.query.selected) {
+      selectedAddress = user.addresses.id(req.query.selected)
+    } else {
+      selectedAddress = user.addresses[0]
+    }
 
-selectedAddress = user.addresses.id(req.query.selected)
+    res.render("user/address", {
+      user,
+      selectedAddress,
+      error: req.query.error || null,
+      success: req.query.success || null
+    })
 
-}else{
-
-selectedAddress = user.addresses[0]
-
-}
-
-res.render("user/address",{user,selectedAddress})
   } catch (error) {
     console.log(error)
-    res.redirect("/profile")
-    
+
+    res.redirect(
+      `/profile?error=${encodeURIComponent("Unable to load address page")}`
+    )
   }
-
-
-
 }
 
 const saveAddress = async (req, res) => {
@@ -627,7 +841,7 @@ const deleteAddress = async (req, res) => {
   } = data
 
 
- res.render('user/productListing', {
+res.render("user/productListing", {
   ...res.locals,
   products,
   categories,
@@ -639,8 +853,10 @@ const deleteAddress = async (req, res) => {
   priceRange: maxPrice,
   minPrice,
   totalProducts,
-  user: req.user || req.session.user
- });
+  user: req.user || req.session.user,
+  error: req.query.error || null,
+  success: req.query.success || null
+});
 
  } catch (error) {
 
@@ -655,33 +871,62 @@ const deleteAddress = async (req, res) => {
 
 
 const loadProductDetails = async (req, res) => {
+  try {
+    const productId = req.params.id
 
-try {
+    const error = req.query.error || null
+    const success = req.query.success || null
 
-const productId = req.params.id
+    const data = await userService.getProductDetails(productId)
 
-const error = req.query.error || null
-const success = req.query.success || null
+    if (!data || !data.product) {
+      return res.redirect("/products")
+    }
 
-const data = await userService.getProductDetails(productId)
+    if (data.product.isBlocked) {
+      return res.render("user/productDetails", {
 
-if (!data || !data.product) {
-return res.redirect("/products")
-}
+  ...data,
 
-res.render("user/productDetails", {
-...data,
-error,
-success
+  availableCoupons,
+
+  error:
+    "This product is currently unavailable.",
+
+  success: null
+})
+    }
+    /*
+=================================
+AVAILABLE COUPONS
+=================================
+*/
+
+const availableCoupons =
+  await Coupon.find({
+
+    isActive: true,
+
+    expiryDate: {
+      $gt: new Date()
+    }
+  });
+
+    res.render("user/productDetails", {
+
+  ...data,
+
+  availableCoupons,
+
+  error,
+
+  success
 })
 
-} catch (error) {
-
-console.log(error)
-res.redirect("/products")
-
-}
-
+  } catch (error) {
+    console.log(error)
+    res.redirect("/products")
+  }
 }
 
 const addReview = async(req,res)=>{
@@ -743,6 +988,118 @@ const loadEditAddress = async (req, res) => {
 };
 
 
+const loadWalletPage = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const userId =
+      req.session.user;
+
+    /*
+    =================================
+    FIND USER
+    =================================
+    */
+
+    const user =
+      await User.findById(
+        userId
+      );
+
+    /*
+    =================================
+    GENERATE REFERRAL CODE
+    FOR OLD USERS
+    =================================
+    */
+
+    if (!user.referralCode) {
+
+      user.referralCode =
+
+        user.username
+          .substring(0, 4)
+          .toUpperCase()
+
+        +
+
+        Math.floor(
+          1000 +
+          Math.random() * 9000
+        );
+
+      await user.save();
+    }
+
+    /*
+    =================================
+    FIND OR CREATE WALLET
+    =================================
+    */
+
+    let wallet =
+      await Wallet.findOne({
+        user: userId
+      });
+
+    if (!wallet) {
+
+      wallet =
+        await Wallet.create({
+
+          user: userId,
+
+          balance: 0,
+
+          transactions: []
+        });
+    }
+
+    /*
+    =================================
+    SORT TRANSACTIONS
+    =================================
+    */
+
+    wallet.transactions.sort(
+
+      (a, b) =>
+
+        new Date(b.createdAt) -
+
+        new Date(a.createdAt)
+    );
+
+    /*
+    =================================
+    RENDER PAGE
+    =================================
+    */
+
+    res.render(
+      "user/wallet",
+      {
+        wallet,
+        user
+      }
+    );
+
+  } catch (error) {
+
+    console.log(
+      "Load Wallet Error:",
+      error
+    );
+
+    res.redirect(
+      "/profile"
+    );
+  }
+};
+
 
 
 
@@ -786,5 +1143,8 @@ export default {
   addReview,
 
   loadEditAddress,
-  loadAddAddress
+  loadAddAddress,
+  loadWalletPage,
+  loadAbout,
+  loadContact
 };

@@ -1,9 +1,16 @@
 
 <%- include('../partials/header', { title: "Home" }) %>
-
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/user/home.css">
-
+<% if (error) { %>
+  <div class="error-message">
+    <%= error %>
+  </div>
+<% } %>
 <!-- HERO SECTION -->
 <section class="hero-section">
 
@@ -51,37 +58,33 @@
 <section class="categories">
 
   <div class="section-header">
-    <h2>Choose your Brand</h2>
-    <p>Select from the most trusted laptop manufacturers</p>
+    <h2>Shop By Category</h2>
+
+<p>Browse laptops by category</p>
   </div>
 
-  <div class="brand-container">
+ <div class="brand-container">
 
-    <div class="brand-card">
-      <img src="/images/brands/dell.png" alt="Dell">
-    </div>
+  <% topCategories.forEach(item => { %>
 
-    <div class="brand-card">
-      <img src="/images/brands/hp.png" alt="HP">
-    </div>
+    <a
+      href="/products?category=<%= item.category._id %>"
+      class="brand-card"
+    >
 
-    <div class="brand-card">
-      <img src="/images/brands/asus.png" alt="Asus">
-    </div>
+      <h3>
+  <%= item.category.name %>
+</h3>
 
-    <div class="brand-card">
-      <img src="/images/brands/lenovo.png" alt="Lenovo">
-    </div>
+<span>
+  <%= item.totalSold %> sales
+</span>
 
-    <div class="brand-card">
-      <img src="/images/brands/acer.png" alt="Acer">
-    </div>
+    </a>
 
-    <div class="brand-card">
-      <img src="/images/brands/msi.png" alt="MSI">
-    </div>
+  <% }) %>
 
-  </div>
+</div>
 
 </section>
 
@@ -110,60 +113,55 @@
 <section class="products">
 
   <div class="section-header">
-    <h2>Featured Laptops</h2>
-    <p>Top selling laptops loved by professionals and gamers</p>
+   <h2>Top Selling Laptops</h2>
+
+<p>
+  Most purchased laptops by our customers
+</p>
   </div>
 
   <div class="product-grid">
 
-    <div class="product-card">
+  <% topProducts.forEach(item => { %>
 
-      <div class="product-image"></div>
+    <a
+      href="/product/<%= item.product._id %>"
+      class="product-card"
+    >
 
-      <div class="product-info">
-        <h4>Dell Inspiron</h4>
-        <p class="price">₹53,990</p>
+      <div class="product-image">
+
+        <img
+          src="<%= item.product.images?.[0] || '/images/no-image.png' %>"
+          alt="<%= item.product.name %>"
+        >
+
       </div>
 
-    </div>
-
-
-    <div class="product-card">
-
-      <div class="product-image"></div>
-
       <div class="product-info">
-        <h4>HP Pavilion</h4>
-        <p class="price">₹61,999</p>
+
+        <h4>
+          <%= item.product.name %>
+        </h4>
+
+        <p class="price">
+
+          ₹<%= item.product.variants?.[0]?.price || 0 %>
+
+        </p>
+
+        <small>
+          Sold:
+          <%= item.totalSold %>
+        </small>
+
       </div>
 
-    </div>
+    </a>
 
+  <% }) %>
 
-    <div class="product-card">
-
-      <div class="product-image"></div>
-
-      <div class="product-info">
-        <h4>ASUS ROG</h4>
-        <p class="price">₹95,000</p>
-      </div>
-
-    </div>
-
-
-    <div class="product-card">
-
-      <div class="product-image"></div>
-
-      <div class="product-info">
-        <h4>Lenovo Legion</h4>
-        <p class="price">₹88,999</p>
-      </div>
-
-    </div>
-
-  </div>
+</div>
 
 </section>
 

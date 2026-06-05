@@ -56,7 +56,8 @@ const createCategory = async (name) => {
   }
 };
 
-const updateCategory = async (id, name) => {
+const updateCategory = async (id, name,offerPercentage,
+  offerExpiryDate) => {
 
   if (!name || !name.trim()) {
     throw new Error("Category name is required");
@@ -74,10 +75,33 @@ const updateCategory = async (id, name) => {
   }
 
   return await Category.findByIdAndUpdate(
-    id,
-    { name: formattedName },
-    { new: true }
-  );
+
+  id,
+
+  {
+
+    name: formattedName,
+
+    /*
+    =================================
+    CATEGORY OFFER
+    =================================
+    */
+
+    categoryOffer: {
+
+      percentage:
+        Number(
+          offerPercentage || 0
+        ),
+
+      expiryDate:
+        offerExpiryDate || null
+    }
+  },
+
+  { new: true }
+);
 };
 
 const toggleCategory = async (id) => {

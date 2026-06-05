@@ -1,4 +1,6 @@
 import Order from "../../models/order.js";
+import Product from "../../models/productModel.js";
+import Wallet from "../../models/walletModel.js";
 
 const loadOrders = async (req, res) => {
   try {
@@ -73,7 +75,7 @@ const loadOrderDetails = async (req, res) => {
     }
 
     res.render("admin/orderDetails", {
-      order
+      order,error: req.query.error || null
     });
 
   } catch (error) {
@@ -84,8 +86,224 @@ const loadOrderDetails = async (req, res) => {
 
 const updateOrderStatus = async (req, res) => {
   try {
-    const orderId = req.params.id;
-    const { orderStatus } = req.body;
+    const orderId = req.params.id
+    const { orderStatus } = req.body
+
+    const redirectWithError = (message) => {
+      return res.redirect(
+        `/admin/orders/${orderId}?error=${encodeURIComponent(message)}`
+      )
+    }
+
+    const order = await Order.findById(orderId)
+
+    if (!order) {
+      return redirectWithError("Order not found")
+    }
+
+    /*
+    =================================
+    RETURN REQUEST APPROVAL FLOW
+    =================================
+    */
+
+    if (order.orderStatus === "Return Requested") {
+
+      // Approve Return
+      if (orderStatus === "Returned") {
+
+        for (const item of order.items) {
+          const product = await Product.findById(item.product)
+
+          if (!product) continue
+
+          const variant = product.variants.id(item.variantId)
+
+          if (
+            variant &&
+            item.status !== "Returned"
+          ) {
+            variant.stock += item.quantity
+            await product.save()
+          }
+
+          item.status = "Returned"
+        }
+
+       /*
+=================================
+WALLET REFUND
+=================================
+*/
+
+let wallet =
+  await Wallet.findOne({
+    user: order.user
+  });
+
+if (!wallet) {
+
+  wallet = await Wallet.create({
+    user: order.user,
+    balance: 0,
+    transactions: []
+  });
+}
+
+wallet.balance += order.finalAmount;
+
+wallet.transactions.push({
+
+  type: "Credit",
+
+  amount: order.finalAmount,
+
+  description:
+    `Refund for Order ${order.orderId}`,
+
+  orderId: order._id
+});
+
+await wallet.save();
+
+/*
+=================================
+UPDATE ORDER
+=================================
+*/
+
+order.orderStatus = "Returned";
+
+await order.save();
+
+        return res.redirect(`/admin/orders/${orderId}`)
+      }
+
+      // Reject Return
+      if (orderStatus === "Delivered") {
+
+        for (const item of order.items) {
+          if (item.status === "Return Requested") {
+            item.status = "Delivered"
+          }
+        }
+
+        order.orderStatus = "Delivered"
+        await order.save()
+
+        return res.redirect(`/admin/orders/${orderId}`)
+      }
+    }
+
+    /*
+    =================================
+    NORMAL STATUS FLOW
+    =================================
+    */
+
+    const statusFlow = [
+      "Pending",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Cancelled"
+    ]
+
+    const currentStatus = order.orderStatus.trim()
+    const selectedStatus = orderStatus.trim()
+
+    const currentIndex = statusFlow.indexOf(currentStatus)
+    const newIndex = statusFlow.indexOf(selectedStatus)
+
+ 
+
+    // Prevent moving to previous status
+    if (
+      newIndex < currentIndex &&
+      currentStatus !== "Cancelled" &&
+      currentStatus !== "Returned"
+    ) {
+      return redirectWithError("Previous status cannot be assigned")
+    }
+
+    // Prevent updating closed orders
+    if (
+      currentStatus === "Cancelled" ||
+      currentStatus === "Returned"
+    ) {
+      return redirectWithError("This order is already closed")
+    }
+
+    /*
+    =================================
+    CANCELLED → RESTORE STOCK
+    =================================
+    */
+
+    if (
+      selectedStatus === "Cancelled" &&
+      currentStatus !== "Cancelled"
+    ) {
+
+      for (const item of order.items) {
+        const product = await Product.findById(item.product)
+
+        if (!product) continue
+
+        const variant = product.variants.id(item.variantId)
+
+        if (
+          variant &&
+          item.status !== "Cancelled" &&
+          item.status !== "Returned"
+        ) {
+          variant.stock += item.quantity
+          await product.save()
+        }
+
+        item.status = "Cancelled"
+      }
+
+      order.orderStatus = "Cancelled"
+      await order.save()
+
+      return res.redirect(`/admin/orders/${orderId}`)
+    }
+/*
+=================================
+NORMAL UPDATE
+=================================
+*/
+
+for (const item of order.items) {
+
+  if (
+    item.status !== "Cancelled" &&
+    item.status !== "Returned"
+  ) {
+    item.status = selectedStatus;
+  }
+
+}
+
+order.orderStatus = selectedStatus;
+
+await order.save();
+
+return res.redirect(`/admin/orders/${orderId}`);
+
+  } catch (error) {
+    console.log("Update Order Status Error:", error)
+    return res.redirect("/admin/orders")
+  }
+}
+
+const processItemReturn = async (req, res) => {
+
+  try {
+
+    const { orderId, itemId } = req.params;
+    const { action } = req.body;
 
     const order = await Order.findById(orderId);
 
@@ -93,40 +311,111 @@ const updateOrderStatus = async (req, res) => {
       return res.redirect("/admin/orders");
     }
 
-    // Restore stock only when changing to Cancelled
-    if (
-      orderStatus === "Cancelled" &&
-      order.orderStatus !== "Cancelled"
-    ) {
-      for (const item of order.items) {
-        const product = await Product.findById(item.product);
+    const item = order.items.id(itemId);
 
-        if (product) {
-          const variant = product.variants.id(item.variantId);
+    if (!item) {
+      return res.redirect(`/admin/orders/${orderId}`);
+    }
 
-          if (variant) {
-            variant.stock += item.quantity;
-          }
+    /*
+    ============================
+    APPROVE RETURN
+    ============================
+    */
+
+    if (action === "approve") {
+
+      const product = await Product.findById(
+        item.product
+      );
+
+      if (product) {
+
+        const variant =
+          product.variants.id(
+            item.variantId
+          );
+
+        if (variant) {
+
+          variant.stock += item.quantity;
 
           await product.save();
         }
       }
+
+      /*
+      ============================
+      WALLET REFUND
+      ============================
+      */
+
+      let wallet = await Wallet.findOne({
+        user: order.user
+      });
+
+      if (!wallet) {
+
+        wallet = await Wallet.create({
+          user: order.user,
+          balance: 0,
+          transactions: []
+        });
+      }
+
+      wallet.balance += item.totalPrice;
+
+      wallet.transactions.push({
+
+        type: "Credit",
+
+        amount: item.totalPrice,
+
+        description:
+          `Refund for returned item in Order ${order.orderId}`,
+
+        orderId: order._id
+      });
+
+      await wallet.save();
+
+      item.status = "Returned";
     }
 
-    // update without full validation issue
-    await Order.findByIdAndUpdate(orderId, {
-      orderStatus: orderStatus
-    });
+    /*
+    ============================
+    REJECT RETURN
+    ============================
+    */
 
-    res.redirect(`/admin/orders/${orderId}`);
+    if (action === "reject") {
+
+      item.status = "Delivered";
+    }
+
+    await order.save();
+
+    return res.redirect(
+      `/admin/orders/${orderId}`
+    );
 
   } catch (error) {
-    console.log("Update Order Status Error:", error);
-    res.redirect("/admin/orders");
+
+    console.log(
+      "Process Item Return Error:",
+      error
+    );
+
+    return res.redirect(
+      "/admin/orders"
+    );
   }
 };
+
+
 export default {
   loadOrders,
   loadOrderDetails,
-  updateOrderStatus
+  updateOrderStatus,
+  processItemReturn
 };

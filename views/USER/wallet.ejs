@@ -1,0 +1,163 @@
+<%- include('../partials/header', { user: user }) %>
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
+<link
+  rel="stylesheet"
+  href="/css/user/wallet.css"
+/>
+
+<section class="wallet-page">
+
+  <div class="wallet-container">
+
+    <!-- HEADER -->
+    <div class="wallet-header">
+
+      <h2>My Wallet</h2>
+
+      <div class="wallet-balance">
+
+        <span>
+          Available Balance
+        </span>
+
+        <h1>
+          ₹<%= wallet.balance.toFixed(2) %>
+        </h1>
+
+      </div>
+
+    </div>
+
+    <!-- REFERRAL CARD -->
+    <div class="referral-card">
+
+      <div class="referral-left">
+
+        <h3>
+          Invite Friends & Earn
+        </h3>
+
+        <p>
+          Share your referral code and
+          earn wallet rewards when
+          someone signs up using it.
+        </p>
+
+      </div>
+
+      <div class="referral-right">
+
+        <div class="referral-code-box">
+
+          <span id="referralCode">
+            <%= user.referralCode %>
+          </span>
+
+          <button
+            type="button"
+            onclick="copyReferralCode()"
+          >
+            Copy
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div class="wallet-transactions">
+
+      <h3>
+        Transaction History
+      </h3>
+
+      <% if (
+        wallet.transactions.length > 0
+      ) { %>
+
+        <% wallet.transactions.forEach(txn => { %>
+
+          <div class="transaction-card">
+
+            <div class="txn-left">
+
+              <h4>
+                <%= txn.description %>
+              </h4>
+
+              <p>
+                <%= new Date(
+                  txn.createdAt
+                ).toLocaleString() %>
+              </p>
+
+            </div>
+
+            <div class="txn-right">
+
+              <span
+                class="
+                  <%= txn.type === 'Credit'
+                    ? 'credit'
+                    : 'debit'
+                  %>
+                "
+              >
+
+                <%= txn.type === "Credit"
+                  ? "+"
+                  : "-"
+                %>
+
+                ₹<%= txn.amount.toFixed(2) %>
+
+              </span>
+
+            </div>
+
+          </div>
+
+        <% }) %>
+
+      <% } else { %>
+
+        <div class="empty-wallet">
+
+          <p>
+            No wallet transactions yet.
+          </p>
+
+        </div>
+
+      <% } %>
+
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+
+function copyReferralCode() {
+
+  const code =
+    document.getElementById(
+      "referralCode"
+    ).innerText;
+
+  navigator.clipboard.writeText(code);
+
+  alert(
+    "Referral code copied!"
+  );
+}
+
+</script>
+
+<%- include('../partials/footer') %>

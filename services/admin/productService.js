@@ -1,20 +1,32 @@
 import Product from "../../models/productModel.js"
 import Category from "../../models/category.js"
 import Brand from "../../models/brandModel.js"
+import calculateBestOffer from "../../utils/calculateBestOffer.js"
 
 
 // Get Products (Pagination + Brands)
-const getProducts = async ({ page = 1, selectedCategory } = {}) => {
+const getProducts = async ({
+  page = 1,
+  selectedCategory,
+  search = ""
+} = {}) => {
 
   const limit = 10
   const skip = (page - 1) * limit
 
   let filter = {
-    isDeleted:false
+    isDeleted: false
   }
 
-  if(selectedCategory){
+  if (selectedCategory) {
     filter.category = selectedCategory
+  }
+
+  if (search) {
+    filter.name = {
+      $regex: search,
+      $options: "i"
+    }
   }
 
   const totalProducts = await Product.countDocuments(filter)
@@ -25,26 +37,26 @@ const getProducts = async ({ page = 1, selectedCategory } = {}) => {
     .populate("brand")
     .skip(skip)
     .limit(limit)
-    .sort({createdAt:-1})
+    .sort({ createdAt: -1 })
 
-  // ✅ Calculate Total Stock
+  // Total Stock Calculation
   products.forEach(product => {
 
-  product.totalStock = product.variants.reduce(
-    (total, variant) => {
-      return total + Number(variant.stock || 0);
-    },
-    0
-  );
+    product.totalStock = product.variants.reduce(
+      (total, variant) => {
+        return total + Number(variant.stock || 0)
+      },
+      0
+    )
 
-  product.isLowStock =
-    product.totalStock > 0 &&
-    product.totalStock <= 5;
+    product.isLowStock =
+      product.totalStock > 0 &&
+      product.totalStock <= 5
 
-  product.isOutOfStock =
-    product.totalStock === 0;
+    product.isOutOfStock =
+      product.totalStock === 0
 
-});
+  })
 
   const categories = await Category.find({
     isListed: true,
@@ -55,14 +67,11 @@ const getProducts = async ({ page = 1, selectedCategory } = {}) => {
     products,
     categories,
     totalPages,
-    currentPage:page,
-    selectedCategory
+    currentPage: page,
+    selectedCategory,
+    search
   }
-
 }
-
-
-
 // Get Add Product Page Data
 const getAddProductData = async()=>{
 
@@ -92,6 +101,7 @@ const createProduct = async(data,files)=>{
     brand,
     price,
     discount,
+    offerExpiryDate,
     color,
     ram,
     rom,
@@ -130,22 +140,96 @@ const createProduct = async(data,files)=>{
     images.push(file.path)
   })
 
-  const offerPrice =
-    Number(price) - (Number(price) * Number(discount || 0) / 100)
+  /*
+=================================
+PRODUCT OFFER
+=================================
+*/
 
-  const newProduct = new Product({
+const productOffer =
+  Number(discount || 0);
 
-    name,
-    description,
-    category,
-    brand: brandValue,
-    price,
-    discount,
-    offerPrice,
-    variants,
-    images
+/*
+=================================
+CATEGORY OFFER
+=================================
+*/
 
-  })
+const categoryData =
+  await Category.findById(
+    category
+  );
+
+let categoryOffer = 0;
+
+if (
+  categoryData?.categoryOffer
+    ?.expiryDate >
+
+  new Date()
+) {
+
+  categoryOffer =
+    categoryData
+      .categoryOffer
+      .percentage || 0;
+}
+
+/*
+=================================
+BEST OFFER
+=================================
+*/
+
+const offerData =
+  calculateBestOffer(
+    productOffer,
+    categoryOffer,
+    Number(price)
+  );
+
+const newProduct = new Product({
+
+  name,
+  description,
+  category,
+  brand: brandValue,
+
+  price,
+
+  discount,
+
+  /*
+  =================================
+  PRODUCT OFFER
+  =================================
+  */
+
+  productOffer: {
+
+  percentage:
+    productOffer,
+
+  expiryDate:
+    offerExpiryDate || null
+},
+
+  /*
+  =================================
+  FINAL BEST OFFER
+  =================================
+  */
+
+  finalOffer:
+    offerData.finalOffer,
+
+  finalPrice:
+    offerData.finalPrice,
+
+  variants,
+  images
+
+})
 
   await newProduct.save()
 
@@ -187,6 +271,7 @@ const updateProduct = async(id,data,files)=>{
     brand,
     price,
     discount,
+offerExpiryDate,
     color,
     ram,
     rom,
@@ -221,8 +306,53 @@ const updateProduct = async(id,data,files)=>{
 
   }))
 
-  const offerPrice =
-    Number(price) - (Number(price) * Number(discount || 0) / 100)
+  /*
+=================================
+PRODUCT OFFER
+=================================
+*/
+
+const productOffer =
+  Number(discount || 0);
+
+/*
+=================================
+CATEGORY OFFER
+=================================
+*/
+
+const categoryData =
+  await Category.findById(
+    category
+  );
+
+let categoryOffer = 0;
+
+if (
+  categoryData?.categoryOffer
+    ?.expiryDate >
+
+  new Date()
+) {
+
+  categoryOffer =
+    categoryData
+      .categoryOffer
+      .percentage || 0;
+}
+
+/*
+=================================
+BEST OFFER
+=================================
+*/
+
+const offerData =
+  calculateBestOffer(
+    productOffer,
+    categoryOffer,
+    Number(price)
+  );
 
   let updateData = {
 
@@ -231,9 +361,25 @@ const updateProduct = async(id,data,files)=>{
     category,
     brand: brandValue,
     price,
-    discount,
-    offerPrice,
-    variants
+
+discount,
+
+productOffer: {
+
+  percentage:
+    productOffer,
+
+  expiryDate:
+    offerExpiryDate || null
+},
+
+finalOffer:
+  offerData.finalOffer,
+
+finalPrice:
+  offerData.finalPrice,
+
+variants
 
   }
 
@@ -267,6 +413,18 @@ const softDeleteProduct = async(id)=>{
 
 }
 
+const toggleProductBlock = async (id) => {
+  const product = await Product.findById(id)
+
+  if (!product) {
+    throw new Error("Product not found")
+  }
+
+  await Product.findByIdAndUpdate(id, {
+    isBlocked: !product.isBlocked
+  })
+}
+
 
 export default {
 
@@ -275,6 +433,7 @@ export default {
   createProduct,
   getEditProductData,
   updateProduct,
-  softDeleteProduct
+  softDeleteProduct,
+  toggleProductBlock
 
 }

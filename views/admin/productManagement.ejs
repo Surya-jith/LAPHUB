@@ -25,22 +25,41 @@
 
     </div>
 
-    <!-- Filters -->
-    <div class="filter-tabs">
+<!-- Filters + Search -->
+<div class="filter-tabs">
 
-      <button class="active">
-        All Products
-      </button>
+  <div class="left-filters">
+    <button class="active">
+      All Products
+    </button>
 
-      <button>
-        In Stock
-      </button>
+    <button>
+      In Stock
+    </button>
 
-      <button>
-        Out of Stock
-      </button>
+    <button>
+      Out of Stock
+    </button>
+  </div>
 
-    </div>
+  <form
+    action="/admin/products"
+    method="GET"
+    class="search-form"
+  >
+    <input
+      type="text"
+      name="search"
+      placeholder="Search product name..."
+      value="<%= search || '' %>"
+    >
+
+    <button type="submit">
+      Search
+    </button>
+  </form>
+
+</div>
 
     <!-- Table -->
     <div class="table-container">
@@ -160,28 +179,40 @@
                 </td>
 
                 <!-- ACTION -->
-                <td class="actions">
+                <!-- ACTION -->
+<td class="actions">
 
-                  <a href="/admin/edit-product/<%= product._id %>">
-                    ✏️
-                  </a>
+  <a href="/admin/edit-product/<%= product._id %>">
+    ✏️
+  </a>
 
-                  <form
-                    action="/admin/delete-product/<%= product._id %>"
-                    method="POST"
-                  >
+  <form
+    action="/admin/toggle-product-block/<%= product._id %>"
+    method="POST"
+    style="display:inline;"
+  >
+    <button
+      type="submit"
+      onclick="return confirm('<%= product.isBlocked ? "Unblock" : "Block" %> this product?')"
+    >
+      <%= product.isBlocked ? "🟢 Unblock" : "🔴 Block" %>
+    </button>
+  </form>
 
-                    <button
-                      type="submit"
-                      onclick="return confirm('Delete product?')"
-                    >
-                      🗑️
-                    </button>
+  <form
+    action="/admin/delete-product/<%= product._id %>"
+    method="POST"
+    style="display:inline;"
+  >
+    <button
+      type="submit"
+      onclick="return confirm('Delete product?')"
+    >
+      🗑️
+    </button>
+  </form>
 
-                  </form>
-
-                </td>
-
+</td>
               </tr>
 
             <% }) %>

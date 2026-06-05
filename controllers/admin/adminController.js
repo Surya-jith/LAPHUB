@@ -1,4 +1,5 @@
 import adminService from "../../services/admin/adminService.js"
+import dashboardService from "../../services/admin/dashboardService.js";
 
 
 
@@ -29,9 +30,62 @@ res.redirect("/admin/dashboard")
 
 }
 
-const loadDashboard=(req,res)=>{
-    res.render("admin/dashboard");
-}
+const loadDashboard = async (
+  req,
+  res
+) => {
+
+  try {
+
+    /*
+    =================================
+    FILTER
+    =================================
+    */
+
+    const filter =
+      req.query.filter || "monthly";
+
+    /*
+    =================================
+    DASHBOARD DATA
+    =================================
+    */
+
+    const data =
+      await dashboardService
+        .getDashboardData(
+          filter
+        );
+
+    /*
+    =================================
+    RENDER
+    =================================
+    */
+
+    res.render(
+      "admin/dashboard",
+      {
+
+        ...data,
+
+        filter
+      }
+    );
+
+  } catch (error) {
+
+    console.log(
+      "Dashboard Error:",
+      error
+    );
+
+    res.redirect(
+      "/admin/login"
+    );
+  }
+};
 
 const loadUsers = async(req,res)=>{
     try {

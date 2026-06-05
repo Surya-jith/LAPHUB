@@ -1,5 +1,6 @@
 import Order from "../../models/order.js";
 import Product from "../../models/productModel.js";
+import Wallet from "../../models/walletModel.js";
 
 const generateOrderId = () => {
   const timestamp = Date.now().toString().slice(-6);
@@ -68,6 +69,12 @@ const cancelOrder = async (
     throw new Error("Order already closed");
   }
 
+  if (order.orderStatus === "Delivered") {
+  throw new Error(
+    "Delivered orders cannot be cancelled"
+  );
+}
+
   /*
   =================================
   STOCK INCREMENT BACK
@@ -86,12 +93,18 @@ const cancelOrder = async (
       item.variantId
     );
 
-    if (variant) {
-      variant.stock += item.quantity;
-      await product.save();
-    }
+    if (
+      item.status !== "Cancelled" &&
+      item.status !== "Returned"
+    ) {
 
-    item.status = "Cancelled";
+      if (variant) {
+        variant.stock += item.quantity;
+        await product.save();
+      }
+
+      item.status = "Cancelled";
+    }
   }
 
   /*
@@ -103,11 +116,50 @@ const cancelOrder = async (
   order.orderStatus = "Cancelled";
   order.cancelReason = cancelReason || "";
 
+  /*
+  =================================
+  WALLET REFUND
+  =================================
+  */
+
+  if (
+    order.paymentStatus === "Paid" &&
+    (
+      order.paymentMethod === "Wallet" ||
+      order.paymentMethod === "Razorpay"
+    )
+  ) {
+    console.log("REFUND BLOCK EXECUTED");
+
+    let wallet = await Wallet.findOne({
+      user: order.user
+    });
+
+    if (!wallet) {
+
+      wallet = await Wallet.create({
+        user: order.user,
+        balance: 0,
+        transactions: []
+      });
+    }
+
+    wallet.balance += order.finalAmount;
+
+    wallet.transactions.push({
+      type: "Credit",
+      amount: order.finalAmount,
+      description: `Refund for Cancelled Order ${order.orderId}`,
+      orderId: order._id
+    });
+
+    await wallet.save();
+  }
+
   await order.save();
 
   return order;
 };
-
 const cancelOrderItem = async (
   orderId,
   itemId,
@@ -142,8 +194,19 @@ const cancelOrderItem = async (
     throw new Error("Order item not found");
   }
 
-  if (item.status === "Cancelled") {
-    throw new Error("Item already cancelled");
+  if (item.status === "Delivered") {
+    throw new Error(
+      "Delivered items cannot be cancelled"
+    );
+  }
+
+  if (
+    item.status === "Cancelled" ||
+    item.status === "Returned"
+  ) {
+    throw new Error(
+      "This item is already closed"
+    );
   }
 
   /*
@@ -178,8 +241,49 @@ const cancelOrderItem = async (
 
   /*
   =================================
+  REFUND FOR PAID ORDERS
+  =================================
+  */
+
+  const refundAmount = item.totalPrice;
+
+  if (
+    order.paymentStatus === "Paid" &&
+    (
+      order.paymentMethod === "Wallet" ||
+      order.paymentMethod === "Razorpay"
+    )
+  ) {
+
+    let wallet = await Wallet.findOne({
+      user: order.user
+    });
+
+    if (!wallet) {
+
+      wallet = await Wallet.create({
+        user: order.user,
+        balance: 0,
+        transactions: []
+      });
+    }
+
+    wallet.balance += refundAmount;
+
+    wallet.transactions.push({
+      type: "Credit",
+      amount: refundAmount,
+      description:
+        `Refund for cancelled item in Order ${order.orderId}`,
+      orderId: order._id
+    });
+
+    await wallet.save();
+  }
+
+  /*
+  =================================
   IF ALL ITEMS CANCELLED
-  → FULL ORDER CANCELLED
   =================================
   */
 
@@ -205,10 +309,10 @@ const returnOrder = async (
   const order = await Order.findOne({
     _id: orderId,
     user: userId
-  });
+  })
 
   if (!order) {
-    throw new Error("Order not found");
+    throw new Error("Order not found")
   }
 
   /*
@@ -220,8 +324,73 @@ const returnOrder = async (
   if (order.orderStatus !== "Delivered") {
     throw new Error(
       "Return allowed only after delivery"
-    );
+    )
   }
+
+  if (
+    !returnReason ||
+    !returnReason.trim()
+  ) {
+    throw new Error(
+      "Return reason is required"
+    )
+  }
+
+  /*
+  =================================
+  USER ONLY REQUESTS RETURN
+  (NO STOCK RESTORE HERE)
+  =================================
+  */
+
+  order.orderStatus = "Return Requested"
+  order.returnReason = returnReason.trim()
+
+  for (const item of order.items) {
+    if (
+      item.status !== "Cancelled" &&
+      item.status !== "Returned"
+    ) {
+      item.status = "Return Requested"
+    }
+  }
+
+  await order.save()
+
+  return order
+}
+
+const returnOrderItem = async (
+  orderId,
+  itemId,
+  userId,
+  returnReason
+) => {
+
+  const order = await Order.findOne({
+    _id: orderId,
+    user: userId
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  const item = order.items.id(itemId);
+
+  if (!item) {
+    throw new Error("Item not found");
+  }
+
+if (
+  order.orderStatus !== "Delivered" ||
+  item.status === "Cancelled" ||
+  item.status === "Returned"
+) {
+  throw new Error(
+    "Return allowed only for delivered items"
+  );
+}
 
   if (
     !returnReason ||
@@ -232,34 +401,7 @@ const returnOrder = async (
     );
   }
 
-  /*
-  =================================
-  UPDATE ORDER STATUS
-  =================================
-  */
-
-  order.orderStatus = "Returned";
-  order.returnReason = returnReason.trim();
-
- for (const item of order.items) {
-
-  const product = await Product.findById(
-    item.product
-  );
-
-  if (!product) continue;
-
-  const variant = product.variants.id(
-    item.variantId
-  );
-
-  if (variant) {
-    variant.stock += item.quantity;
-    await product.save();
-  }
-
-  item.status = "Returned";
-}
+  item.status = "Return Requested";
 
   await order.save();
 
@@ -272,5 +414,6 @@ export default {
   getOrderById,
   cancelOrder,
   cancelOrderItem,
-  returnOrder
+  returnOrder,
+  returnOrderItem
 };

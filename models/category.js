@@ -14,10 +14,30 @@ const categorySchema =new mongoose.Schema({
   default: true
 },
 
-  isDeleted: {
+   isDeleted: {
     type: Boolean,
     default: false
+  },
+
+  /*
+  =================================
+  CATEGORY OFFER
+  =================================
+  */
+
+  categoryOffer: {
+
+    percentage: {
+      type: Number,
+      default: 0
+    },
+
+    expiryDate: {
+      type: Date,
+      default: null
+    }
   }
+
     
 },{timestamps:true});
 

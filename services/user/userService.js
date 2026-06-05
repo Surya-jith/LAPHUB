@@ -3,6 +3,7 @@ import bcrypt  from "bcryptjs";
 import Product from "../../models/productModel.js"
 import Category from "../../models/category.js"
 import sendEmail from "../../utils/sendEmail.js";
+import calculateBestOffer from "../../utils/calculateBestOffer.js";
 
 
 
@@ -10,13 +11,44 @@ const register = async ({ username, email, password, phone }) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  await User.create({
-    username,
-    email,
-    phone,
-    password: hashedPassword
-  });
+/*
+=================================
+GENERATE REFERRAL CODE
+=================================
+*/
 
+const referralCode =
+
+  username
+    .substring(0, 4)
+    .toUpperCase()
+
+  +
+
+  Math.floor(
+    1000 + Math.random() * 9000
+  );
+
+/*
+=================================
+CREATE USER
+=================================
+*/
+
+const user =
+  await User.create({
+
+  username,
+  email,
+  phone,
+
+  password:
+    hashedPassword,
+
+  referralCode
+
+});
+return user;
 };
 
 
@@ -328,6 +360,46 @@ const deleteAddress=async(userId,addressId)=>{
    .skip(skip)
    .limit(limit)
 
+   /*
+=================================
+BEST OFFER CALCULATION
+=================================
+*/
+
+products.forEach(product => {
+
+  let categoryOffer = 0;
+
+  if (
+    product.category?.categoryOffer
+      ?.expiryDate >
+
+    new Date()
+  ) {
+
+    categoryOffer =
+      product.category
+        .categoryOffer
+        .percentage || 0;
+  }
+
+  const offerData =
+    calculateBestOffer(
+
+      product.productOffer
+        ?.percentage || 0,
+
+      categoryOffer,
+
+      product.price
+    );
+
+  product.finalOffer =
+    offerData.finalOffer;
+
+  product.finalPrice =
+    offerData.finalPrice;
+});
 
   const totalProducts = await Product.countDocuments(query)
 
@@ -371,16 +443,81 @@ if(!product || product.isDeleted || !product.isListed){
 return null
 }
 
+/*
+=================================
+PRODUCT BEST OFFER
+=================================
+*/
+
+let categoryOffer = 0;
+
+if (
+  product.category?.categoryOffer
+    ?.expiryDate >
+
+  new Date()
+) {
+
+  categoryOffer =
+    product.category
+      .categoryOffer
+      .percentage || 0;
+}
+
+const offerData =
+  calculateBestOffer(
+
+    product.productOffer
+      ?.percentage || 0,
+
+    categoryOffer,
+
+    product.price
+  );
+
+product.finalOffer =
+  offerData.finalOffer;
+
+product.finalPrice =
+  offerData.finalPrice;
 
 // related products
 const relatedProducts = await Product.find({
 
-category: product.category,
+category: product.category._id,
 _id: { $ne: product._id },
 isDeleted:false,
 isListed:true
 
-}).limit(4)
+})
+.populate("category")
+.limit(4)
+
+/*
+=================================
+RELATED PRODUCTS OFFER
+=================================
+*/
+
+relatedProducts.forEach(item => {
+
+  const relatedOffer =
+    calculateBestOffer(
+
+      item.productOffer
+        ?.percentage || 0,
+
+      categoryOffer,
+
+      item.price
+    );
+
+  item.finalOffer =
+    relatedOffer.finalOffer;
+
+  item.finalPrice =
+    relatedOffer.finalPrice;
+});
 
 let avgRating = 0
 let reviewCount = 0

@@ -415,3 +415,104 @@ RESPONSIVE
   padding: 24px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
+/* =================================
+MOBILE HEADER
+================================= */
+
+.menu-toggle{
+display:none;
+background:none;
+border:none;
+font-size:24px;
+cursor:pointer;
+color:#1f2937;
+}
+
+
+/* =================================
+TABLET + MOBILE
+================================= */
+
+@media(max-width: 992px){
+
+.header-container{
+flex-wrap:wrap;
+gap:18px;
+position:relative;
+}
+
+.menu-toggle{
+display:block;
+}
+
+.nav-links{
+display:none;
+width:100%;
+flex-direction:column;
+gap:16px;
+padding-top:10px;
+border-top:1px solid #e5e7eb;
+}
+
+.nav-links.active{
+display:flex;
+}
+
+.header-right{
+width:100%;
+justify-content:space-between;
+flex-wrap:wrap;
+}
+
+.user-section{
+flex-wrap:wrap;
+}
+
+.logo img{
+height:36px;
+}
+
+}
+
+
+/* =================================
+MOBILE
+================================= */
+
+@media(max-width: 576px){
+
+.main-header{
+padding:0;
+}
+
+.header-container{
+padding:14px;
+}
+
+.username{
+font-size:12px;
+padding:6px 10px;
+}
+
+.logout-btn,
+.login-btn{
+font-size:12px;
+padding:6px 12px;
+}
+
+.cart-icon,
+.wishlist-icon{
+font-size:20px;
+}
+
+.profile-sidebar{
+min-width:100%;
+width:100%;
+padding:18px;
+}
+
+.page-layout{
+padding:0 14px;
+}
+
+}

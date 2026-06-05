@@ -1,4 +1,8 @@
 <%- include('../partials/header', { user: user }) %>
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
 <link rel="stylesheet" href="/css/user/checkout.css">
 <% if(typeof error !== "undefined" && error){ %>
   <div class="error-box">
@@ -122,32 +126,206 @@
       </div>
 
       <!-- SUMMARY -->
-      <div class="summary">
+      <!-- SUMMARY -->
+<div class="summary">
 
-        <div class="row">
-          <span>Subtotal</span>
-          <span>₹<%= subtotal %></span>
+  <div class="row">
+    <span>Subtotal</span>
+    <span>₹<%= subtotal.toFixed(2) %></span>
+  </div>
+
+  <div class="row">
+    <span>GST (2%)</span>
+    <span>₹<%= gst.toFixed(2) %></span>
+  </div>
+
+  <% if(discount > 0){ %>
+  <div class="row">
+    <span>Discount</span>
+    <span>- ₹<%= discount.toFixed(2) %></span>
+  </div>
+  <% } %>
+
+  <div class="row">
+    <span>Shipping</span>
+    <span>Free</span>
+  </div>
+
+  <div class="row total">
+    <span>Total</span>
+    <span>₹<%= total.toFixed(2) %></span>
+  </div>
+
+</div>
+
+<!-- COUPON -->
+<div class="coupon-box">
+
+  <h4>Apply Coupon</h4>
+
+  <div class="coupon-input-group">
+
+    <input
+      type="text"
+      id="couponCode"
+      placeholder="Enter coupon code"
+    >
+
+    <button
+      type="button"
+      id="applyCouponBtn"
+    >
+      Apply
+    </button>
+
+    <button
+      type="button"
+      id="removeCouponBtn"
+      style="display:none;"
+    >
+      Remove
+    </button>
+
+  </div>
+
+  <p
+    id="couponMessage"
+    class="coupon-message"
+  ></p>
+
+</div>
+
+
+<!-- AVAILABLE COUPONS -->
+
+<% if (
+  availableCoupons &&
+  availableCoupons.length > 0
+) { %>
+
+<div class="available-coupons">
+
+  <div class="coupon-header">
+
+    <h4>
+      Available Coupons
+    </h4>
+
+  </div>
+
+  <div class="coupon-list">
+
+    <% availableCoupons.forEach(coupon => { %>
+
+      <div class="coupon-card">
+
+        <div class="coupon-left">
+
+          <div class="coupon-code">
+
+            <%= coupon.code %>
+
+          </div>
+
+          <div class="coupon-details">
+
+            <% if (
+              coupon.discountType
+              === "percentage"
+            ) { %>
+
+              <h5>
+                <%= coupon.discountValue %>% OFF
+              </h5>
+
+            <% } else { %>
+
+              <h5>
+                ₹<%= coupon.discountValue %> OFF
+              </h5>
+
+            <% } %>
+
+            <p>
+
+              Min Purchase:
+              ₹<%= coupon.minimumAmount %>
+
+            </p>
+
+          </div>
+
         </div>
 
-        <div class="row">
-          <span>Tax</span>
-          <span>₹<%= tax %></span>
-        </div>
+        <button
+          type="button"
+          class="coupon-apply-btn"
 
-        <div class="row total">
-          <span>Total</span>
-          <span>₹<%= total %></span>
-        </div>
+          onclick="
+            document.getElementById(
+              'couponCode'
+            ).value =
+            '<%= coupon.code %>';
+
+            applyCouponBtn.click();
+          "
+        >
+
+          Apply
+
+        </button>
 
       </div>
 
-      <!-- PAYMENT -->
-      <div class="payment">
-        <label>
-          <input type="radio" name="paymentMethod" value="COD" checked>
-          Cash on Delivery
-        </label>
-      </div>
+    <% }) %>
+
+  </div>
+
+</div>
+
+<% } %>
+
+    <!-- PAYMENT -->
+<div class="payment">
+
+  <h4>Select Payment Method</h4>
+
+  <label class="payment-option">
+    <input
+      type="radio"
+      name="paymentMethod"
+      value="COD"
+      checked
+    >
+    Cash on Delivery
+  </label>
+
+  <label class="payment-option">
+    <input
+      type="radio"
+      name="paymentMethod"
+      value="Razorpay"
+    >
+    Razorpay
+  </label>
+
+  <label class="payment-option">
+
+  <input
+    type="radio"
+    name="paymentMethod"
+    value="Wallet"
+  >
+
+  Wallet
+  (
+    Balance:
+    ₹<%= walletBalance.toFixed(2) %>
+  )
+
+</label>
+
+</div>
 
       <!-- BUTTON -->
       <button class="place-btn" <%= disableCheckout ? 'disabled' : '' %>>
@@ -164,14 +342,371 @@
 
 </section>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script>
-document.querySelectorAll('.address-item').forEach(item => {
+
+/*
+=================================
+ADDRESS SELECT
+=================================
+*/
+
+document.querySelectorAll('.address-item')
+.forEach(item => {
+
   item.addEventListener('click', () => {
-    document.querySelectorAll('.address-item').forEach(i => i.classList.remove('selected'));
+
+    document
+      .querySelectorAll('.address-item')
+      .forEach(i => i.classList.remove('selected'));
+
     item.classList.add('selected');
+
     item.querySelector('input').checked = true;
   });
 });
-</script>
 
+
+
+/*
+=================================
+COUPON APPLY
+=================================
+*/
+
+const applyCouponBtn =
+  document.getElementById(
+    "applyCouponBtn"
+  );
+
+const removeCouponBtn =
+  document.getElementById(
+    "removeCouponBtn"
+  );
+
+const couponMessage =
+  document.getElementById(
+    "couponMessage"
+  );
+
+const couponInput =
+  document.getElementById(
+    "couponCode"
+  );
+
+applyCouponBtn?.addEventListener(
+  "click",
+  async () => {
+
+    try {
+
+      const couponCode =
+        couponInput.value.trim();
+
+      if (!couponCode) {
+
+        couponMessage.innerText =
+          "Enter coupon code";
+
+        return;
+      }
+
+      const response =
+        await fetch(
+          "/apply-coupon",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              couponCode
+            })
+          }
+        );
+
+      const result =
+        await response.json();
+
+        /*
+=================================
+FAILED RESPONSE
+=================================
+*/
+
+if (!result.success) {
+
+  alert(result.message);
+
+  return;
+}
+
+      if (result.success) {
+
+        couponMessage.innerText =
+          "Coupon applied successfully";
+
+        applyCouponBtn.style.display =
+          "none";
+
+        removeCouponBtn.style.display =
+          "inline-block";
+
+        location.reload();
+
+      } else {
+
+        couponMessage.innerText =
+          result.message;
+      }
+
+    } catch (error) {
+
+      couponMessage.innerText =
+        "Unable to apply coupon";
+    }
+  }
+);
+
+/*
+=================================
+REMOVE COUPON
+=================================
+*/
+
+removeCouponBtn?.addEventListener(
+  "click",
+  async () => {
+
+    try {
+
+      const response =
+        await fetch(
+          "/remove-coupon",
+          {
+            method: "POST"
+          }
+        );
+
+      const result =
+        await response.json();
+
+      if (result.success) {
+
+        location.reload();
+      }
+
+    } catch (error) {
+
+      couponMessage.innerText =
+        "Unable to remove coupon";
+    }
+  }
+);
+
+/*
+=================================
+PLACE ORDER
+=================================
+*/
+
+
+
+const checkoutForm =
+  document.querySelector("form");
+
+checkoutForm.addEventListener(
+  "submit",
+  async (e) => {
+
+    e.preventDefault();
+
+    const formData =
+      new FormData(checkoutForm);
+
+    const data = {
+      address:
+        formData.get("address"),
+
+      paymentMethod:
+        formData.get("paymentMethod")
+    };
+
+    try {
+
+      const response = await fetch(
+        "/place-order",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify(data)
+        }
+      );
+
+      const result =
+        await response.json();
+        /*
+=================================
+SHOW BACKEND ERROR
+=================================
+*/
+
+if (!result.success) {
+
+  alert(result.message);
+
+  return;
+}
+
+      /*
+      ================================
+      COD SUCCESS
+      ================================
+      */
+
+      if (
+        result.success &&
+        result.cod
+      ) {
+
+        window.location.href =
+          `/order-success/${result.orderId}`;
+
+        return;
+      }
+
+      /*
+      ================================
+      RAZORPAY
+      ================================
+      */
+
+      if (
+        result.success &&
+        !result.cod
+      ) {
+
+        const options = {
+
+          key:
+            result.razorpayKey,
+
+          amount:
+            result.razorpayOrder.amount,
+
+          currency:
+            result.razorpayOrder.currency,
+
+          name: "LAPHUB",
+
+          description:
+            "Order Payment",
+
+          order_id:
+            result.razorpayOrder.id,
+
+          handler: async function (
+  response
+) {
+
+  try {
+
+    const verifyResponse =
+      await fetch(
+        "/verify-payment",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            razorpay_order_id:
+              response.razorpay_order_id,
+
+            razorpay_payment_id:
+              response.razorpay_payment_id,
+
+            razorpay_signature:
+              response.razorpay_signature,
+
+            orderId:
+              result.order._id
+          })
+        }
+      );
+
+    const verifyResult =
+      await verifyResponse.json();
+
+    /*
+    ================================
+    PAYMENT VERIFIED
+    ================================
+    */
+
+    if (verifyResult.success) {
+
+      window.location.href =
+        `/order-success/${result.order._id}`;
+    }
+
+    else {
+
+      alert(
+        "Payment verification failed"
+      );
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Verification Error:",
+      error
+    );
+
+    alert(
+      "Payment verification failed"
+    );
+  }
+},
+
+          theme: {
+            color: "#2f4da3"
+          }
+        };
+
+        const razorpay =
+          new Razorpay(options);
+
+        razorpay.open();
+      }
+
+    } catch (error) {
+
+      console.log(
+        "Checkout Error:",
+        error
+      );
+
+      alert(
+        "Something went wrong"
+      );
+    }
+  }
+);
+
+</script>
 <%- include('../partials/footer') %>

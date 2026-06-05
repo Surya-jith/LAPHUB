@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>
+    Sales Report
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="/css/admin/sidebar.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="/css/admin/salesReport.css"
+  >
+
+</head>
+
+<body>
+
+<div class="admin-container">
+
+  <!-- SIDEBAR -->
+  <%- include('./partials/sidebar') %>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- HEADER -->
+    <div class="report-header">
+
+      <h2>
+        Sales Report
+      </h2>
+
+      <!-- EXPORT -->
+      <div class="export-buttons">
+
+        <a
+          href="/admin/sales-report/pdf"
+          class="btn-export"
+        >
+          Export PDF
+        </a>
+
+        <a
+          href="/admin/sales-report/excel"
+          class="btn-export"
+        >
+          Export Excel
+        </a>
+
+      </div>
+
+    </div>
+
+    <!-- FILTER -->
+    <div class="filter-card">
+
+      <form
+        method="GET"
+        action="/admin/sales-report"
+      >
+
+        <select
+          name="filter"
+          onchange="toggleCustomDates()"
+          id="filterSelect"
+        >
+
+          <option
+            value="daily"
+            <%= filter === "daily"
+              ? "selected"
+              : ""
+            %>
+          >
+            Daily
+          </option>
+
+          <option
+            value="weekly"
+            <%= filter === "weekly"
+              ? "selected"
+              : ""
+            %>
+          >
+            Weekly
+          </option>
+
+          <option
+            value="monthly"
+            <%= filter === "monthly"
+              ? "selected"
+              : ""
+            %>
+          >
+            Monthly
+          </option>
+
+          <option
+            value="yearly"
+            <%= filter === "yearly"
+              ? "selected"
+              : ""
+            %>
+          >
+            Yearly
+          </option>
+
+          <option
+            value="custom"
+            <%= filter === "custom"
+              ? "selected"
+              : ""
+            %>
+          >
+            Custom
+          </option>
+
+        </select>
+
+        <!-- CUSTOM DATES -->
+        <div
+          id="customDates"
+          style="
+            display:
+            <%= filter === 'custom'
+              ? 'flex'
+              : 'none'
+            %>;
+          "
+        >
+
+          <input
+            type="date"
+            name="startDate"
+            value="<%= startDate || '' %>"
+          >
+
+          <input
+            type="date"
+            name="endDate"
+            value="<%= endDate || '' %>"
+          >
+
+        </div>
+
+        <button
+          type="submit"
+          class="btn-filter"
+        >
+          Apply
+        </button>
+
+      </form>
+
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+
+      <div class="stat-card">
+
+        <h4>
+          Total Sales
+        </h4>
+
+        <h2>
+          ₹<%= totalSales.toFixed(2) %>
+        </h2>
+
+      </div>
+
+      <div class="stat-card">
+
+        <h4>
+          Total Discount
+        </h4>
+
+        <h2>
+          ₹<%= totalDiscount.toFixed(2) %>
+        </h2>
+
+      </div>
+
+      <div class="stat-card">
+
+        <h4>
+          Total Orders
+        </h4>
+
+        <h2>
+          <%= totalOrders %>
+        </h2>
+
+      </div>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Order ID</th>
+
+            <th>User</th>
+
+            <th>Total</th>
+
+            <th>Discount</th>
+
+            <th>Payment</th>
+
+            <th>Date</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <% orders.forEach(order => { %>
+
+            <tr>
+
+              <td>
+                <%= order.orderId %>
+              </td>
+
+              <td>
+                <%= order.user?.username %>
+              </td>
+
+              <td>
+                ₹<%= order.finalAmount %>
+              </td>
+
+              <td>
+                ₹<%= order.discount || 0 %>
+              </td>
+
+              <td>
+                <%= order.paymentMethod %>
+              </td>
+
+              <td>
+
+                <%= new Date(
+                  order.createdAt
+                ).toLocaleDateString() %>
+
+              </td>
+
+            </tr>
+
+          <% }) %>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+function toggleCustomDates() {
+
+  const filter =
+    document.getElementById(
+      "filterSelect"
+    ).value;
+
+  const customDates =
+    document.getElementById(
+      "customDates"
+    );
+
+  customDates.style.display =
+
+    filter === "custom"
+
+      ? "flex"
+
+      : "none";
+}
+
+</script>
+
+</body>
+</html>

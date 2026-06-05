@@ -1,21 +1,38 @@
-import Cart from "../models/cartModel.js"
+import Cart from "../models/cartModel.js";
+import Product from "../models/productModel.js";
 
-const cartCount = async (req,res,next)=>{
+const cartCount = async (req, res, next) => {
+  try {
+    if (!req.session.user) {
+      res.locals.cartCount = 0;
+      return next();
+    }
 
-if(req.session.user){
+    const cart = await Cart.findOne({ user: req.session.user })
+      .populate("items.product");
 
-const cart = await Cart.findOne({user:req.session.user})
+    if (!cart || !cart.items.length) {
+      res.locals.cartCount = 0;
+      return next();
+    }
 
-res.locals.cartCount = cart ? cart.items.length : 0
+    const validItems = cart.items.filter(
+      item =>
+        item.product &&
+        item.quantity > 0
+    );
 
-}else{
+    res.locals.cartCount = validItems.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
 
-res.locals.cartCount = 0
+    next();
+  } catch (error) {
+    console.error("Cart count middleware error:", error);
+    res.locals.cartCount = 0;
+    next();
+  }
+};
 
-}
-
-next()
-
-}
-
-export default cartCount
+export default cartCount;

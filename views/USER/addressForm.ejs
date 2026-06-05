@@ -1,7 +1,14 @@
 <%- include('../partials/header', { user: user }) %>
-
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
 <link rel="stylesheet" href="/css/user/addressForm.css">
-
+<% if (typeof error !== "undefined" && error) { %>
+  <div class="error-message">
+    <%= error %>
+  </div>
+<% } %>
 <section class="address-form">
 
   <div class="form-card">

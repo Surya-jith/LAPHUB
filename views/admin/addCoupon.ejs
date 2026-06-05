@@ -1,0 +1,167 @@
+<link
+  rel="stylesheet"
+  href="/css/admin/sidebar.css"
+/>
+
+<link
+  rel="stylesheet"
+  href="/css/admin/coupons.css"
+/>
+
+<div class="admin-container">
+
+  <%- include('./partials/sidebar') %>
+
+  <div class="main-content">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+      <h2>
+        Add Coupon
+      </h2>
+
+      <a
+        href="/admin/coupons"
+        class="btn-back"
+      >
+        ← Back
+      </a>
+
+    </div>
+
+    <!-- ERROR -->
+    <% if (error) { %>
+
+      <div class="error-box">
+        <%= error %>
+      </div>
+
+    <% } %>
+
+    <!-- FORM -->
+    <div class="form-container">
+
+      <form
+        action="/admin/add-coupon"
+        method="POST"
+      >
+
+        <!-- CODE -->
+        <div class="form-group">
+
+          <label>
+            Coupon Code
+          </label>
+
+          <input
+            type="text"
+            name="code"
+            required
+          >
+
+        </div>
+
+        <!-- TYPE -->
+        <div class="form-group">
+
+          <label>
+            Discount Type
+          </label>
+
+          <select
+            name="discountType"
+            required
+          >
+
+            <option
+              value="percentage"
+            >
+              Percentage
+            </option>
+
+            <option
+              value="fixed"
+            >
+              Fixed
+            </option>
+
+          </select>
+
+        </div>
+
+        <!-- VALUE -->
+        <div class="form-group">
+
+          <label>
+            Discount Value
+          </label>
+
+          <input
+            type="number"
+            name="discountValue"
+            required
+          >
+
+        </div>
+
+        <!-- MIN -->
+        <div class="form-group">
+
+          <label>
+            Minimum Amount
+          </label>
+
+          <input
+            type="number"
+            name="minimumAmount"
+            value="0"
+          >
+
+        </div>
+
+        <!-- MAX -->
+        <div class="form-group">
+
+          <label>
+            Maximum Discount
+          </label>
+
+          <input
+            type="number"
+            name="maximumDiscount"
+            value="0"
+          >
+
+        </div>
+
+        <!-- EXPIRY -->
+        <div class="form-group">
+
+          <label>
+            Expiry Date
+          </label>
+
+          <input
+            type="date"
+            name="expiryDate"
+            required
+          >
+
+        </div>
+
+        <!-- BUTTON -->
+        <button
+          type="submit"
+          class="btn-save"
+        >
+          Create Coupon
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

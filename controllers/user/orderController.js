@@ -1,5 +1,9 @@
 import orderService from "../../services/user/orderService.js";
-import { PDFDocument, StandardFonts } from "pdf-lib";
+import {
+  PDFDocument,
+  StandardFonts,
+  rgb
+} from "pdf-lib";
 
 const loadOrders = async (req, res) => {
   try {
@@ -154,38 +158,66 @@ const returnOrder = async (req, res) => {
 
 const downloadInvoice = async (req, res) => {
   try {
-    const userId = req.session.user;
-    const orderId = req.params.id;
+
+    const userId = req.session.user
+    const orderId = req.params.id
 
     const order = await orderService.getOrderById(
       orderId,
       userId
-    );
+    )
 
     if (!order) {
       return res.redirect(
         `/orders?error=${encodeURIComponent("Order not found")}`
-      );
+      )
     }
 
-    const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([600, 800]);
+    if (order.orderStatus !== "Delivered") {
+      return res.redirect(
+        `/orders/${orderId}?error=${encodeURIComponent("Invoice is available only for delivered orders")}`
+      )
+    }
+
+    const pdfDoc = await PDFDocument.create()
+
+    const page = pdfDoc.addPage([700, 900])
 
     const font = await pdfDoc.embedFont(
       StandardFonts.Helvetica
-    );
+    )
 
-    let y = 760;
+    const boldFont = await pdfDoc.embedFont(
+      StandardFonts.HelveticaBold
+    )
 
-    const drawText = (text, size = 12) => {
-      page.drawText(text, {
-        x: 50,
-        y,
-        size,
-        font
-      });
-      y -= 20;
-    };
+    const { width, height } = page.getSize()
+
+    /*
+    =================================
+    COLORS
+    =================================
+    */
+
+    const darkBg = rgb(0.12, 0.12, 0.12)
+    const lightText = rgb(1, 1, 1)
+    const mutedText = rgb(0.7, 0.7, 0.7)
+    const borderColor = rgb(0.3, 0.3, 0.3)
+    const whiteBg = rgb(1, 1, 1)
+
+    /*
+    =================================
+    PAGE BACKGROUND
+    =================================
+    */
+
+    page.drawRectangle({
+      x: 0,
+      y: 0,
+      width,
+      height,
+      color: whiteBg
+    })
 
     /*
     =================================
@@ -193,39 +225,187 @@ const downloadInvoice = async (req, res) => {
     =================================
     */
 
-    drawText("Invoice", 20);
-    y -= 10;
+    page.drawRectangle({
+      x: 0,
+      y: height - 120,
+      width,
+      height: 120,
+      color: darkBg
+    })
 
-    drawText(`Order ID: ${order.orderId}`);
-    drawText(
-      `Order Date: ${new Date(order.createdAt).toDateString()}`
-    );
-    drawText(
-      `Payment Method: ${order.paymentMethod}`
-    );
-    drawText(
-      `Payment Status: ${order.paymentStatus}`
-    );
+    page.drawText("LAPHUB", {
+      x: 50,
+      y: height - 70,
+      size: 28,
+      font: boldFont,
+      color: lightText
+    })
+
+    page.drawText("INVOICE", {
+      x: 50,
+      y: height - 100,
+      size: 14,
+      font,
+      color: mutedText
+    })
 
     /*
     =================================
-    ADDRESS
+    ORDER DETAILS
     =================================
     */
 
-    y -= 20;
+    let y = height - 170
 
-    drawText("Delivery Address", 14);
+    const drawLabel = (label, value) => {
 
-    drawText(
-      `${order.address.firstName} ${order.address.lastName}`
-    );
-    drawText(order.address.address);
-    drawText(
-      `${order.address.city}, ${order.address.state}`
-    );
-    drawText(order.address.pincode);
-    drawText(order.address.phone);
+      page.drawText(label, {
+        x: 50,
+        y,
+        size: 11,
+        font: boldFont
+      })
+
+      page.drawText(String(value || ""), {
+        x: 180,
+        y,
+        size: 11,
+        font
+      })
+
+      y -= 22
+    }
+
+    drawLabel("Order ID:", order.orderId)
+
+    drawLabel(
+      "Order Date:",
+      new Date(order.createdAt).toDateString()
+    )
+
+    drawLabel(
+      "Payment Method:",
+      order.paymentMethod
+    )
+
+    drawLabel(
+      "Payment Status:",
+      order.paymentStatus
+    )
+
+    /*
+    =================================
+    ADDRESS SECTION
+    =================================
+    */
+
+    y -= 20
+
+    page.drawRectangle({
+      x: 45,
+      y: y - 90,
+      width: 280,
+      height: 90,
+      borderColor,
+      borderWidth: 1
+    })
+
+    page.drawText("Delivery Address", {
+      x: 55,
+      y: y - 20,
+      size: 13,
+      font: boldFont
+    })
+
+    page.drawText(
+      `${order.address?.firstName || ""} ${order.address?.lastName || ""}`,
+      {
+        x: 55,
+        y: y - 42,
+        size: 11,
+        font
+      }
+    )
+
+    page.drawText(
+      `${order.address?.address || ""}`,
+      {
+        x: 55,
+        y: y - 58,
+        size: 10,
+        font
+      }
+    )
+
+    page.drawText(
+      `${order.address?.city || ""}, ${order.address?.state || ""}`,
+      {
+        x: 55,
+        y: y - 74,
+        size: 10,
+        font
+      }
+    )
+
+    page.drawText(
+      `${order.address?.pincode || ""} | ${order.address?.phone || ""}`,
+      {
+        x: 55,
+        y: y - 90,
+        size: 10,
+        font
+      }
+    )
+
+    y -= 140
+
+    /*
+    =================================
+    PRODUCT TABLE HEADER
+    =================================
+    */
+
+    page.drawRectangle({
+      x: 45,
+      y,
+      width: 610,
+      height: 28,
+      color: darkBg
+    })
+
+    page.drawText("Product", {
+      x: 55,
+      y: y + 8,
+      size: 11,
+      font: boldFont,
+      color: lightText
+    })
+
+    page.drawText("Qty", {
+      x: 350,
+      y: y + 8,
+      size: 11,
+      font: boldFont,
+      color: lightText
+    })
+
+    page.drawText("Price", {
+      x: 430,
+      y: y + 8,
+      size: 11,
+      font: boldFont,
+      color: lightText
+    })
+
+    page.drawText("Total", {
+      x: 550,
+      y: y + 8,
+      size: 11,
+      font: boldFont,
+      color: lightText
+    })
+
+    y -= 35
 
     /*
     =================================
@@ -233,36 +413,145 @@ const downloadInvoice = async (req, res) => {
     =================================
     */
 
-    y -= 20;
+   order.items.forEach(item => {
 
-    drawText("Ordered Products", 14);
+  const productName =
+    item.product?.name || "Product"
 
-    order.items.forEach((item, index) => {
-      drawText(
-        `${index + 1}. ${item.product.name}`
-      );
+  const shortName =
+    productName.length > 45
+      ? productName.substring(0, 45) + "..."
+      : productName
 
-      drawText(
-        `Qty: ${item.quantity} | Price: Rs.${item.price} | Total: Rs.${item.totalPrice}`
-      );
+  page.drawText(shortName, {
+    x: 55,
+    y,
+    size: 10,
+    font,
+    maxWidth: 260
+  })
 
-      y -= 5;
-    });
+  page.drawText(
+    String(item.quantity),
+    {
+      x: 360,
+      y,
+      size: 10,
+      font
+    }
+  )
+
+  page.drawText(
+    `Rs.${item.price.toFixed(2)}`,
+    {
+      x: 430,
+      y,
+      size: 10,
+      font
+    }
+  )
+
+  page.drawText(
+    `Rs.${item.totalPrice.toFixed(2)}`,
+    {
+      x: 565,
+      y,
+      size: 10,
+      font
+    }
+  )
+
+  y -= 28
+})
 
     /*
     =================================
-    PAYMENT SUMMARY
+    TOTALS SECTION
     =================================
     */
 
-    y -= 10;
+    y -= 20
 
-    drawText("Payment Summary", 14);
+    page.drawRectangle({
+      x: 390,
+      y: y - 110,
+      width: 265,
+      height: 110,
+      borderColor,
+      borderWidth: 1
+    })
 
-    drawText(`Subtotal: Rs.${order.subtotal}`);
-    drawText(`Discount: Rs.${order.discount}`);
-    drawText(`Shipping: Rs.${order.shippingCharge}`);
-    drawText(`Final Amount: Rs.${order.finalAmount}`);
+    const drawTotalRow = (
+      label,
+      value,
+      posY,
+      isBold = false
+    ) => {
+
+      page.drawText(label, {
+        x: 405,
+        y: posY,
+        size: 11,
+        font: isBold ? boldFont : font
+      })
+
+      page.drawText(value, {
+        x: 540,
+        y: posY,
+        size: 11,
+        font: isBold ? boldFont : font
+      })
+    }
+
+    drawTotalRow(
+      "Subtotal",
+      `Rs.${order.subtotal.toFixed(2)}`,
+      y - 20
+    )
+
+    drawTotalRow(
+      "GST (2%)",
+      `Rs.${(order.gst || 0).toFixed(2)}`,
+      y - 40
+    )
+
+    drawTotalRow(
+      "Discount",
+      `Rs.${(order.discount || 0).toFixed(2)}`,
+      y - 60
+    )
+
+    drawTotalRow(
+      "Shipping",
+      order.shippingCharge > 0
+        ? `Rs.${order.shippingCharge.toFixed(2)}`
+        : "Free",
+      y - 80
+    )
+
+    drawTotalRow(
+      "Final Amount",
+      `Rs.${order.finalAmount.toFixed(2)}`,
+      y - 100,
+      true
+    )
+
+    /*
+    =================================
+    FOOTER
+    =================================
+    */
+
+    page.drawText(
+      "Thank you for shopping with LAPHUB",
+      {
+        x: 50,
+        y: 40,
+        size: 10,
+        font,
+        color: mutedText
+      }
+    )
 
     /*
     =================================
@@ -270,28 +559,67 @@ const downloadInvoice = async (req, res) => {
     =================================
     */
 
-    const pdfBytes = await pdfDoc.save();
+    const pdfBytes = await pdfDoc.save()
 
     res.setHeader(
       "Content-Type",
       "application/pdf"
-    );
+    )
 
     res.setHeader(
       "Content-Disposition",
       `attachment; filename=invoice-${order.orderId}.pdf`
-    );
+    )
 
-    res.send(Buffer.from(pdfBytes));
+    res.send(Buffer.from(pdfBytes))
 
   } catch (error) {
+
     console.log(
       "Download Invoice Error:",
       error
-    );
+    )
 
     return res.redirect(
       `/orders?error=${encodeURIComponent("Unable to download invoice")}`
+    )
+  }
+}
+
+
+const returnOrderItem = async (
+  req,
+  res
+) => {
+
+  try {
+
+    console.log("RETURN ITEM HIT");
+    console.log("Params:", req.params);
+    console.log("Body:", req.body);
+
+    await orderService.returnOrderItem(
+      req.params.orderId,
+      req.params.itemId,
+      req.session.user,
+      req.body.returnReason
+    );
+
+    console.log("RETURN ITEM SUCCESS");
+
+    res.redirect(
+      `/orders/${req.params.orderId}`
+    );
+
+  } catch (error) {
+
+    console.log(
+      "RETURN ITEM ERROR:",
+      error.message
+    );
+
+    res.redirect(
+      `/orders/${req.params.orderId}?error=${encodeURIComponent(error.message)}`
     );
   }
 };
@@ -302,5 +630,6 @@ export default {
   cancelOrder,
   cancelOrderItem,
   returnOrder,
-  downloadInvoice
+  downloadInvoice,
+  returnOrderItem
 };

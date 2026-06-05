@@ -1,10 +1,22 @@
 <link rel="stylesheet" href="/css/admin/orderDetails.css">
 <link rel="stylesheet" href="/css/admin/sidebar.css">
-
+<% if (typeof error !== "undefined" && error) { %>
+  <div style="
+    background: #ffe6e6;
+    color: #d8000c;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+  ">
+    <%= error %>
+  </div>
+<% } %>
 <div class="admin-layout">
 
+  
   <!-- SIDEBAR -->
- <%- include("./partials/sidebar") %>
+  <%- include("./partials/sidebar") %>
 
   <!-- MAIN CONTENT -->
   <div class="main-content">
@@ -57,6 +69,15 @@
             <%= order.paymentStatus %>
           </strong>
         </div>
+
+        <% if (order.orderStatus === "Return Requested") { %>
+          <div class="info-row">
+            <span>Return Reason</span>
+            <strong>
+              <%= order.returnReason || "No reason provided" %>
+            </strong>
+          </div>
+        <% } %>
       </div>
 
       <!-- CUSTOMER INFO -->
@@ -89,12 +110,16 @@
       <div class="info-card">
         <h3>Document</h3>
 
-        <a
-          href="/admin/orders/<%= order._id %>/invoice"
-          class="invoice-btn"
-        >
-          Download Invoice
-        </a>
+        <% if (order.orderStatus === "Delivered") { %>
+
+          <a
+            href="/orders/<%= order._id %>/invoice"
+            class="invoice-btn"
+          >
+            Download Invoice
+          </a>
+
+        <% } %>
       </div>
 
     </div>
@@ -104,45 +129,93 @@
 
       <h3>Edit Order Status</h3>
 
-      <form
-        action="/admin/orders/<%= order._id %>/status"
-        method="POST"
-      >
+      <% if (
+        order.orderStatus !== "Cancelled" &&
+        order.orderStatus !== "Returned"
+      ) { %>
 
-        <select name="orderStatus" required>
+        <form
+          action="/admin/orders/<%= order._id %>/status"
+          method="POST"
+        >
 
-          <option value="Pending"
-            <%= order.orderStatus === "Pending" ? "selected" : "" %>>
-            Pending
-          </option>
+          <select name="orderStatus" required>
 
-          <option value="Shipped"
-            <%= order.orderStatus === "Shipped" ? "selected" : "" %>>
-            Shipped
-          </option>
+            <option value="Pending"
+              <%= order.orderStatus === "Pending" ? "selected" : "" %>>
+              Pending
+            </option>
 
-          <option value="Out for Delivery"
-            <%= order.orderStatus === "Out for Delivery" ? "selected" : "" %>>
-            Out for Delivery
-          </option>
+            <option value="Processing"
+              <%= order.orderStatus === "Processing" ? "selected" : "" %>>
+              Processing
+            </option>
 
-          <option value="Delivered"
-            <%= order.orderStatus === "Delivered" ? "selected" : "" %>>
-            Delivered
-          </option>
+            <option value="Shipped"
+              <%= order.orderStatus === "Shipped" ? "selected" : "" %>>
+              Shipped
+            </option>
 
-          <option value="Cancelled"
-            <%= order.orderStatus === "Cancelled" ? "selected" : "" %>>
-            Cancelled
-          </option>
+            <option value="Delivered"
+              <%= order.orderStatus === "Delivered" ? "selected" : "" %>>
+              Delivered
+            </option>
 
-        </select>
+            <option value="Cancelled"
+              <%= order.orderStatus === "Cancelled" ? "selected" : "" %>>
+              Cancelled
+            </option>
 
-        <button type="submit">
-          Update Status
-        </button>
+            <option value="Returned"
+              <%= order.orderStatus === "Returned" ? "selected" : "" %>>
+              Returned
+            </option>
 
-      </form>
+          </select>
+
+          <button type="submit">
+            Update Status
+          </button>
+
+        </form>
+
+        <% if (order.orderStatus === "Return Requested") { %>
+
+          <form
+            action="/admin/orders/<%= order._id %>/status"
+            method="POST"
+            class="return-approval-form"
+          >
+
+            <button
+              type="submit"
+              name="orderStatus"
+              value="Returned"
+              class="approve-btn"
+            >
+              Approve Return
+            </button>
+
+            <button
+              type="submit"
+              name="orderStatus"
+              value="Delivered"
+              class="reject-btn"
+            >
+              Reject Return
+            </button>
+
+          </form>
+
+        <% } %>
+
+      <% } else { %>
+
+        <p class="closed-order-message">
+          This order is already closed and status cannot be changed.
+        </p>
+
+      <% } %>
 
     </div>
 
@@ -164,6 +237,8 @@
               <th>Qty</th>
               <th>Price</th>
               <th>Total</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
 
@@ -201,6 +276,43 @@
                 <td>
                   ₹<%= item.totalPrice %>
                 </td>
+                <td>
+  <%= item.status %>
+</td>
+
+<td>
+
+  <% if (item.status === "Return Requested") { %>
+
+    <form
+      action="/admin/orders/<%= order._id %>/items/<%= item._id %>/return"
+      method="POST"
+      style="display:inline;"
+    >
+
+      <button
+        type="submit"
+        name="action"
+        value="approve"
+        class="approve-btn"
+      >
+        Approve
+      </button>
+
+      <button
+        type="submit"
+        name="action"
+        value="reject"
+        class="reject-btn"
+      >
+        Reject
+      </button>
+
+    </form>
+
+  <% } %>
+
+</td>
 
               </tr>
 

@@ -10,39 +10,116 @@
 
     <div class="page-header">
       <h2>Edit Category</h2>
-      <a href="/admin/category" class="btn-back">← Back</a>
+
+      <a
+        href="/admin/category"
+        class="btn-back"
+      >
+        ← Back
+      </a>
     </div>
 
     <div class="form-container">
 
-      <!-- ✅ ADD FORM ID -->
-      <form id="editCategoryForm" action="/admin/edit-category" method="POST">
+      <form
+        id="editCategoryForm"
+        action="/admin/edit-category"
+        method="POST"
+      >
 
-        <input 
-          type="hidden" 
-          name="id" 
+        <input
+          type="hidden"
+          name="id"
           value="<%= category._id %>"
         >
 
+        <!-- CATEGORY NAME -->
         <div class="form-group">
-          <label>Category Name</label>
-          <input 
-            type="text" 
+
+          <label>
+            Category Name
+          </label>
+
+          <input
+            type="text"
             id="editCategoryName"
-            name="name" 
+            name="name"
             value="<%= category.name %>"
           >
-          <small class="error-text" id="editNameError"></small>
+
+          <small
+            class="error-text"
+            id="editNameError"
+          ></small>
+
         </div>
 
+        <!-- CATEGORY OFFER -->
+        <div class="form-group">
+
+          <label>
+            Category Offer (%)
+          </label>
+
+          <input
+            type="number"
+            name="offerPercentage"
+            min="0"
+            max="90"
+
+            value="<%=
+              category.categoryOffer
+                ?.percentage || 0
+            %>"
+          >
+
+        </div>
+
+        <!-- OFFER EXPIRY -->
+        <div class="form-group">
+
+          <label>
+            Offer Expiry Date
+          </label>
+
+          <input
+            type="date"
+            name="offerExpiryDate"
+
+            value="<%=
+              category.categoryOffer
+                ?.expiryDate
+
+                ? new Date(
+                    category.categoryOffer
+                      .expiryDate
+                  )
+                  .toISOString()
+                  .split('T')[0]
+
+                : ''
+            %>"
+          >
+
+        </div>
+
+        <!-- BUTTONS -->
         <div class="form-actions">
-          <button type="submit" class="btn-save">
+
+          <button
+            type="submit"
+            class="btn-save"
+          >
             Update Category
           </button>
 
-          <a href="/admin/category" class="btn-cancel">
+          <a
+            href="/admin/category"
+            class="btn-cancel"
+          >
             Cancel
           </a>
+
         </div>
 
       </form>
@@ -53,10 +130,17 @@
 
 </div>
 
-
-<!-- 🔥 IMPORT GLOBAL VALIDATION -->
+<!-- VALIDATION -->
 <script type="module">
-  import { validateCategoryForm } from "/js/validation.js";
 
-  validateCategoryForm("editCategoryForm", "editCategoryName", "editNameError");
+  import {
+    validateCategoryForm
+  } from "/js/validation.js";
+
+  validateCategoryForm(
+    "editCategoryForm",
+    "editCategoryName",
+    "editNameError"
+  );
+
 </script>

@@ -83,9 +83,22 @@ const loadEditCategory = async (req,res)=>{
 const editCategory = async (req, res) => {
   try {
 
-    const { id, name } = req.body;
+   const {
+  id,
+  name,
+  offerPercentage,
+  offerExpiryDate
+} = req.body;
 
-    await categoryService.updateCategory(id, name);
+    await categoryService.updateCategory(
+
+  id,
+  name,
+
+  offerPercentage,
+
+  offerExpiryDate
+);
 
     res.redirect("/admin/category");
 

@@ -11,7 +11,14 @@ const router = express.Router();
 
 
 router.get("/", userController.loadHomepage);
-
+router.get(
+  "/about",
+  userController.loadAbout
+);
+router.get(
+  "/contact",
+  userController.loadContact
+);
 router.get("/signup", authMiddleware.redirectIfLoggedIn, userController.loadSignup);
 router.post("/signup", userController.registerUser);
 
@@ -55,6 +62,11 @@ router.get(
 );
 
  router.get("/profile",authMiddleware.isUserLoggedIn,userController.loadProfile)
+ router.get(
+  "/wallet",
+  authMiddleware.isUserLoggedIn,
+  userController.loadWalletPage
+);
 
  router.get("/profile/edit",authMiddleware.isUserLoggedIn,userController.loadEditProfile)
 router.post(
@@ -96,6 +108,16 @@ router.get("/add-address", userController.loadAddAddress);
 router.post("/add-address", userController.saveAddress);
 router.post( "/buy-now",authMiddleware.isUserLoggedIn,checkoutController.buyNow);
 router.post("/place-order",authMiddleware.isUserLoggedIn,checkoutController.placeOrder);
+router.post(
+  "/verify-payment",
+  authMiddleware.isUserLoggedIn,
+  checkoutController.verifyPayment
+);
+router.post(
+  "/retry-payment/:id",
+  authMiddleware.isUserLoggedIn,
+  checkoutController.retryPayment
+);
 
 // ORDER MANAGEMENT
 
@@ -132,10 +154,28 @@ router.post(
   orderController.returnOrder);
 router.get("/orders/:id/invoice",authMiddleware.isUserLoggedIn,orderController.downloadInvoice);
 
+router.post(
+  "/orders/:orderId/items/:itemId/return",
+  orderController.returnOrderItem
+);
+
 // WISHLIST
 router.get( "/wishlist",authMiddleware.isUserLoggedIn,wishlistController.loadWishlist);
 router.post("/wishlist/add/:productId",authMiddleware.isUserLoggedIn,wishlistController.addToWishlist);
 router.get("/wishlist/remove/:productId",authMiddleware.isUserLoggedIn,wishlistController.removeFromWishlist);
 router.post("/wishlist/move-to-cart/:productId", authMiddleware.isUserLoggedIn,wishlistController.moveToCart);
 
+
+
+router.post(
+  "/apply-coupon",
+  authMiddleware.isUserLoggedIn,
+  checkoutController.applyCoupon
+);
+
+router.post(
+  "/remove-coupon",
+  authMiddleware.isUserLoggedIn,
+  checkoutController.removeCoupon
+);
 export default router;    

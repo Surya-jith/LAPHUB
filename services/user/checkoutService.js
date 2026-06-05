@@ -2,20 +2,20 @@ import Cart from "../../models/cartModel.js";
 import User from "../../models/user.js";
 import Product from "../../models/productModel.js";
 import Order from "../../models/order.js";
+import Coupon from "../../models/couponModel.js";
+import Wallet from "../../models/walletModel.js";
 
-const getCheckoutData = async (userId, buyNow = null) => {
+const getCheckoutData = async (userId, buyNow = null,sessionCoupon = null) => {
 
   let items = [];
   let subtotal = 0;
   let discount = 0;
-  let tax = 0;
+  let gst = 0;
   let total = 0;
   let disableCheckout = false;
 
   /*
-  =================================
   BUY NOW FLOW
-  =================================
   */
 
   if (buyNow) {
@@ -125,7 +125,7 @@ const getCheckoutData = async (userId, buyNow = null) => {
         cartItems: [],
         subtotal: 0,
         discount: 0,
-        tax: 0,
+        gst: 0,
         total: 0,
         disableCheckout: true,
         addresses: [],
@@ -135,14 +135,45 @@ const getCheckoutData = async (userId, buyNow = null) => {
     }
   }
 
+
+  /*
+=================================
+SESSION COUPON
+=================================
+*/
+
+if (sessionCoupon) {
+
+  const coupon =
+    await Coupon.findById(
+      sessionCoupon._id
+    );
+
+  if (
+    coupon &&
+    coupon.isActive &&
+    coupon.expiryDate > new Date()
+  ) {
+
+    discount =
+      sessionCoupon.discount || 0;
+  }
+}
   /*
   =================================
   COMMON TOTAL CALCULATION
   =================================
   */
 
-  tax = Number((subtotal * 0.02).toFixed(2));
-  total = Number((subtotal + tax - discount).toFixed(2));
+  gst = Number((subtotal * 0.02).toFixed(2));
+
+  total = Number(
+    (
+      subtotal +
+      gst -
+      discount
+    ).toFixed(2)
+  );
 
   /*
   =================================
@@ -163,7 +194,7 @@ const getCheckoutData = async (userId, buyNow = null) => {
     cartItems: items,
     subtotal,
     discount,
-    tax,
+    gst,
     total,
     disableCheckout,
     addresses,
@@ -171,12 +202,174 @@ const getCheckoutData = async (userId, buyNow = null) => {
   };
 };
 
+const applyCoupon = async (
+  userId,
+  couponCode,
+  buyNow = null
+) => {
+
+
+  console.log(
+  "Coupon Code:",
+  couponCode
+);
+  /*
+  =================================
+  GET CHECKOUT DATA
+  =================================
+  */
+
+  const checkoutData =
+    await getCheckoutData(
+      userId,
+      buyNow
+    );
+
+  const subtotal =
+    checkoutData.subtotal;
+
+  /*
+  =================================
+  FIND COUPON
+  =================================
+  */
+
+  const coupon =
+    await Coupon.findOne({
+      code:
+        couponCode.toUpperCase(),
+      isActive: true
+    });
+
+  if (!coupon) {
+    throw new Error(
+      "Invalid coupon code"
+    );
+  }
+
+  /*
+  =================================
+  EXPIRY CHECK
+  =================================
+  */
+
+  if (
+    coupon.expiryDate < new Date()
+  ) {
+
+    throw new Error(
+      "Coupon expired"
+    );
+  }
+
+  /*
+  =================================
+  MINIMUM AMOUNT CHECK
+  =================================
+  */
+
+  if (
+    subtotal <
+    coupon.minimumAmount
+  ) {
+
+    throw new Error(
+      `Minimum purchase amount is ₹${coupon.minimumAmount}`
+    );
+  }
+
+  /*
+  =================================
+  SINGLE USE CHECK
+  =================================
+  */
+
+  const alreadyUsed =
+    coupon.usedBy.includes(userId);
+
+  if (alreadyUsed) {
+
+    throw new Error(
+      "Coupon already used"
+    );
+  }
+
+  /*
+  =================================
+  CALCULATE DISCOUNT
+  =================================
+  */
+
+  let discount = 0;
+
+  if (
+    coupon.discountType ===
+    "percentage"
+  ) {
+
+    discount =
+      (subtotal *
+        coupon.discountValue) / 100;
+
+    /*
+    MAX DISCOUNT
+    */
+
+    if (
+      coupon.maximumDiscount > 0
+    ) {
+
+      discount = Math.min(
+        discount,
+        coupon.maximumDiscount
+      );
+    }
+
+  } else {
+
+    discount =
+      coupon.discountValue;
+  }
+
+  /*
+  =================================
+  GST + TOTAL
+  =================================
+  */
+
+  const gst = Number(
+    (
+      subtotal * 0.02
+    ).toFixed(2)
+  );
+
+  const total = Number(
+    (
+      subtotal +
+      gst -
+      discount
+    ).toFixed(2)
+  );
+
+  return {
+
+    coupon: {
+      _id: coupon._id,
+      code: coupon.code,
+      discount
+    },
+
+    discount,
+    total
+  };
+};
 
 const placeOrder = async (
   userId,
   addressId,
   paymentMethod,
-  buyNow = null
+  buyNow = null,
+  sessionCoupon=null
 ) => {
 
   let items = [];
@@ -241,8 +434,18 @@ const placeOrder = async (
       throw new Error("Variant not found");
     }
 
-    if (quantity > variant.stock) {
-      throw new Error("Insufficient stock");
+    if (
+      product.isBlocked ||
+      !product.isListed
+    ) {
+      throw new Error("This product is currently unavailable");
+    }
+
+    if (
+      variant.stock <= 0 ||
+      quantity > variant.stock
+    ) {
+      throw new Error("Insufficient stock available");
     }
 
     const totalPrice =
@@ -291,7 +494,19 @@ const placeOrder = async (
 
       if (!variant) continue;
 
-      if (item.quantity > variant.stock) {
+      if (
+        product.isBlocked ||
+        !product.isListed
+      ) {
+        throw new Error(
+          `${product.name} is currently unavailable`
+        );
+      }
+
+      if (
+        variant.stock <= 0 ||
+        item.quantity > variant.stock
+      ) {
         throw new Error(
           `${product.name} has insufficient stock`
         );
@@ -321,13 +536,109 @@ const placeOrder = async (
   }
 
   /*
+=================================
+APPLY COUPON DISCOUNT
+=================================
+*/
+
+if (sessionCoupon) {
+
+  discount =
+    sessionCoupon.discount || 0;
+
+  /*
+  MARK COUPON USED
+  */
+
+  await Coupon.findByIdAndUpdate(
+    sessionCoupon._id,
+    {
+      $addToSet: {
+        usedBy: userId
+      }
+    }
+  );
+}
+
+  /*
   =================================
   FINAL TOTAL
   =================================
   */
 
-  const finalAmount =
-    subtotal - discount + shippingCharge;
+  const gst = Number((subtotal * 0.02).toFixed(2));
+
+  const finalAmount = Number(
+    (
+      subtotal +
+      gst +
+      shippingCharge -
+      discount
+    ).toFixed(2)
+  );
+
+  /*
+=================================
+WALLET PAYMENT
+=================================
+*/
+
+if (paymentMethod === "Wallet") {
+
+  const wallet =
+    await Wallet.findOne({
+      user: userId
+    });
+
+  if (!wallet) {
+    throw new Error(
+      "Wallet not found"
+    );
+  }
+
+  /*
+  =================================
+  INSUFFICIENT BALANCE
+  =================================
+  */
+
+  if (
+    wallet.balance <
+    finalAmount
+  ) {
+
+    throw new Error(
+      "Insufficient wallet balance"
+    );
+  }
+
+  /*
+  =================================
+  DEDUCT WALLET
+  =================================
+  */
+
+  wallet.balance -=
+    finalAmount;
+
+  /*
+  =================================
+  TRANSACTION
+  =================================
+  */
+
+  wallet.transactions.push({
+
+    type: "Debit",
+
+    amount: finalAmount,
+
+    description:
+      "Order payment"
+  });
+
+  await wallet.save();
+}
 
   /*
   =================================
@@ -352,13 +663,21 @@ const placeOrder = async (
 
     paymentMethod,
 
-    paymentStatus:
-      paymentMethod === "COD"
-        ? "Pending"
-        : "Paid",
+   paymentStatus:
+
+  paymentMethod === "COD"
+
+    ? "Pending"
+
+    : paymentMethod === "Wallet"
+
+      ? "Paid"
+
+      : "Failed",
 
     subtotal,
     discount,
+    gst,
     shippingCharge,
     finalAmount,
     orderStatus: "Pending"
@@ -387,5 +706,6 @@ const getOrderSuccessData = async (
 export default {
   getCheckoutData,
   placeOrder,
-  getOrderSuccessData
+  getOrderSuccessData,
+  applyCoupon
 };

@@ -1,0 +1,155 @@
+/* PAGE */
+
+.main-content{
+  flex:1;
+  padding:30px;
+  background:#f5f7fb;
+  min-height:100vh;
+}
+
+/* HEADER */
+
+.page-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+}
+
+.page-header h2{
+  font-size:28px;
+  color:#111827;
+}
+
+/* BUTTONS */
+
+.btn-add,
+.btn-back,
+.btn-save{
+  background:#2563eb;
+  color:#fff;
+  padding:12px 18px;
+  border:none;
+  border-radius:10px;
+  text-decoration:none;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.btn-delete{
+  background:#dc2626;
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.btn-toggle{
+  background:#111827;
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* TABLE */
+
+.table-container{
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:
+    0 4px 20px rgba(0,0,0,.05);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#111827;
+  color:#fff;
+}
+
+th,
+td{
+  padding:16px;
+  text-align:left;
+}
+
+tbody tr{
+  border-bottom:1px solid #eee;
+}
+
+/* STATUS */
+
+.status{
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.active{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.inactive{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+/* ACTIONS */
+
+.actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+/* FORM */
+
+.form-container{
+  background:#fff;
+  padding:30px;
+  border-radius:18px;
+
+  box-shadow:
+    0 4px 20px rgba(0,0,0,.05);
+
+  max-width:600px;
+}
+
+.form-group{
+  margin-bottom:20px;
+}
+
+.form-group label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:600;
+  color:#111827;
+}
+
+.form-group input,
+.form-group select{
+  width:100%;
+  padding:14px;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  outline:none;
+}
+
+/* ERROR */
+
+.error-box{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:14px;
+  border-radius:10px;
+  margin-bottom:20px;
+}

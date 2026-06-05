@@ -130,3 +130,210 @@
   font-size: 18px;
   color: #6b7280;
 }
+/* PROFILE LAYOUT */
+
+.profile-layout{
+
+  display:flex;
+
+  gap:20px;
+
+  align-items:flex-start;
+}
+
+/* SIDEBAR */
+
+.profile-sidebar{
+
+  width:280px;
+
+  flex-shrink:0;
+}
+
+/* TABLE WRAPPER */
+
+.table-wrapper{
+
+  overflow-x:auto;
+}
+
+/* PRODUCT */
+
+.wishlist-product{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+}
+
+.wishlist-product img{
+
+  width:60px;
+
+  height:60px;
+
+  object-fit:cover;
+}
+
+/* BUTTON */
+
+.wishlist-btn{
+
+  padding:8px 12px;
+
+  border-radius:8px;
+
+  font-size:14px;
+}
+
+/* TEXT */
+
+.wishlist-product-name{
+
+  word-break:break-word;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+  .profile-layout{
+
+    flex-direction:column;
+  }
+
+  .profile-sidebar{
+
+    width:100%;
+  }
+
+  .wishlist-btn{
+
+    width:100%;
+  }
+
+  table{
+
+    font-size:13px;
+  }
+}
+
+/* TABLE RESPONSIVE */
+
+.table-wrapper{
+  overflow-x:auto;
+}
+
+/* PAGE LAYOUT */
+
+.page-layout{
+
+  display:flex;
+
+  gap:20px;
+
+  align-items:flex-start;
+}
+
+/* MAIN CONTENT */
+
+.main-content{
+  flex:1;
+  min-width:0;
+}
+
+/* WISHLIST TABLE */
+
+.wishlist-table{
+  min-width:700px;
+}
+
+/* PRODUCT */
+
+.wishlist-product{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+}
+
+.wishlist-product img{
+
+  width:70px;
+
+  height:70px;
+
+  object-fit:cover;
+
+  border-radius:8px;
+}
+
+.wishlist-product h4{
+
+  font-size:14px;
+
+  line-height:1.4;
+}
+
+/* BUTTON */
+
+.move-btn{
+
+  padding:10px 14px;
+
+  border:none;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+  white-space:nowrap;
+}
+
+/* REMOVE BUTTON */
+
+.remove-btn{
+
+  font-size:22px;
+
+  text-decoration:none;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+  .page-layout{
+
+    flex-direction:column;
+  }
+
+  .wishlist-table{
+
+    min-width:650px;
+  }
+
+  .wishlist-head,
+  .wishlist-row{
+
+    font-size:13px;
+  }
+
+  .wishlist-product img{
+
+    width:55px;
+
+    height:55px;
+  }
+
+  .move-btn{
+
+    font-size:13px;
+
+    padding:8px 10px;
+  }
+}

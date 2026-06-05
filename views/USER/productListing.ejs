@@ -1,8 +1,15 @@
 <%- include('../partials/header') %>
-
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/user/productListing.css">
-
+<% if (typeof error !== "undefined" && error) { %>
+  <div class="error-message">
+    <%= error %>
+  </div>
+<% } %>
 <section class="product-listing">
 <div class="container">
 

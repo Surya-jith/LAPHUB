@@ -5,6 +5,8 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 import productController from "../controllers/admin/productController.js"
 import productUpload from "../middlewares/productUpload.js"
 import orderController from "../controllers/admin/orderController.js";
+import couponController from "../controllers/admin/couponController.js";
+import reportController from "../controllers/admin/reportController.js";
 const router=express.Router();
 import upload from "../config/multerCloudinary.js"
 
@@ -30,6 +32,8 @@ router.post("/delete-category/:id",categoryController.deleteCategory)
 router.get("/products",authMiddleware.adminAuth,productController.loadProducts)
 // Add Product Page
 router.get("/add-product",authMiddleware.adminAuth,productController.loadAddProduct)
+
+
 // Add Product
 router.post(
 "/add-product",
@@ -39,58 +43,116 @@ upload.fields([
 { name:"images", maxCount:3 },
 { name:"variantImages", maxCount:10 }
 ])(req,res,(err)=>{
-
 if(err){
 console.log("Multer Error:",err)
 return res.send(err.message)
 }
-
 next()
-
 })
-},
-productController.addProduct
-)
-// Edit Product Page
+},productController.addProduct)
+
+
 router.get("/edit-product/:id",authMiddleware.adminAuth,productController.loadEditProduct)
-// Edit Product
-router.post(
-"/edit-product/:id",
-authMiddleware.adminAuth,
-upload.fields([
-{ name:"images", maxCount:3 },
-{ name:"variantImages", maxCount:10 }
-]),
-productController.editProduct
-)
-// Soft Delete Product
+router.post("/edit-product/:id",authMiddleware.adminAuth,upload.fields([{ name:"images", maxCount:3 },{ name:"variantImages", maxCount:10 }]),productController.editProduct)
 router.post("/delete-product/:id",authMiddleware.adminAuth,productController.deleteProduct)
-
-
-
-
-// =========================
-// ORDER MANAGEMENT
-// =========================
-
-// Order List Page
-router.get(
-  "/orders",
-  authMiddleware.adminAuth,
-  orderController.loadOrders
-);
-
-// Order Details Page
-router.get(
-  "/orders/:id",
-  authMiddleware.adminAuth,
-  orderController.loadOrderDetails
-);
-
-// Update Order Status
 router.post(
-  "/orders/:id/status",
+  "/toggle-product-block/:id",
   authMiddleware.adminAuth,
-  orderController.updateOrderStatus
+  productController.toggleProductBlock
+)
+
+
+
+
+
+// ORDER MANAGEMENT
+
+
+router.get("/orders",authMiddleware.adminAuth,orderController.loadOrders);
+router.get("/orders/:id",authMiddleware.adminAuth, orderController.loadOrderDetails);
+router.post("/orders/:id/status",authMiddleware.adminAuth,orderController.updateOrderStatus);
+router.post(
+  "/orders/:orderId/items/:itemId/return",
+  orderController.processItemReturn
+);
+/*
+=================================
+COUPON MANAGEMENT
+=================================
+*/
+
+router.get(
+  "/coupons",
+  authMiddleware.adminAuth,
+  couponController.loadCoupons
+);
+
+router.get(
+  "/add-coupon",
+  authMiddleware.adminAuth,
+  couponController.loadAddCoupon
+);
+
+router.post(
+  "/add-coupon",
+  authMiddleware.adminAuth,
+  couponController.addCoupon
+);
+
+router.post(
+  "/toggle-coupon/:id",
+  authMiddleware.adminAuth,
+  couponController.toggleCoupon
+);
+
+router.post(
+  "/delete-coupon/:id",
+  authMiddleware.adminAuth,
+  couponController.deleteCoupon
+);
+
+/*
+=================================
+SALES REPORTS
+=================================
+*/
+
+router.get(
+
+  "/sales-report",
+
+  authMiddleware.adminAuth,
+
+  reportController.loadSalesReport
+);
+
+/*
+=================================
+EXPORT PDF
+=================================
+*/
+
+router.get(
+
+  "/sales-report/pdf",
+
+  authMiddleware.adminAuth,
+
+  reportController.downloadPdfReport
+);
+
+/*
+=================================
+EXPORT EXCEL
+=================================
+*/
+
+router.get(
+
+  "/sales-report/excel",
+
+  authMiddleware.adminAuth,
+
+  reportController.downloadExcelReport
 );
 export default router;

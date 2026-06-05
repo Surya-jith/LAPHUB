@@ -3,7 +3,10 @@
 
 <head>
 <title>Address</title>
-
+<link
+  rel="stylesheet"
+  href="/css/common.css"
+>
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/user/address.css">
 
@@ -12,6 +15,11 @@
 <body>
 
 <%- include('../partials/header',{ user }) %>
+<% if (typeof error !== "undefined" && error) { %>
+  <div class="error-message">
+    <%= error %>
+  </div>
+<% } %>
 
 <div class="page-layout">
 
