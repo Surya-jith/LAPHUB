@@ -123,15 +123,29 @@ return cart
 
 }
 
-const increaseQty = async (userId, productId)=>{
+const increaseQty = async (userId, productId, variantId)=>{
 
 const cart = await Cart.findOne({user:userId})
 
+if (!cart) {
+throw new Error("Cart is empty")
+}
+
 const item = cart.items.find(
-i => i.product.toString() === productId
+i =>
+i.product.toString() === productId &&
+i.variant.toString() === variantId
 )
 
+if (!item) {
+throw new Error("Cart item not found")
+}
+
 const product = await Product.findById(productId)
+
+if (!product) {
+throw new Error("Product not found")
+}
 
 if (product.isBlocked) {
 throw new Error("This product is currently unavailable")
@@ -154,13 +168,23 @@ await cart.save()
 }
 
 
-const decreaseQty = async (userId, productId)=>{
+const decreaseQty = async (userId, productId, variantId)=>{
 
 const cart = await Cart.findOne({user:userId})
 
+if (!cart) {
+throw new Error("Cart is empty")
+}
+
 const item = cart.items.find(
-i => i.product.toString() === productId
+i =>
+i.product.toString() === productId &&
+i.variant.toString() === variantId
 )
+
+if (!item) {
+throw new Error("Cart item not found")
+}
 
 if(item.quantity > 1){
 item.quantity -= 1
@@ -171,14 +195,18 @@ await cart.save()
 }
 
 
-const removeCartItem = async (userId, productId)=>{
+const removeCartItem = async (userId, productId, variantId)=>{
 
 const cart = await Cart.findOne({user:userId})
 
 if(!cart) return
 
 cart.items = cart.items.filter(
-item => item.product.toString() !== productId
+item =>
+!(
+item.product.toString() === productId &&
+item.variant.toString() === variantId
+)
 )
 
 await cart.save()

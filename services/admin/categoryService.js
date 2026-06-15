@@ -2,14 +2,16 @@ import Category from "../../models/category.js";
 
 
 // 🔹 GET (Search + Pagination + Sort + Soft Delete Filter)
-const getCategories = async (page, search) => {
+const getCategories = async (page = 1, search = "") => {
 
   const limit = 10;
-  const skip = (page - 1) * limit;
+  const currentPage = Math.max(Number(page) || 1, 1);
+  const skip = (currentPage - 1) * limit;
+  const searchText = search.trim();
 
   const query = {
     isDeleted: false,
-    name: { $regex: search, $options: "i" }
+    name: { $regex: searchText, $options: "i" }
   };
 
   const categories = await Category.find(query)
@@ -18,12 +20,14 @@ const getCategories = async (page, search) => {
     .limit(limit);
 
   const total = await Category.countDocuments(query);
+  const totalPages = Math.max(Math.ceil(total / limit), 1);
 
   return {
     categories,
-    currentPage: page,
-    totalPages: Math.ceil(total / limit),
-    search
+    currentPage,
+    totalPages,
+    search: searchText,
+    totalCategories: total
   };
 };
 

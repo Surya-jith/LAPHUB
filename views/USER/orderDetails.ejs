@@ -55,7 +55,21 @@
               <form
                 action="/orders/<%= order._id %>/cancel"
                 method="POST"
+                onsubmit="return confirm('Cancel this order?')"
               >
+                <select
+                  name="cancelReason"
+                  required
+                  class="return-reason-select"
+                >
+                  <option value="">Select Cancel Reason</option>
+                  <option value="Ordered by mistake">Ordered by mistake</option>
+                  <option value="Found a better price">Found a better price</option>
+                  <option value="Delivery is taking too long">Delivery is taking too long</option>
+                  <option value="Changed my mind">Changed my mind</option>
+                  <option value="Other">Other</option>
+                </select>
+
                 <button
                   type="submit"
                   class="cancel-order-btn"
@@ -249,7 +263,19 @@
     <form
       action="/orders/<%= order._id %>/items/<%= item._id %>/cancel"
       method="POST"
+      onsubmit="return confirm('Cancel this product?')"
     >
+      <select
+        name="cancelReason"
+        required
+      >
+        <option value="">Select Cancel Reason</option>
+        <option value="Ordered by mistake">Ordered by mistake</option>
+        <option value="Found a better price">Found a better price</option>
+        <option value="Delivery is taking too long">Delivery is taking too long</option>
+        <option value="Changed my mind">Changed my mind</option>
+        <option value="Other">Other</option>
+      </select>
 
       <button
         type="submit"

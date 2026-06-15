@@ -2,18 +2,10 @@
 <html>
 
 <head>
-<title>Account Settings</title>
-<link
-  rel="stylesheet"
-  href="/css/common.css"
->
-<link rel="stylesheet" href="/css/layout.css">
-<link rel="stylesheet" href="/css/user/profile.css">
-<% if (typeof error !== "undefined" && error) { %>
-  <div class="error-message">
-    <%= error %>
-  </div>
-<% } %>
+  <title>Account Settings</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/user/profile.css">
 </head>
 
 <body>
@@ -22,106 +14,82 @@
 
 <div class="page-layout">
 
-  <%- include('../partials/userSidebar', {
-    activePage: 'profile'
-  }) %>
+  <%- include('../partials/userSidebar', { activePage: 'profile' }) %>
 
   <div class="main-content">
+
+    <!-- ERROR MESSAGE -->
+    <% if (typeof error !== "undefined" && error) { %>
+      <div class="error-message">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (typeof success !== "undefined" && success) { %>
+      <div class="success-message">
+        <%= success %>
+      </div>
+    <% } %>
 
     <div class="profile-card">
 
       <div class="card-header">
-
         <h3>ACCOUNT SETTING</h3>
-
-        <a href="/profile/edit" class="edit-profile-btn">
-          EDIT PROFILE
-        </a>
-
+        <a href="/profile/edit" class="edit-profile-btn">EDIT PROFILE</a>
       </div>
 
       <div class="profile-body">
 
         <!-- PROFILE IMAGE -->
-
         <div class="profile-image">
-
-          <img
-            src="<%= user.profileImage ? '/uploads/profile/' + user.profileImage : '/images/user.png' %>"
-            alt="User Image"
-          >
-
+          <% if (user.profileImage && user.profileImage.trim() && user.profileImage !== "null") { %>
+            <img
+              src="/uploads/profile/<%= user.profileImage %>"
+              alt="User Image"
+              onerror="this.style.display='none'; document.getElementById('default-avatar').style.display='flex';"
+            >
+            <div id="default-avatar" class="default-avatar" style="display:none;">
+              <i class="fa-solid fa-user"></i>
+            </div>
+          <% } else { %>
+            <img src="/images/default-profile.png" alt="Default User Image" onerror="this.style.display='none'; document.getElementById('default-avatar').style.display='flex';">
+            <div id="default-avatar" class="default-avatar" style="display:none;">
+              <i class="fa-solid fa-user"></i>
+            </div>
+          <% } %>
         </div>
 
         <!-- PROFILE DETAILS -->
-
         <div class="profile-details">
 
           <div class="row">
 
             <div class="field">
-
               <label>Name</label>
-
-              <input
-                type="text"
-                value="<%= user.username %>"
-                readonly
-              >
-
+              <input type="text" value="<%= user.username %>" readonly>
             </div>
 
             <div class="field">
-
               <label>Email</label>
-
-              <input
-                type="text"
-                value="<%= user.email %>"
-                readonly
-              >
-
-              <a
-                href="/edit-email"
-                class="edit-email-btn"
-              >
-                EDIT EMAIL
-              </a>
-
+              <input type="text" value="<%= user.email %>" readonly>
+              <a href="/edit-email" class="edit-email-btn">EDIT EMAIL</a>
             </div>
 
           </div>
 
           <div class="row">
-
             <div class="field">
-
               <label>Phone Number</label>
-
-              <input
-                type="text"
-                value="<%= user.phone %>"
-                readonly
-              >
-
+              <input type="text" value="<%= user.phone %>" readonly>
             </div>
-
           </div>
 
           <div class="referral-section">
-
             <p>Your referral code</p>
-
-            <span class="referral-code">
-              <%= user.referralCode %>
-            </span>
-
+            <span class="referral-code"><%= user.referralCode %></span>
           </div>
 
-          <a
-            href="/change-password"
-            class="change-password-btn"
-          >
+          <a href="/change-password" class="change-password-btn">
             Change Password
           </a>
 

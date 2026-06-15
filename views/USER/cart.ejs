@@ -51,7 +51,7 @@
 
                       <!-- REMOVE -->
                       <td class="remove-item">
-                        <a href="/remove-cart/<%= item.productId %>">
+                        <a href="/remove-cart/<%= item.productId %>/<%= item.variantId %>">
                           <i class="fa fa-times"></i>
                         </a>
                       </td>
@@ -109,6 +109,7 @@
                           <button
                             class="qty-btn minus"
                             data-id="<%= item.productId %>"
+                            data-variant-id="<%= item.variantId %>"
                             <%= (!item.product || !item.variant || item.variant.stock === 0) ? 'disabled' : '' %>
                           >
                             -
@@ -123,6 +124,7 @@
                           <button
   class="qty-btn plus"
   data-id="<%= item.productId %>"
+  data-variant-id="<%= item.variantId %>"
   <%= (
     !item.product ||
     !item.variant ||
@@ -135,6 +137,12 @@
 </button>
 
                         </div>
+
+                        <% if (item.stockWarning) { %>
+                          <small class="stock-warning">
+                            <%= item.stockWarning %>
+                          </small>
+                        <% } %>
 
                       </td>
 
@@ -246,8 +254,9 @@ document.querySelectorAll(".plus").forEach(btn => {
   btn.addEventListener("click", () => {
     if (btn.disabled) return;
     const id = btn.dataset.id;
-    if (!id) return;
-    window.location.href = `/cart/increase/${id}`;
+    const variantId = btn.dataset.variantId;
+    if (!id || !variantId) return;
+    window.location.href = `/cart/increase/${id}/${variantId}`;
   });
 });
 
@@ -255,8 +264,9 @@ document.querySelectorAll(".minus").forEach(btn => {
   btn.addEventListener("click", () => {
     if (btn.disabled) return;
     const id = btn.dataset.id;
-    if (!id) return;
-    window.location.href = `/cart/decrease/${id}`;
+    const variantId = btn.dataset.variantId;
+    if (!id || !variantId) return;
+    window.location.href = `/cart/decrease/${id}/${variantId}`;
   });
 });
 </script>

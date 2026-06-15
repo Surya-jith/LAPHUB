@@ -129,15 +129,27 @@
 
       <% if (totalPages > 1) { %>
 
+        <a
+          href="/admin/category?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(search || '') %>"
+          class="<%= currentPage === 1 ? 'disabled' : '' %>">
+          Previous
+        </a>
+
         <% for (let i = 1; i <= totalPages; i++) { %>
 
           <a 
-            href="/admin/category?page=<%= i %>&search=<%= search %>" 
+            href="/admin/category?page=<%= i %>&search=<%= encodeURIComponent(search || '') %>"
             class="<%= currentPage === i ? 'active-page' : '' %>">
             <%= i %>
           </a>
 
         <% } %>
+
+        <a
+          href="/admin/category?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(search || '') %>"
+          class="<%= currentPage === totalPages ? 'disabled' : '' %>">
+          Next
+        </a>
 
       <% } %>
 

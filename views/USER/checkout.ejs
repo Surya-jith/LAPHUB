@@ -82,7 +82,7 @@
         <!-- EMPTY STATE -->
         <div class="empty-address">
           <p>No address found.</p>
-          <a href="/add-address" class="add-address-btn">
+          <a href="/add-address?redirect=/checkout" class="add-address-btn">
             + Add your first address
           </a>
 
@@ -297,7 +297,13 @@
       value="COD"
       checked
     >
-    Cash on Delivery
+    <span class="payment-icon">
+      <i class="fa-solid fa-money-bill-wave"></i>
+    </span>
+    <span class="payment-copy">
+      <strong>Cash on Delivery</strong>
+      <small>Pay when the order arrives</small>
+    </span>
   </label>
 
   <label class="payment-option">
@@ -306,7 +312,13 @@
       name="paymentMethod"
       value="Razorpay"
     >
-    Razorpay
+    <span class="payment-icon">
+      <i class="fa-solid fa-credit-card"></i>
+    </span>
+    <span class="payment-copy">
+      <strong>Razorpay</strong>
+      <small>Cards, UPI, and net banking</small>
+    </span>
   </label>
 
   <label class="payment-option">
@@ -317,11 +329,15 @@
     value="Wallet"
   >
 
-  Wallet
-  (
-    Balance:
+  <span class="payment-icon">
+    <i class="fa-solid fa-wallet"></i>
+  </span>
+  <span class="payment-copy">
+    <strong>Wallet</strong>
+    <small>Balance:
     ₹<%= walletBalance.toFixed(2) %>
-  )
+  </small>
+  </span>
 
 </label>
 
@@ -364,6 +380,24 @@ document.querySelectorAll('.address-item')
     item.classList.add('selected');
 
     item.querySelector('input').checked = true;
+  });
+});
+
+document.querySelectorAll(".payment-option")
+.forEach(option => {
+  const input = option.querySelector("input");
+
+  if (input.checked) {
+    option.classList.add("selected");
+  }
+
+  option.addEventListener("click", () => {
+    document
+      .querySelectorAll(".payment-option")
+      .forEach(item => item.classList.remove("selected"));
+
+    option.classList.add("selected");
+    input.checked = true;
   });
 });
 

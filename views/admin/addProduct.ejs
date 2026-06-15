@@ -21,6 +21,12 @@
 </div>
 </div>
 
+<% if (typeof error !== 'undefined' && error) { %>
+<div class="error-box">
+<%= error %>
+</div>
+<% } %>
+
 <form id="addProductForm" method="POST" enctype="multipart/form-data">
 
 <div class="product-layout">
@@ -32,11 +38,11 @@
 <h4>General Information</h4>
 
 <label>Product Name</label>
-<input type="text" id="productName" name="name">
+<input type="text" id="productName" name="name" value="<%= formData?.name || '' %>" required>
 <small id="nameError" class="error-text"></small>
 
 <label>Description</label>
-<textarea id="productDescription" name="description"></textarea>
+<textarea id="productDescription" name="description" required><%= formData?.description || '' %></textarea>
 <small id="descError" class="error-text"></small>
 </div>
 
@@ -44,11 +50,11 @@
 <h4>Pricing</h4>
 
 <label>Base Price</label>
-<input type="number" id="productPrice" name="price">
+<input type="number" id="productPrice" name="price" value="<%= formData?.price || '' %>" min="1" required>
 <small id="priceError" class="error-text"></small>
 
 <label>Discount</label>
-<input type="number" name="discount">
+<input type="number" name="discount" value="<%= formData?.discount || '' %>" min="0">
 </div>
 
 <div class="card">
@@ -84,7 +90,7 @@
 <select id="productCategory" name="category">
 <option value="">Select Category</option>
 <% categories.forEach(cat=>{ %>
-<option value="<%= cat._id %>"><%= cat.name %></option>
+<option value="<%= cat._id %>" <%= formData?.category == cat._id.toString() ? 'selected' : '' %>><%= cat.name %></option>
 <% }) %>
 </select>
 <small id="categoryError" class="error-text"></small>
@@ -95,7 +101,7 @@
 <select name="brand">
 <option value="">Select Brand</option>
 <% brands.forEach(b=>{ %>
-<option value="<%= b._id %>"><%= b.name %></option>
+<option value="<%= b._id %>" <%= formData?.brand == b._id.toString() ? 'selected' : '' %>><%= b.name %></option>
 <% }) %>
 </select>
 </div>
@@ -108,17 +114,17 @@
 <div class="variant-row">
 
 <div class="variant-fields">
-<input name="color[]" placeholder="Color">
-<input name="ram[]" placeholder="RAM">
-<input name="rom[]" placeholder="ROM">
+<input name="color[]" placeholder="Color" required>
+<input name="ram[]" placeholder="RAM" required>
+<input name="rom[]" placeholder="ROM" required>
 
 <div class="variant-field">
-<input name="stock[]" placeholder="Stock">
+<input name="stock[]" placeholder="Stock" type="number" min="0" required>
 <small class="error-text stock-error"></small>
 </div>
 
 <div class="variant-field">
-<input name="variantPrice[]" placeholder="Price">
+<input name="variantPrice[]" placeholder="Price" type="number" min="1" required>
 <small class="error-text price-error"></small>
 </div>
 </div>
@@ -245,11 +251,11 @@ document.getElementById("cropModal").style.display="none";
 function addVariant(){
 document.getElementById("variantContainer").insertAdjacentHTML("beforeend",`
 <div class="variant-row">
-<input name="color[]" placeholder="Color">
-<input name="ram[]" placeholder="RAM">
-<input name="rom[]" placeholder="ROM">
-<input name="stock[]" placeholder="Stock">
-<input name="variantPrice[]" placeholder="Price">
+<input name="color[]" placeholder="Color" required>
+<input name="ram[]" placeholder="RAM" required>
+<input name="rom[]" placeholder="ROM" required>
+<input name="stock[]" placeholder="Stock" type="number" min="0" required>
+<input name="variantPrice[]" placeholder="Price" type="number" min="1" required>
 
 <div class="variant-image-box">
 <input type="file" name="variantImages" onchange="previewVariantImage(event,this)">

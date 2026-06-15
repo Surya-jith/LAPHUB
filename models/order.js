@@ -54,6 +54,16 @@ const orderSchema = new mongoose.Schema({
           "Returned"
         ],
         default: "Pending"
+      },
+
+      cancelReason: {
+        type: String,
+        default: ""
+      },
+
+      returnReason: {
+        type: String,
+        default: ""
       }
     }
   ],

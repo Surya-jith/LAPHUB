@@ -72,15 +72,17 @@ const getProducts = async ({
     search
   }
 }
+
+
 // Get Add Product Page Data
-const getAddProductData = async()=>{
+const getAddProductData = async () => {
 
   const categories = await Category.find({
     isListed: true,
     isDeleted: false
   })
 
-  const brands = await Brand.find({isDeleted:false})
+  const brands = await Brand.find({ isDeleted: false })
 
   return {
     categories,
@@ -92,7 +94,7 @@ const getAddProductData = async()=>{
 
 
 // Add Product
-const createProduct = async(data,files)=>{
+const createProduct = async (data, files) => {
 
   const {
     name,
@@ -116,18 +118,44 @@ const createProduct = async(data,files)=>{
   const stocks = Array.isArray(stock) ? stock : [stock]
   const prices = Array.isArray(variantPrice) ? variantPrice : [variantPrice]
 
+  // ================================= 
+  // VALIDATIONS
+  // =================================
+
+  // Base price validation
+  if (!price || Number(price) <= 0) {
+    throw new Error("Product base price must be greater than 0")
+  }
+
+  // Per-variant price & stock validation
+  for (let i = 0; i < colors.length; i++) {
+    if (!prices[i] || Number(prices[i]) <= 0) {
+      throw new Error(`Variant ${i + 1}: Price must be greater than 0`)
+    }
+    if (stocks[i] === undefined || stocks[i] === "" || Number(stocks[i]) < 0) {
+      throw new Error(`Variant ${i + 1}: Stock cannot be negative`)
+    }
+  }
+
+  // Duplicate variant check (color + ram + rom must be unique)
+  const variantKeys = colors.map((c, i) =>
+    `${c?.trim().toLowerCase()}-${rams[i]?.trim().toLowerCase()}-${roms[i]?.trim().toLowerCase()}`
+  )
+  const uniqueKeys = new Set(variantKeys)
+  if (uniqueKeys.size !== variantKeys.length) {
+    throw new Error("Duplicate variant found. Each Color + RAM + ROM combination must be unique")
+  }
+
   const variantImages = files.variantImages || []
 
-  // ✅ Create Variants
-  const variants = colors.map((c,index)=>({
-
+  // Create Variants
+  const variants = colors.map((c, index) => ({
     color: c,
     ram: rams[index],
     rom: roms[index],
     stock: stocks[index],
     price: prices[index],
     variantImage: variantImages[index]?.path || ""
-
   }))
 
   const brandValue = brand && brand !== "" ? brand : null
@@ -136,68 +164,9 @@ const createProduct = async(data,files)=>{
   let images = []
   const mainImages = files.images || []
 
-  mainImages.forEach(file=>{
+  mainImages.forEach(file => {
     images.push(file.path)
   })
-
-  /*
-=================================
-PRODUCT OFFER
-=================================
-*/
-
-const productOffer =
-  Number(discount || 0);
-
-/*
-=================================
-CATEGORY OFFER
-=================================
-*/
-
-const categoryData =
-  await Category.findById(
-    category
-  );
-
-let categoryOffer = 0;
-
-if (
-  categoryData?.categoryOffer
-    ?.expiryDate >
-
-  new Date()
-) {
-
-  categoryOffer =
-    categoryData
-      .categoryOffer
-      .percentage || 0;
-}
-
-/*
-=================================
-BEST OFFER
-=================================
-*/
-
-const offerData =
-  calculateBestOffer(
-    productOffer,
-    categoryOffer,
-    Number(price)
-  );
-
-const newProduct = new Product({
-
-  name,
-  description,
-  category,
-  brand: brandValue,
-
-  price,
-
-  discount,
 
   /*
   =================================
@@ -205,31 +174,53 @@ const newProduct = new Product({
   =================================
   */
 
-  productOffer: {
-
-  percentage:
-    productOffer,
-
-  expiryDate:
-    offerExpiryDate || null
-},
+  const productOffer = Number(discount || 0)
 
   /*
   =================================
-  FINAL BEST OFFER
+  CATEGORY OFFER
   =================================
   */
 
-  finalOffer:
-    offerData.finalOffer,
+  const categoryData = await Category.findById(category)
 
-  finalPrice:
-    offerData.finalPrice,
+  let categoryOffer = 0
 
-  variants,
-  images
+  if (categoryData?.categoryOffer?.expiryDate > new Date()) {
+    categoryOffer = categoryData.categoryOffer.percentage || 0
+  }
 
-})
+  /*
+  =================================
+  BEST OFFER
+  =================================
+  */
+
+  const offerData = calculateBestOffer(
+    productOffer,
+    categoryOffer,
+    Number(price)
+  )
+
+  const newProduct = new Product({
+    name,
+    description,
+    category,
+    brand: brandValue,
+    price,
+    discount,
+
+    productOffer: {
+      percentage: productOffer,
+      expiryDate: offerExpiryDate || null
+    },
+
+    finalOffer: offerData.finalOffer,
+    finalPrice: offerData.finalPrice,
+
+    variants,
+    images
+  })
 
   await newProduct.save()
 
@@ -238,7 +229,7 @@ const newProduct = new Product({
 
 
 // Get Edit Product Data
-const getEditProductData = async(id)=>{
+const getEditProductData = async (id) => {
 
   const product = await Product.findById(id)
 
@@ -249,7 +240,7 @@ const getEditProductData = async(id)=>{
     ]
   })
 
-  const brands = await Brand.find({isDeleted:false})
+  const brands = await Brand.find({ isDeleted: false })
 
   return {
     product,
@@ -262,7 +253,7 @@ const getEditProductData = async(id)=>{
 
 
 // Update Product
-const updateProduct = async(id,data,files)=>{
+const updateProduct = async (id, data, files) => {
 
   const {
     name,
@@ -271,7 +262,7 @@ const updateProduct = async(id,data,files)=>{
     brand,
     price,
     discount,
-offerExpiryDate,
+    offerExpiryDate,
     color,
     ram,
     rom,
@@ -287,128 +278,129 @@ offerExpiryDate,
   const stocks = Array.isArray(stock) ? stock : [stock]
   const prices = Array.isArray(variantPrice) ? variantPrice : [variantPrice]
 
+  // =================================
+  // VALIDATIONS
+  // =================================
+
+  // Base price validation
+  if (!price || Number(price) <= 0) {
+    throw new Error("Product base price must be greater than 0")
+  }
+
+  // Per-variant price & stock validation
+  for (let i = 0; i < colors.length; i++) {
+    if (!prices[i] || Number(prices[i]) <= 0) {
+      throw new Error(`Variant ${i + 1}: Price must be greater than 0`)
+    }
+    if (stocks[i] === undefined || stocks[i] === "" || Number(stocks[i]) < 0) {
+      throw new Error(`Variant ${i + 1}: Stock cannot be negative`)
+    }
+  }
+
+  // Duplicate variant check (color + ram + rom must be unique)
+  const variantKeys = colors.map((c, i) =>
+    `${c?.trim().toLowerCase()}-${rams[i]?.trim().toLowerCase()}-${roms[i]?.trim().toLowerCase()}`
+  )
+  const uniqueKeys = new Set(variantKeys)
+  if (uniqueKeys.size !== variantKeys.length) {
+    throw new Error("Duplicate variant found. Each Color + RAM + ROM combination must be unique")
+  }
+
   const variantImages = files?.variantImages || []
 
   const existingProduct = await Product.findById(id)
 
-  // ✅ Variants update with image fallback
-  const variants = colors.map((c,index)=>({
-
+  // Variants update with image fallback
+  const variants = colors.map((c, index) => ({
     color: c,
     ram: rams[index],
     rom: roms[index],
     stock: stocks[index],
     price: prices[index],
-
-    variantImage: variantImages[index]?.path 
-      || existingProduct.variants[index]?.variantImage 
+    variantImage: variantImages[index]?.path
+      || existingProduct.variants[index]?.variantImage
       || ""
-
   }))
 
   /*
-=================================
-PRODUCT OFFER
-=================================
-*/
+  =================================
+  PRODUCT OFFER
+  =================================
+  */
 
-const productOffer =
-  Number(discount || 0);
+  const productOffer = Number(discount || 0)
 
-/*
-=================================
-CATEGORY OFFER
-=================================
-*/
+  /*
+  =================================
+  CATEGORY OFFER
+  =================================
+  */
 
-const categoryData =
-  await Category.findById(
-    category
-  );
+  const categoryData = await Category.findById(category)
 
-let categoryOffer = 0;
+  let categoryOffer = 0
 
-if (
-  categoryData?.categoryOffer
-    ?.expiryDate >
+  if (categoryData?.categoryOffer?.expiryDate > new Date()) {
+    categoryOffer = categoryData.categoryOffer.percentage || 0
+  }
 
-  new Date()
-) {
+  /*
+  =================================
+  BEST OFFER
+  =================================
+  */
 
-  categoryOffer =
-    categoryData
-      .categoryOffer
-      .percentage || 0;
-}
-
-/*
-=================================
-BEST OFFER
-=================================
-*/
-
-const offerData =
-  calculateBestOffer(
+  const offerData = calculateBestOffer(
     productOffer,
     categoryOffer,
     Number(price)
-  );
+  )
 
   let updateData = {
-
     name,
     description,
     category,
     brand: brandValue,
     price,
+    discount,
 
-discount,
+    productOffer: {
+      percentage: productOffer,
+      expiryDate: offerExpiryDate || null
+    },
 
-productOffer: {
+    finalOffer: offerData.finalOffer,
+    finalPrice: offerData.finalPrice,
 
-  percentage:
-    productOffer,
-
-  expiryDate:
-    offerExpiryDate || null
-},
-
-finalOffer:
-  offerData.finalOffer,
-
-finalPrice:
-  offerData.finalPrice,
-
-variants
-
+    variants
   }
 
   // General Images (replace only if new uploaded)
- const mainImages = files?.images || []
+  const mainImages = files?.images || []
 
-let updatedImages = [...existingProduct.images]
+  let updatedImages = [...existingProduct.images]
 
-if (mainImages.length > 0) {
-  mainImages.forEach((file, index) => {
-    if (file?.path) {
-      updatedImages[index] = file.path
-    }
-  })
-}
+  if (mainImages.length > 0) {
+    mainImages.forEach((file, index) => {
+      if (file?.path) {
+        updatedImages[index] = file.path
+      }
+    })
+  }
 
-updateData.images = updatedImages
+  updateData.images = updatedImages
 
-  await Product.findByIdAndUpdate(id,updateData)
+  await Product.findByIdAndUpdate(id, updateData)
 
 }
 
 
 
 // Soft Delete Product
-const softDeleteProduct = async(id)=>{
+const softDeleteProduct = async (id) => {
 
-  await Product.findByIdAndUpdate(id,{
-    isDeleted:true
+  await Product.findByIdAndUpdate(id, {
+    isDeleted: true
   })
 
 }
@@ -427,7 +419,6 @@ const toggleProductBlock = async (id) => {
 
 
 export default {
-
   getProducts,
   getAddProductData,
   createProduct,
@@ -435,5 +426,4 @@ export default {
   updateProduct,
   softDeleteProduct,
   toggleProductBlock
-
 }

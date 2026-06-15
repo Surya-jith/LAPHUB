@@ -75,6 +75,10 @@ const cancelOrder = async (
   );
 }
 
+  if (!cancelReason || !cancelReason.trim()) {
+    throw new Error("Cancel reason is required");
+  }
+
   /*
   =================================
   STOCK INCREMENT BACK
@@ -114,7 +118,7 @@ const cancelOrder = async (
   */
 
   order.orderStatus = "Cancelled";
-  order.cancelReason = cancelReason || "";
+  order.cancelReason = cancelReason.trim();
 
   /*
   =================================
@@ -163,7 +167,8 @@ const cancelOrder = async (
 const cancelOrderItem = async (
   orderId,
   itemId,
-  userId
+  userId,
+  cancelReason = ""
 ) => {
 
   const order = await Order.findOne({
@@ -209,6 +214,10 @@ const cancelOrderItem = async (
     );
   }
 
+  if (!cancelReason || !cancelReason.trim()) {
+    throw new Error("Cancel reason is required");
+  }
+
   /*
   =================================
   RESTORE STOCK
@@ -238,6 +247,7 @@ const cancelOrderItem = async (
   */
 
   item.status = "Cancelled";
+  item.cancelReason = cancelReason.trim();
 
   /*
   =================================
@@ -402,6 +412,7 @@ if (
   }
 
   item.status = "Return Requested";
+  item.returnReason = returnReason.trim();
 
   await order.save();
 

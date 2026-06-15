@@ -393,6 +393,16 @@ gap:12px;
   margin-top: 4px;
   display: block;
 }
+
+.error-box {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
 .form-group,
 .card label{
   display: block;

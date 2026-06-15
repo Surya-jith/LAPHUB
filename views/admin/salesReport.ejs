@@ -40,14 +40,14 @@
       <div class="export-buttons">
 
         <a
-          href="/admin/sales-report/pdf"
+          href="/admin/sales-report/pdf?filter=<%= filter %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>"
           class="btn-export"
         >
           Export PDF
         </a>
 
         <a
-          href="/admin/sales-report/excel"
+          href="/admin/sales-report/excel?filter=<%= filter %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>"
           class="btn-export"
         >
           Export Excel

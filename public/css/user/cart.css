@@ -34,9 +34,9 @@
 }
 
 .cart-left h2 {
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 700;
-  margin-bottom: 30px;
+  margin-bottom: 22px;
   color: #111827;
 }
 
@@ -50,7 +50,7 @@
 
 .cart-table th,
 .cart-table td {
-  padding: 28px 10px;
+  padding: 18px 10px;
   border-bottom: 1px solid #e5e7eb;
   vertical-align: middle;
   text-align: left;
@@ -219,7 +219,7 @@
 }
 
 .cart-card h3 {
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 700;
   margin-bottom: 24px;
   color: #111827;
@@ -230,6 +230,7 @@
 .cart-row {
   display: flex;
   justify-content: space-between;
+  gap: 16px;
   margin: 14px 0;
   font-size: 16px;
   color: #6b7280;
@@ -238,8 +239,9 @@
 .cart-total {
   display: flex;
   justify-content: space-between;
+  gap: 16px;
   margin-top: 24px;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   color: #111827;
 }
@@ -274,6 +276,7 @@
 .checkout-btn.disabled {
   background: #d1d5db;
   pointer-events: none;
+  color: #6b7280;
 }
 
 /* COUPON */
@@ -315,16 +318,9 @@
   padding: 60px;
   font-size: 18px;
   color: #6b7280;
-}
-.cart-subtotal {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding-top: 42px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
 }
 .cart-table td:nth-child(5) {
   width: 18%;
@@ -556,4 +552,12 @@
   border-radius:14px;
 
   padding:18px;
+}
+
+.stock-warning {
+  display: block;
+  margin-top: 6px;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 600;
 }

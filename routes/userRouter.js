@@ -97,15 +97,15 @@ router.post("/product/review/:id",userController.addReview)
 //CART
 router.get("/cart", cartController.loadCart)
 router.post("/add-to-cart", cartController.addToCart)
-router.get("/cart/increase/:id", cartController.increaseQty)
-router.get("/cart/decrease/:id", cartController.decreaseQty)
-router.get("/remove-cart/:id", cartController.removeCartItem)
+router.get("/cart/increase/:productId/:variantId", cartController.increaseQty)
+router.get("/cart/decrease/:productId/:variantId", cartController.decreaseQty)
+router.get("/remove-cart/:productId/:variantId", cartController.removeCartItem)
 
 //checkout
 router.get("/checkout", checkoutController.loadCheckout);
-router.get("/edit-address/:id", userController.loadEditAddress);
-router.get("/add-address", userController.loadAddAddress);
-router.post("/add-address", userController.saveAddress);
+router.get("/edit-address/:id", authMiddleware.isUserLoggedIn, userController.loadEditAddress);
+router.get("/add-address", authMiddleware.isUserLoggedIn, userController.loadAddAddress);
+router.post("/add-address", authMiddleware.isUserLoggedIn, userController.saveAddress);
 router.post( "/buy-now",authMiddleware.isUserLoggedIn,checkoutController.buyNow);
 router.post("/place-order",authMiddleware.isUserLoggedIn,checkoutController.placeOrder);
 router.post(
@@ -178,4 +178,4 @@ router.post(
   authMiddleware.isUserLoggedIn,
   checkoutController.removeCoupon
 );
-export default router;    
+export default router;

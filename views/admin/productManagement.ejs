@@ -243,7 +243,7 @@
         <% for (let i = 1; i <= totalPages; i++) { %>
 
           <a
-            href="/admin/products?page=<%= i %>&category=<%= selectedCategory || '' %>"
+            href="/admin/products?page=<%= i %>&category=<%= selectedCategory || '' %>&search=<%= encodeURIComponent(search || '') %>"
             class="<%= currentPage === i ? 'active' : '' %>"
           >
             <%= i %>

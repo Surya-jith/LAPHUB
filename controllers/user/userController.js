@@ -6,6 +6,7 @@ import sendEmail from "../../utils/sendEmail.js";
 import bcrypt from "bcryptjs";
 import Wallet from "../../models/walletModel.js";
 import Coupon from "../../models/couponModel.js";
+import fs from "fs";
 
 
 
@@ -638,51 +639,141 @@ const loadProfile = async (req, res) => {
   }
 }
 
-const loadEditProfile=async (req,res)=>{
+const loadEditProfile = async (req, res) => {
+  try {
 
-  const user = await userService.getUser(req.session.user)
-  res.render("user/editProfile",{user})
+    const user = await userService.getUser(req.session.user)
+
+    res.render("user/editProfile", {
+      user,
+      error: null,
+      success: null
+    })
+
+  } catch (error) {
+    console.log("Load Edit Profile Error:", error)
+    res.redirect("/profile")
+  }
 }
 
-const updateProfile = async (req,res)=>{
 
-  console.log("BODY:", req.body);
-console.log("FILE:", req.file); 
+const updateProfile = async (req, res) => {
+  try {
 
-const username = req.body?.username;
-const phone = req.body?.phone;
+    const { username, phone } = req.body
+    const user = await userService.getUser(req.session.user)
 
-const updateData = {
-username,
-phone
-};
+    const renderEditProfile = (message) => {
+      user.username = username || user.username
+      user.phone = phone || ""
 
-// if user uploaded a new image
-if(req.file){
-updateData.profileImage = req.file.filename;
+      return res.render("user/editProfile", {
+        user,
+        error: message,
+        success: null
+      })
+    }
+
+    // Validation
+    if (!username || !username.trim()) {
+      return renderEditProfile("Name is required")
+    }
+
+    if (username.trim().length < 2 || username.trim().length > 30) {
+      return renderEditProfile("Name must be between 2 and 30 characters")
+    }
+
+    if (!/^[A-Za-z ]+$/.test(username.trim())) {
+      return renderEditProfile("Name must contain only letters and spaces")
+    }
+
+    if (phone && !/^\d{10}$/.test(phone.trim())) {
+      return renderEditProfile("Phone number must be exactly 10 digits")
+    }
+
+    const updateData = {
+      username: username.trim(),
+      phone: phone?.trim() || ""
+    }
+
+    // Only update image if a new one was uploaded
+    if (req.file) {
+      if (!req.file.mimetype.startsWith("image/")) {
+        fs.unlink(req.file.path, () => {})
+        return renderEditProfile("Please upload a valid image file")
+      }
+
+      updateData.profileImage = req.file.filename
+    }
+
+    await userService.updateProfile(req.session.user, updateData)
+
+    res.redirect("/profile?success=Profile updated successfully")
+
+  } catch (error) {
+    console.log("Update Profile Error:", error)
+
+    const user = await userService.getUser(req.session.user)
+
+    res.render("user/editProfile", {
+      user,
+      error: error.message || "Failed to update profile",
+      success: null
+    })
+  }
 }
 
-await userService.updateProfile(req.session.user, updateData);
-
-res.redirect("/profile");
-
+const loadChangePassword = (req, res) => {
+  res.render("user/changePassword", {
+    error: null,
+    success: null
+  })
 }
 
-const loadChangePassword=(req,res)=>{
-  res.render("user/changePassword");
-
+const changePassword = async (req, res) => {
+  try {
+ 
+    const { currentPassword, newPassword } = req.body
+ 
+    if (!currentPassword || !newPassword) {
+      return res.render("user/changePassword", {
+        error: "All fields are required",
+        success: null
+      })
+    }
+ 
+    if (newPassword.length < 6) {
+      return res.render("user/changePassword", {
+        error: "New password must be at least 6 characters",
+        success: null
+      })
+    }
+ 
+    const result = await userService.changePassword(
+      req.session.user,
+      currentPassword,
+      newPassword
+    )
+ 
+    if (!result.success) {
+      return res.render("user/changePassword", {
+        error: result.message,
+        success: null
+      })
+    }
+ 
+    res.redirect("/profile?success=Password changed successfully")
+ 
+  } catch (error) {
+    console.log("Change Password Error:", error)
+ 
+    res.render("user/changePassword", {
+      error: error.message || "Failed to change password",
+      success: null
+    })
+  }
 }
-
-const changePassword=async(req,res)=>{
-  const{currentPassword,newPassword}=req.body;
-
-  const result = await userService.changePassword(req.session.user,currentPassword,newPassword)
-if(!result.success){
-  res.render("user/changePassword",{error:result.message})
-}
-res.redirect("/profile")
-
-}
+ 
 
 const loadEditEmail=(req,res)=>{
   res.render("user/editEmail",{
@@ -789,7 +880,13 @@ const saveAddress = async (req, res) => {
 
     const redirectTo = req.query.redirect || "/address";
 
-    res.redirect(redirectTo);
+    if (req.query.redirect) {
+      return res.redirect(
+        `/add-address?redirect=${encodeURIComponent(redirectTo)}&error=${encodeURIComponent(error.message)}`
+      );
+    }
+
+    res.redirect(`/address?error=${encodeURIComponent(error.message)}`);
   }
 };
 const deleteAddress = async (req, res) => {
@@ -963,11 +1060,20 @@ res.redirect("/products")
 
 }
 
-const loadAddAddress = (req, res) => {
-  res.render("user/addressForm", {
-    address: null,
-    redirect: req.query.redirect || null
-  });
+const loadAddAddress = async (req, res) => {
+  try {
+    const user = await userService.getUser(req.session.user);
+
+    res.render("user/addressForm", {
+      user,
+      address: null,
+      redirect: req.query.redirect || null,
+      error: req.query.error || null
+    });
+  } catch (error) {
+    console.log("Load Add Address Error:", error);
+    res.redirect("/checkout");
+  }
 };
 
 const loadEditAddress = async (req, res) => {
@@ -977,8 +1083,10 @@ const loadEditAddress = async (req, res) => {
     const address = user.addresses.id(req.params.id);
 
     res.render("user/addressForm", {
+      user,
       address,
-      redirect: req.query.redirect || null
+      redirect: req.query.redirect || null,
+      error: null
     });
 
   } catch (error) {

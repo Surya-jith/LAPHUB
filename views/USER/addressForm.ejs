@@ -15,7 +15,7 @@
 
     <h2><%= address ? "Edit Address" : "Add Address" %></h2>
 
-   <form method="POST" action="/add-address?<%= redirect ? 'redirect=' + redirect : '' %>">
+   <form method="POST" action="/add-address<%= redirect ? '?redirect=' + encodeURIComponent(redirect) : '' %>">
 
       <!-- 🔥 IMPORTANT: for edit -->
       <% if(address){ %>
@@ -52,11 +52,11 @@
       <!-- ADDRESS -->
       <input 
         type="text" 
-        name="address" 
-        placeholder="Street Address"
-        value="<%= address?.address || '' %>" 
-        required
-      >
+          name="address" 
+          placeholder="Street Address"
+          value="<%= address?.address || '' %>" 
+          required
+        >
 
       <!-- COUNTRY / STATE -->
       <div class="grid">
@@ -93,6 +93,7 @@
           placeholder="Pincode"
           value="<%= address?.pincode || '' %>" 
           required
+          pattern="[0-9]{6}"
         >
       </div>
 
@@ -112,6 +113,7 @@
           placeholder="Phone"
           value="<%= address?.phone || '' %>" 
           required
+          pattern="[0-9]{10}"
         >
       </div>
 

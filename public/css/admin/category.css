@@ -161,20 +161,31 @@ tr:hover {
 /* PAGINATION */
 .pagination {
   margin-top: 20px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .pagination a {
   padding: 6px 10px;
   border: 1px solid #ccc;
-  margin-right: 5px;
   border-radius: 5px;
   text-decoration: none;
   color: black;
 }
 
-.pagination a:hover {
+.pagination a:hover,
+.pagination a.active-page {
   background: #4a6cf7;
   color: white;
+}
+
+.pagination a.disabled {
+  pointer-events: none;
+  opacity: 0.45;
+  background: #f1f5f9;
+  color: #64748b;
 }
 /* ADD CATEGORY BUTTON */
 .btn-add-category{

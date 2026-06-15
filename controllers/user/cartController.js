@@ -44,9 +44,16 @@ const loadCart = async (req, res) => {
             product: item.product,
             productId: item.product._id,
             variant,
+            variantId: variant._id,
             quantity: item.quantity,
             subtotal: itemSubtotal,
-            isUnavailable: false
+            isUnavailable: false,
+            stockWarning:
+              item.quantity >= variant.stock
+                ? `Only ${variant.stock} items available in stock`
+                : item.quantity >= 5
+                  ? "Maximum 5 items allowed per product"
+                  : null
           }
         })
         .filter(Boolean) // remove null entries
@@ -98,9 +105,9 @@ const addToCart = async (req, res) => {
 const increaseQty = async (req, res) => {
   try {
     const userId = req.session.user
-    const productId = req.params.id
+    const { productId, variantId } = req.params
 
-    await cartService.increaseQty(userId, productId)
+    await cartService.increaseQty(userId, productId, variantId)
 
     res.redirect("/cart")
 
@@ -114,9 +121,9 @@ const increaseQty = async (req, res) => {
 const decreaseQty = async (req, res) => {
   try {
     const userId = req.session.user
-    const productId = req.params.id
+    const { productId, variantId } = req.params
 
-    await cartService.decreaseQty(userId, productId)
+    await cartService.decreaseQty(userId, productId, variantId)
 
     res.redirect("/cart")
 
@@ -130,9 +137,9 @@ const decreaseQty = async (req, res) => {
 const removeCartItem = async (req, res) => {
   try {
     const userId = req.session.user
-    const productId = req.params.id
+    const { productId, variantId } = req.params
 
-    await cartService.removeCartItem(userId, productId)
+    await cartService.removeCartItem(userId, productId, variantId)
 
     res.redirect("/cart")
 

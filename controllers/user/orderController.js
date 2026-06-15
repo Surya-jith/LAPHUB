@@ -111,7 +111,8 @@ const cancelOrderItem = async (req, res) => {
     await orderService.cancelOrderItem(
       orderId,
       itemId,
-      userId
+      userId,
+      req.body.cancelReason || ""
     );
 
     return res.redirect(

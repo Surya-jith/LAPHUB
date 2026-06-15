@@ -1,12 +1,5 @@
-<link
-  rel="stylesheet"
-  href="/css/admin/sidebar.css"
-/>
-
-<link
-  rel="stylesheet"
-  href="/css/admin/coupons.css"
-/>
+<link rel="stylesheet" href="/css/admin/sidebar.css" />
+<link rel="stylesheet" href="/css/admin/coupons.css" />
 
 <div class="admin-container">
 
@@ -16,158 +9,138 @@
 
     <!-- HEADER -->
     <div class="page-header">
+      <h2>Coupon Management</h2>
+      <a href="/admin/add-coupon" class="btn-add">+ Add Coupon</a>
+    </div>
 
-      <h2>
-        Coupon Management
-      </h2>
+    <!-- ERROR -->
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="error-box">
+        <%= error %>
+      </div>
+    <% } %>
 
-      <a
-        href="/admin/add-coupon"
-        class="btn-add"
-      >
-        + Add Coupon
-      </a>
-
+    <!-- SEARCH -->
+    <div class="top-bar">
+      <form method="GET" action="/admin/coupons" class="search-form">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search coupon code"
+          value="<%= search || '' %>"
+        />
+        <button type="submit">Search</button>
+        <a href="/admin/coupons">Clear</a>
+      </form>
     </div>
 
     <!-- TABLE -->
     <div class="table-container">
-
       <table>
-
         <thead>
-
           <tr>
-
             <th>Code</th>
-
             <th>Type</th>
-
             <th>Discount</th>
-
             <th>Min Amount</th>
-
             <th>Expiry</th>
-
             <th>Status</th>
-
             <th>Actions</th>
-
           </tr>
-
         </thead>
 
         <tbody>
 
-          <% coupons.forEach(coupon => { %>
+          <% if (coupons && coupons.length > 0) { %>
 
+            <% coupons.forEach(coupon => { %>
+              <tr>
+
+                <td><%= coupon.code %></td>
+
+                <td><%= coupon.discountType %></td>
+
+                <td>
+                  <% if (coupon.discountType === "percentage") { %>
+                    <%= coupon.discountValue %>%
+                  <% } else { %>
+                    ₹<%= coupon.discountValue %>
+                  <% } %>
+                </td>
+
+                <td>₹<%= coupon.minimumAmount %></td>
+
+                <td>
+                  <%= new Date(coupon.expiryDate).toLocaleDateString() %>
+                </td>
+
+                <td>
+                  <span class="status <%= coupon.isActive ? 'active' : 'inactive' %>">
+                    <%= coupon.isActive ? 'Active' : 'Inactive' %>
+                  </span>
+                </td>
+
+                <td class="actions">
+
+                  <!-- TOGGLE -->
+                  <form action="/admin/toggle-coupon/<%= coupon._id %>" method="POST" style="display:inline;">
+                    <button type="submit" class="btn-toggle">
+                      <%= coupon.isActive ? 'Disable' : 'Enable' %>
+                    </button>
+                  </form>
+
+                  <!-- DELETE -->
+                  <form action="/admin/delete-coupon/<%= coupon._id %>" method="POST" style="display:inline;">
+                    <button
+                      type="submit"
+                      class="btn-delete"
+                      onclick="return confirm('Delete this coupon?')"
+                    >
+                      Delete
+                    </button>
+                  </form>
+
+                </td>
+
+              </tr>
+            <% }) %>
+
+          <% } else { %>
             <tr>
-
-              <td>
-                <%= coupon.code %>
-              </td>
-
-              <td>
-                <%= coupon.discountType %>
-              </td>
-
-              <td>
-
-                <% if (
-                  coupon.discountType
-                  === "percentage"
-                ) { %>
-
-                  <%= coupon.discountValue %>%
-
-                <% } else { %>
-
-                  ₹<%= coupon.discountValue %>
-
-                <% } %>
-
-              </td>
-
-              <td>
-                ₹<%= coupon.minimumAmount %>
-              </td>
-
-              <td>
-
-                <%= new Date(
-                  coupon.expiryDate
-                ).toLocaleDateString() %>
-
-              </td>
-
-              <td>
-
-                <span
-                  class="
-                    status
-                    <%= coupon.isActive
-                      ? 'active'
-                      : 'inactive'
-                    %>
-                  "
-                >
-
-                  <%= coupon.isActive
-                    ? 'Active'
-                    : 'Inactive'
-                  %>
-
-                </span>
-
-              </td>
-
-              <td class="actions">
-
-                <!-- TOGGLE -->
-                <form
-                  action="/admin/toggle-coupon/<%= coupon._id %>"
-                  method="POST"
-                >
-
-                  <button
-                    type="submit"
-                    class="btn-toggle"
-                  >
-
-                    <%= coupon.isActive
-                      ? 'Disable'
-                      : 'Enable'
-                    %>
-
-                  </button>
-
-                </form>
-
-                <!-- DELETE -->
-                <form
-                  action="/admin/delete-coupon/<%= coupon._id %>"
-                  method="POST"
-                >
-
-                  <button
-                    type="submit"
-                    class="btn-delete"
-                  >
-                    Delete
-                  </button>
-
-                </form>
-
-              </td>
-
+              <td colspan="7" style="text-align:center;">No coupons found</td>
             </tr>
-
-          <% }) %>
+          <% } %>
 
         </tbody>
-
       </table>
+    </div>
 
+    <!-- PAGINATION -->
+    <div class="pagination">
+      <% if (totalPages > 1) { %>
+        <a
+          href="/admin/coupons?page=<%= currentPage - 1 %>&search=<%= encodeURIComponent(search || '') %>"
+          class="<%= currentPage === 1 ? 'disabled' : '' %>"
+        >
+          Previous
+        </a>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <a
+            href="/admin/coupons?page=<%= i %>&search=<%= encodeURIComponent(search || '') %>"
+            class="<%= currentPage === i ? 'active-page' : '' %>"
+          >
+            <%= i %>
+          </a>
+        <% } %>
+
+        <a
+          href="/admin/coupons?page=<%= currentPage + 1 %>&search=<%= encodeURIComponent(search || '') %>"
+          class="<%= currentPage === totalPages ? 'disabled' : '' %>"
+        >
+          Next
+        </a>
+      <% } %>
     </div>
 
   </div>
