@@ -1,3 +1,9 @@
+<link rel="stylesheet" href="/css/responsive.css">
+
+<button type="button" class="admin-menu-toggle" aria-label="Toggle admin navigation">
+  Menu
+</button>
+
 <div class="sidebar">
 
 <h3>LapHub</h3>
@@ -15,3 +21,9 @@
 </ul>
 
 </div>
+
+<script>
+  document.querySelector(".admin-menu-toggle")?.addEventListener("click", () => {
+    document.querySelector(".sidebar")?.classList.toggle("is-open");
+  });
+</script>

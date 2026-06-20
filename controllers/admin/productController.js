@@ -16,11 +16,13 @@ const loadProducts = async (req, res) => {
 
     res.render("admin/productManagement", {
       ...data,
-      search
+      search,
+      error: req.query.error || null
     })
 
   } catch (error) {
     console.log(error)
+    res.redirect(`/admin/products?error=${encodeURIComponent("Unable to load products")}`)
   }
 }
 
@@ -34,12 +36,14 @@ const data = await productService.getAddProductData()
 
 res.render("admin/addProduct",{
 ...data,
-formData:{}
+formData:{},
+error: req.query.error || null
 })
 
 }catch(error){
 
 console.log(error)
+res.redirect(`/admin/products?error=${encodeURIComponent("Unable to load the add product page")}`)
 
 }
 
@@ -119,11 +123,12 @@ try{
 
 const data = await productService.getEditProductData(req.params.id)
 
-res.render("admin/editProduct",data)
+res.render("admin/editProduct", { ...data, error: req.query.error || null })
 
 }catch(error){
 
 console.log(error)
+res.redirect(`/admin/products?error=${encodeURIComponent("Product not found")}`)
 
 }
 
@@ -147,6 +152,7 @@ res.redirect("/admin/products")
 }catch(error){
 
 console.log(error)
+res.redirect(`/admin/edit-product/${req.params.id}?error=${encodeURIComponent(error.message || "Unable to update product")}`)
 
 }
 
@@ -166,6 +172,7 @@ res.redirect("/admin/products")
 }catch(error){
 
 console.log(error)
+res.redirect(`/admin/products?error=${encodeURIComponent(error.message || "Unable to delete product")}`)
 
 }
 
@@ -177,6 +184,7 @@ const toggleProductBlock = async (req, res) => {
     res.redirect("/admin/products")
   } catch (error) {
     console.log(error)
+    res.redirect(`/admin/products?error=${encodeURIComponent(error.message || "Unable to update product status")}`)
   }
 }
 

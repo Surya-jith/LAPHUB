@@ -1,0 +1,95 @@
+:root {
+  --app-gutter: clamp(14px, 3vw, 32px);
+}
+
+.error-message,
+.error-box,
+.success-message {
+  width: min(100% - (var(--app-gutter) * 2), 1100px);
+  margin: 16px auto;
+  overflow-wrap: anywhere;
+}
+
+.table-container,
+.table-card,
+.orders-table-box,
+.cart-table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-container table,
+.table-card table,
+.orders-table-box table {
+  min-width: 640px;
+}
+
+.app-error-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--app-gutter);
+  background: #f5f7fb;
+}
+
+.app-error-card {
+  width: min(100%, 520px);
+  padding: clamp(24px, 5vw, 48px);
+  border: 1px solid #dbe3f0;
+  border-radius: 8px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+}
+
+.app-error-code { color: #3b5bdb; font-size: 14px; font-weight: 700; }
+.app-error-card h1 { margin: 10px 0; color: #111827; font-size: 28px; }
+.app-error-card p { color: #4b5563; line-height: 1.6; }
+.app-error-action { display: inline-block; margin-top: 22px; padding: 10px 16px; border-radius: 6px; background: #3b5bdb; color: #fff; text-decoration: none; }
+
+@media (max-width: 992px) {
+  .admin-container { min-width: 0; }
+  .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 1100; width: min(82vw, 280px) !important; transform: translateX(-100%); transition: transform 0.2s ease; overflow-y: auto; }
+  .sidebar.is-open { transform: translateX(0); }
+  .admin-menu-toggle { display: inline-flex; position: fixed; top: 14px; left: 14px; z-index: 1200; padding: 9px 12px; border: 0; border-radius: 6px; background: #1f2945; color: #fff; }
+  .admin-container .main-content { margin-left: 0 !important; width: 100%; }
+  .filter-form, .top-bar, .page-header, .orders-header { flex-wrap: wrap; }
+}
+
+.admin-menu-toggle { display: none; }
+
+@media (max-width: 992px) {
+  .admin-menu-toggle { display: inline-flex; }
+}
+
+@media (max-width: 768px) {
+  body { overflow-x: hidden; }
+  .main-content, .admin-container .main-content { min-width: 0; }
+  .page-layout, .profile-page, .checkout-wrapper form, .cart-container, .product-layout { flex-direction: column !important; grid-template-columns: 1fr !important; }
+  .checkout, .cart-page, .profile-page { padding: 16px !important; }
+  .checkout-right, .cart-right { position: static !important; width: 100% !important; }
+  .card, .cart-card, .cart-left, .profile-card { padding: 18px !important; border-radius: 8px !important; }
+  .filter-form, .search-form, .top-bar, .action-buttons, .header-actions { gap: 10px; }
+  .filter-form input, .filter-form select, .search-form input, .search-box input { max-width: 100%; }
+  .pagination { flex-wrap: wrap; }
+  .form-container, .login-container, .signup-container, .login-card, .signup-card, .password-card, .email-card { width: min(100% - 28px, 460px) !important; max-width: 100% !important; }
+  .main-container { min-height: 100vh; flex-direction: column !important; }
+  .main-container .left-section { display: none; }
+  .main-container .right-section { width: 100%; padding: 20px 14px; }
+  .orders-content, .order-details-page .container, .address-container, .wallet-container { width: 100% !important; max-width: 100% !important; }
+  .orders-header, .filter-section, .top-actions, .status-filter { gap: 10px; flex-wrap: wrap; }
+  .orders-header .search-box, .filter-form .search-box, .filter-form .sort-box { width: 100%; }
+  .orders-header .search-box input, .filter-form .search-box input, .filter-form .sort-box select { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 28px; }
+  h2 { font-size: 24px; }
+  .page-header, .orders-header, .card-header { align-items: flex-start; flex-direction: column; }
+  .address-item, .order-item, .payment-option { align-items: flex-start; }
+  .coupon-card { flex-direction: column; align-items: stretch; }
+  .coupon-apply-btn, .place-btn, .checkout-btn { width: 100%; }
+  .profile-sidebar { min-width: 0 !important; }
+  .product-card, .wishlist-card, .address-card { min-width: 0; }
+}

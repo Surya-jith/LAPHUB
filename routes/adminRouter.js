@@ -18,13 +18,13 @@ router.post("/block-user/:id",authMiddleware.adminAuth,adminController.toggleBlo
 router.get("/logout",adminController.logout)
 
 //CATEGORY MANAGEMENT
-router.get("/category",categoryController.loadCategory)
-router.get("/add-category",categoryController.loadAddCategory)
-router.post("/add-category",categoryController.addCategory)
-router.get("/edit-category/:id",categoryController.loadEditCategory)
-router.post("/edit-category",categoryController.editCategory)
-router.post("/toggle-category/:id",categoryController.toggleCategory)
-router.post("/delete-category/:id",categoryController.deleteCategory)
+router.get("/category",authMiddleware.adminAuth,categoryController.loadCategory)
+router.get("/add-category",authMiddleware.adminAuth,categoryController.loadAddCategory)
+router.post("/add-category",authMiddleware.adminAuth,categoryController.addCategory)
+router.get("/edit-category/:id",authMiddleware.adminAuth,categoryController.loadEditCategory)
+router.post("/edit-category",authMiddleware.adminAuth,categoryController.editCategory)
+router.post("/toggle-category/:id",authMiddleware.adminAuth,categoryController.toggleCategory)
+router.post("/delete-category/:id",authMiddleware.adminAuth,categoryController.deleteCategory)
 
 
 // PRODUCT MANAGEMENT
@@ -45,7 +45,7 @@ upload.fields([
 ])(req,res,(err)=>{
 if(err){
 console.log("Multer Error:",err)
-return res.send(err.message)
+return res.redirect(`/admin/add-product?error=${encodeURIComponent(err.message || "Unable to upload product images")}`)
 }
 next()
 })
@@ -73,6 +73,7 @@ router.get("/orders/:id",authMiddleware.adminAuth, orderController.loadOrderDeta
 router.post("/orders/:id/status",authMiddleware.adminAuth,orderController.updateOrderStatus);
 router.post(
   "/orders/:orderId/items/:itemId/return",
+  authMiddleware.adminAuth,
   orderController.processItemReturn
 );
 /*

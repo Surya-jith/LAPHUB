@@ -8,6 +8,10 @@
 
   <div class="main-content">
 
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="error-box"><%= error %></div>
+    <% } %>
+
     <div class="page-header">
       <h2>Add Category</h2>
       <a href="/admin/category" class="btn-back">← Back</a>

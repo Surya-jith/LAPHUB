@@ -91,18 +91,18 @@ router.post("/address/delete/:id", authMiddleware.isUserLoggedIn, userController
 
 router.get("/products",authMiddleware.isUserLoggedIn,userController.loadProducts)
 router.get("/product/:id",authMiddleware.isUserLoggedIn, userController.loadProductDetails)
-router.post("/product/review/:id",userController.addReview)
+router.post("/product/review/:id", authMiddleware.isUserLoggedIn, userController.addReview)
 
 
 //CART
-router.get("/cart", cartController.loadCart)
-router.post("/add-to-cart", cartController.addToCart)
-router.get("/cart/increase/:productId/:variantId", cartController.increaseQty)
-router.get("/cart/decrease/:productId/:variantId", cartController.decreaseQty)
-router.get("/remove-cart/:productId/:variantId", cartController.removeCartItem)
+router.get("/cart", authMiddleware.isUserLoggedIn, cartController.loadCart)
+router.post("/add-to-cart", authMiddleware.isUserLoggedIn, cartController.addToCart)
+router.get("/cart/increase/:productId/:variantId", authMiddleware.isUserLoggedIn, cartController.increaseQty)
+router.get("/cart/decrease/:productId/:variantId", authMiddleware.isUserLoggedIn, cartController.decreaseQty)
+router.get("/remove-cart/:productId/:variantId", authMiddleware.isUserLoggedIn, cartController.removeCartItem)
 
 //checkout
-router.get("/checkout", checkoutController.loadCheckout);
+router.get("/checkout", authMiddleware.isUserLoggedIn, checkoutController.loadCheckout);
 router.get("/edit-address/:id", authMiddleware.isUserLoggedIn, userController.loadEditAddress);
 router.get("/add-address", authMiddleware.isUserLoggedIn, userController.loadAddAddress);
 router.post("/add-address", authMiddleware.isUserLoggedIn, userController.saveAddress);
@@ -156,6 +156,7 @@ router.get("/orders/:id/invoice",authMiddleware.isUserLoggedIn,orderController.d
 
 router.post(
   "/orders/:orderId/items/:itemId/return",
+  authMiddleware.isUserLoggedIn,
   orderController.returnOrderItem
 );
 

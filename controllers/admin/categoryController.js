@@ -26,11 +26,11 @@ const loadCategory = async (req, res) => {
 const loadAddCategory = async (req,res)=>{
   try {
 
-    res.render("admin/addCategory")
+    res.render("admin/addCategory", { error: null })
 
   } catch (err) {
     console.log("Load Add Category Error:", err)
-    res.redirect("/admin/category")
+    res.redirect(`/admin/category?error=${encodeURIComponent("Unable to load the add category page")}`)
   }
 }
 
@@ -74,7 +74,7 @@ const loadEditCategory = async (req,res)=>{
 
   } catch (err) {
     console.log("Load Edit Category Error:", err)
-    res.redirect("/admin/category")
+    res.redirect(`/admin/category?error=${encodeURIComponent("Category not found")}`)
   }
 }
 
@@ -126,7 +126,7 @@ const toggleCategory = async (req,res)=>{
 
   } catch (err) {
     console.log("Toggle Category Error:", err)
-    res.redirect("/admin/category")
+    res.redirect(`/admin/category?error=${encodeURIComponent(err.message || "Unable to update category status")}`)
   }
 }
 
@@ -142,7 +142,7 @@ const deleteCategory = async (req,res)=>{
 
   } catch (err) {
     console.log("Delete Category Error:", err)
-    res.redirect("/admin/category")
+    res.redirect(`/admin/category?error=${encodeURIComponent(err.message || "Unable to delete category")}`)
   }
 }
 
