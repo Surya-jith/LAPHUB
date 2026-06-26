@@ -3,6 +3,19 @@ import Category from "../../models/category.js"
 import Brand from "../../models/brandModel.js"
 import calculateBestOffer from "../../utils/calculateBestOffer.js"
 
+function normalizeImagePath(filePath) {
+  if (!filePath) return "";
+  if (filePath.startsWith("http")) return filePath;
+  let clean = filePath.replace(/\\/g, "/");
+  if (clean.startsWith("public/")) {
+    clean = clean.substring(7);
+  }
+  if (!clean.startsWith("/")) {
+    clean = "/" + clean;
+  }
+  return clean;
+}
+
 
 // Get Products (Pagination + Brands)
 const getProducts = async ({
@@ -159,7 +172,7 @@ const createProduct = async (data, files) => {
     rom: roms[index],
     stock: stocks[index],
     price: prices[index],
-    variantImage: variantImages[index]?.path || ""
+    variantImage: normalizeImagePath(variantImages[index]?.path)
   }))
 
   const brandValue = brand && brand !== "" ? brand : null
@@ -169,7 +182,7 @@ const createProduct = async (data, files) => {
   const mainImages = files.images || []
 
   mainImages.forEach(file => {
-    images.push(file.path)
+    images.push(normalizeImagePath(file.path))
   })
 
   /*
@@ -326,8 +339,8 @@ const updateProduct = async (id, data, files) => {
     stock: stocks[index],
     price: prices[index],
     variantImage: variantImages[index]?.path
-      || existingProduct.variants[index]?.variantImage
-      || ""
+      ? normalizeImagePath(variantImages[index].path)
+      : (existingProduct.variants[index]?.variantImage || "")
   }))
 
   /*
@@ -391,7 +404,7 @@ const updateProduct = async (id, data, files) => {
   if (mainImages.length > 0) {
     mainImages.forEach((file, index) => {
       if (file?.path) {
-        updatedImages[index] = file.path
+        updatedImages[index] = normalizeImagePath(file.path)
       }
     })
   }

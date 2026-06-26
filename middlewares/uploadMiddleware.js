@@ -1,15 +1,36 @@
 import multer from "multer";
+import path from "path";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
 
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req, file) => ({
-    folder: "profile",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-    public_id: `${Date.now()}-${file.originalname.replace(/\.[^/.]+$/, "")}`
-  })
-});
+let storage;
+
+const isCloudinaryConfigured = 
+  process.env.CLOUDINARY_NAME && 
+  process.env.CLOUDINARY_KEY && 
+  process.env.CLOUDINARY_SECRET;
+
+if (isCloudinaryConfigured) {
+  storage = new CloudinaryStorage({
+    cloudinary,
+    params: async (req, file) => ({
+      folder: "profile",
+      allowed_formats: ["jpg", "jpeg", "png", "webp"],
+      public_id: `${Date.now()}-${file.originalname.replace(/\.[^/.]+$/, "")}`
+    })
+  });
+} else {
+  console.warn("WARNING: Cloudinary environment variables are missing. Falling back to local disk storage for profile pictures.");
+  storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "public/uploads/profile");
+    },
+    filename: function (req, file, cb) {
+      const uniqueName = Date.now() + path.extname(file.originalname);
+      cb(null, uniqueName);
+    }
+  });
+}
 
 const upload = multer({
   storage,
@@ -26,3 +47,4 @@ const upload = multer({
 });
 
 export default upload;
+

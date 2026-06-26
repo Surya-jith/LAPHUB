@@ -44,9 +44,23 @@
         <div class="profile-image">
           <% if (user.profileImage && user.profileImage.trim() && user.profileImage !== "null") { %>
             <%
-              const profileImageSrc = user.profileImage.startsWith("http")
-                ? user.profileImage
-                : `/uploads/profile/${user.profileImage}`;
+              let profileImageSrc = user.profileImage;
+              if (!profileImageSrc.startsWith("http")) {
+                let cleanPath = profileImageSrc.replace(/\\/g, "/");
+                if (cleanPath.startsWith("public/")) {
+                  cleanPath = cleanPath.substring(7);
+                }
+                if (!cleanPath.startsWith("/")) {
+                  cleanPath = "/" + cleanPath;
+                }
+                if (cleanPath.startsWith("/uploads/profile/")) {
+                  profileImageSrc = cleanPath;
+                } else if (cleanPath.startsWith("/uploads/")) {
+                  profileImageSrc = cleanPath;
+                } else {
+                  profileImageSrc = `/uploads/profile${cleanPath}`;
+                }
+              }
             %>
             <img
               src="<%= profileImageSrc %>"

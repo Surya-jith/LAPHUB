@@ -753,7 +753,11 @@ const updateProfile = async (req, res) => {
     }
 
     if (req.file) {
-      updateData.profileImage = req.file.path
+      if (req.file.path.startsWith("http")) {
+        updateData.profileImage = req.file.path
+      } else {
+        updateData.profileImage = req.file.filename
+      }
     }
 
     await userService.updateProfile(req.session.user, updateData)
