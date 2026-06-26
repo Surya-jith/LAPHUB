@@ -54,8 +54,13 @@
       <div class="profile-image">
 
         <% if (user.profileImage && user.profileImage.trim() && user.profileImage !== "null") { %>
+          <%
+            const profileImageSrc = user.profileImage.startsWith("http")
+              ? user.profileImage
+              : `/uploads/profile/${user.profileImage}`;
+          %>
           <img
-            src="/uploads/profile/<%= user.profileImage %>"
+            src="<%= profileImageSrc %>"
             alt="User Image"
             onerror="this.style.display='none'; document.getElementById('default-avatar').style.display='flex';"
           >

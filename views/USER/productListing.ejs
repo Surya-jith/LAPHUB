@@ -27,6 +27,13 @@ value="<%= search || '' %>"
 />
 
 <input type="hidden" name="sort" value="<%= sort || '' %>">
+<input type="hidden" name="category" value="<%= selectedCategory || '' %>">
+<% if (minPrice) { %>
+<input type="hidden" name="minPrice" value="<%= minPrice %>">
+<% } %>
+<% if (priceRange) { %>
+<input type="hidden" name="maxPrice" value="<%= priceRange %>">
+<% } %>
 
 <button type="submit">
 <i class="fa fa-search"></i>
@@ -41,6 +48,14 @@ value="<%= search || '' %>"
 <div class="sort-box">
 
 <form method="GET" action="/products">
+<input type="hidden" name="search" value="<%= search || '' %>">
+<input type="hidden" name="category" value="<%= selectedCategory || '' %>">
+<% if (minPrice) { %>
+<input type="hidden" name="minPrice" value="<%= minPrice %>">
+<% } %>
+<% if (priceRange) { %>
+<input type="hidden" name="maxPrice" value="<%= priceRange %>">
+<% } %>
 
 <span class="sort-label">Sort By:</span>
 
@@ -106,7 +121,7 @@ Z – A
 <ul class="filter-list">
 
 <li>
-<a href="/products">All</a>
+<a href="/products?search=<%= encodeURIComponent(search || '') %>&sort=<%= encodeURIComponent(sort || '') %><%= minPrice ? `&minPrice=${encodeURIComponent(minPrice)}` : '' %><%= priceRange ? `&maxPrice=${encodeURIComponent(priceRange)}` : '' %>">All</a>
 </li>
 
 <% if(categories && categories.length > 0){ %>
@@ -114,7 +129,7 @@ Z – A
 <% categories.forEach(category => { %>
 
 <li>
-<a href="/products?category=<%= category._id %>">
+<a href="/products?category=<%= category._id %>&search=<%= encodeURIComponent(search || '') %>&sort=<%= encodeURIComponent(sort || '') %><%= minPrice ? `&minPrice=${encodeURIComponent(minPrice)}` : '' %><%= priceRange ? `&maxPrice=${encodeURIComponent(priceRange)}` : '' %>">
 <%= category.name %>
 </a>
 </li>
@@ -178,10 +193,10 @@ loading="lazy"
 />
 
 <!-- Discount Badge -->
-<% if(product.discount > 0){ %>
+<% if(product.finalOffer > 0){ %>
 
 <span class="discount-badge">
-<%= product.discount %>% OFF
+<%= product.finalOffer %>% OFF
 </span>
 
 <% } %>
@@ -208,10 +223,10 @@ Out of Stock
 <div class="price">
 
 <span class="new-price">
-₹<%= product.offerPrice || product.price %>
+₹<%= product.finalPrice || product.price %>
 </span>
 
-<% if(product.discount > 0){ %>
+<% if(product.finalOffer > 0){ %>
 
 <span class="old-price">
 ₹<%= product.price %>
@@ -252,7 +267,7 @@ Out of Stock
 <% for(let i=1;i<=totalPages;i++){ %>
 
 <a
-href="?page=<%= i %>&category=<%= selectedCategory || '' %>&sort=<%= sort || '' %>"
+href="?page=<%= i %>&category=<%= selectedCategory || '' %>&sort=<%= encodeURIComponent(sort || '') %>&search=<%= encodeURIComponent(search || '') %><%= minPrice ? `&minPrice=${encodeURIComponent(minPrice)}` : '' %><%= priceRange ? `&maxPrice=${encodeURIComponent(priceRange)}` : '' %>"
 class="page-btn <%= currentPage === i ? 'page-btn--active' : '' %>"
 >
 
@@ -275,3 +290,4 @@ class="page-btn <%= currentPage === i ? 'page-btn--active' : '' %>"
 </section>
 
 <%- include('../partials/footer') %>
+

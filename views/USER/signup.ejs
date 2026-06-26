@@ -45,6 +45,8 @@
        name="username"
        placeholder="ex: Surya jith"
        value="<%= oldData ? oldData.username : '' %>"
+       required
+       minlength="3"
        >
         </div>
 
@@ -54,17 +56,18 @@
        name="email"
        placeholder="example@email.com"
        value="<%= oldData ? oldData.email : '' %>"
+       required
        >
         </div>
 
         <div class="input-group">
           <label>Password</label>
-          <input type="password" name="password" placeholder="Enter your password" >
+          <input type="password" name="password" placeholder="Enter your password" required minlength="6">
         </div>
 
         <div class="input-group">
           <label>Confirm Password</label>
-          <input type="password" name="confirmPassword" placeholder="Enter your password" >
+          <input type="password" name="confirmPassword" placeholder="Enter your password" required minlength="6">
         </div>
 
         <div class="input-group">

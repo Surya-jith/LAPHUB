@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 
 
-const sendEmail = async (to, subject, text,otp) => {
+const sendEmail = async (to, subject, text) => {
   try {
 
     const transporter = nodemailer.createTransport({
@@ -22,7 +22,6 @@ const sendEmail = async (to, subject, text,otp) => {
     });
 
     console.log("Email sent successfully");
-    console.log(otp)
 
   } catch (error) {
     console.log("Email sending failed:", error.message);

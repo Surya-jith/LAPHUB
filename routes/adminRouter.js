@@ -70,6 +70,7 @@ router.post(
 
 router.get("/orders",authMiddleware.adminAuth,orderController.loadOrders);
 router.get("/orders/:id",authMiddleware.adminAuth, orderController.loadOrderDetails);
+router.get("/orders/:id/invoice",authMiddleware.adminAuth, orderController.downloadInvoice);
 router.post("/orders/:id/status",authMiddleware.adminAuth,orderController.updateOrderStatus);
 router.post(
   "/orders/:orderId/items/:itemId/return",

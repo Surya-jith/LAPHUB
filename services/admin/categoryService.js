@@ -31,7 +31,7 @@ const getCategories = async (page = 1, search = "") => {
   };
 };
 
-const createCategory = async (name) => {
+const createCategory = async (name, offerPercentage = 0, offerExpiryDate = null) => {
 
   // ❌ Block empty / spaces
   if (!name || !name.trim()) {
@@ -40,6 +40,11 @@ const createCategory = async (name) => {
 
   // ✅ Normalize
   const formattedName = name.trim().toLowerCase();
+  const offer = Number(offerPercentage || 0);
+
+  if (offer < 0 || offer > 90) {
+    throw new Error("Category offer must be between 0 and 90%");
+  }
 
   // 🔍 Duplicate check (safe + normalized)
   const exist = await Category.findOne({
@@ -51,7 +56,13 @@ const createCategory = async (name) => {
   }
 
   try {
-    return await Category.create({ name: formattedName });
+    return await Category.create({
+      name: formattedName,
+      categoryOffer: {
+        percentage: offer,
+        expiryDate: offerExpiryDate || null
+      }
+    });
   } catch (error) {
     if (error.code === 11000) {
       throw new Error("Category already exists");
@@ -68,6 +79,11 @@ const updateCategory = async (id, name,offerPercentage,
   }
 
   const formattedName = name.trim().toLowerCase();
+  const offer = Number(offerPercentage || 0);
+
+  if (offer < 0 || offer > 90) {
+    throw new Error("Category offer must be between 0 and 90%");
+  }
 
   const exist = await Category.findOne({
     name: { $regex: new RegExp(`^${formattedName}$`, "i") },
@@ -94,10 +110,7 @@ const updateCategory = async (id, name,offerPercentage,
 
     categoryOffer: {
 
-      percentage:
-        Number(
-          offerPercentage || 0
-        ),
+      percentage: offer,
 
       expiryDate:
         offerExpiryDate || null

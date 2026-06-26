@@ -6,7 +6,6 @@ import sendEmail from "../../utils/sendEmail.js";
 import bcrypt from "bcryptjs";
 import Wallet from "../../models/walletModel.js";
 import Coupon from "../../models/couponModel.js";
-import fs from "fs";
 
 
 
@@ -254,7 +253,11 @@ const sendOtp = async (req, res) => {
   } catch (error) {
 
     console.log(error.message);
-    res.status(500).send("Server Error");
+    res.render("user/forgetpassword", {
+      title: "Forgot Password",
+      error: "Unable to send OTP. Please try again.",
+      user: null
+    });
 
   }
 
@@ -312,12 +315,20 @@ const verifyOtp = async (req, res) => {
     user.otpExpiry = null;
     await user.save();
 
-    res.redirect(`/reset-password?email=${email}`);
+    req.session.passwordResetEmail = email;
+    req.session.passwordResetVerified = true;
+
+    res.redirect("/reset-password");
 
   } catch (error) {
 
     console.log(error);
-    res.status(500).send("Server Error");
+    res.render("user/otppage", {
+      title: "Verify OTP",
+      email: req.body.email,
+      error: "Unable to verify OTP. Please try again.",
+      user: null
+    });
 
   }
 
@@ -329,10 +340,14 @@ const verifyOtp = async (req, res) => {
 
 const loadResetPassword = (req, res) => {
 
+  if (!req.session.passwordResetVerified || !req.session.passwordResetEmail) {
+    return res.redirect("/forgot-password");
+  }
+
   res.render("user/resetpassword", {
     title: "Reset Password",
     error: null,
-    email: req.query.email,
+    email: req.session.passwordResetEmail,
     user: null
   });
 
@@ -344,16 +359,31 @@ const resetPassword = async (req, res) => {
 
   try {
 
-    const { email, password, confirmPassword } = req.body;
+    if (!req.session.passwordResetVerified || !req.session.passwordResetEmail) {
+      return res.redirect("/forgot-password");
+    }
+
+    const { password, confirmPassword } = req.body;
+    const email = req.session.passwordResetEmail;
 
     if (password !== confirmPassword) {
 
       return res.render("user/resetpassword", {
         title: "Reset Password",
         error: "Passwords do not match",
-        email
+        email,
+        user: null
       });
 
+    }
+
+    if (!password || password.length < 6) {
+      return res.render("user/resetpassword", {
+        title: "Reset Password",
+        error: "Password must be at least 6 characters",
+        email,
+        user: null
+      });
     }
 
     const user = await User.findOne({ email });
@@ -370,12 +400,20 @@ const resetPassword = async (req, res) => {
 
     await user.save();
 
+    req.session.passwordResetEmail = null;
+    req.session.passwordResetVerified = null;
+
     res.redirect("/login");
 
   } catch (error) {
 
     console.log(error.message);
-    res.status(500).send("Server Error");
+    res.render("user/resetpassword", {
+      title: "Reset Password",
+      error: "Unable to reset password. Please try again.",
+      email: req.session.passwordResetEmail || "",
+      user: null
+    });
 
   }
 
@@ -385,12 +423,21 @@ const resetPassword = async (req, res) => {
 
 
 const loadSignupOtp = (req, res) => {
+  if (!req.session.signupData || !req.session.signupOtp) {
+    return res.redirect("/signup");
+  }
+
+  const remainingSeconds = Math.max(
+    Math.ceil(((req.session.signupOtpExpiry || Date.now()) - Date.now()) / 1000),
+    0
+  );
 
   res.render("user/signupOtp", {
     title: "Verify OTP",
     email: req.query.email,
     error: null,
-    user: null
+    user: null,
+    remainingSeconds
   });
 
 };
@@ -402,13 +449,21 @@ const verifySignupOtp = async (req, res) => {
 
     const { otp } = req.body;
 
+    if (!req.session.signupData || !req.session.signupOtp) {
+      return res.redirect("/signup");
+    }
+
     if (otp !== req.session.signupOtp) {
 
       return res.render("user/signupOtp", {
         title: "Verify OTP",
         error: "Invalid OTP",
         email: req.session.signupData.email,
-        user: null
+        user: null,
+        remainingSeconds: Math.max(
+          Math.ceil(((req.session.signupOtpExpiry || Date.now()) - Date.now()) / 1000),
+          0
+        )
       });
 
     }
@@ -419,7 +474,8 @@ const verifySignupOtp = async (req, res) => {
         title: "Verify OTP",
         error: "OTP expired",
         email: req.session.signupData.email,
-        user: null
+        user: null,
+        remainingSeconds: 0
       });
 
     }
@@ -646,7 +702,7 @@ const loadEditProfile = async (req, res) => {
 
     res.render("user/editProfile", {
       user,
-      error: null,
+      error: req.query.error || null,
       success: null
     })
 
@@ -696,14 +752,8 @@ const updateProfile = async (req, res) => {
       phone: phone?.trim() || ""
     }
 
-    // Only update image if a new one was uploaded
     if (req.file) {
-      if (!req.file.mimetype.startsWith("image/")) {
-        fs.unlink(req.file.path, () => {})
-        return renderEditProfile("Please upload a valid image file")
-      }
-
-      updateData.profileImage = req.file.filename
+      updateData.profileImage = req.file.path
     }
 
     await userService.updateProfile(req.session.user, updateData)
@@ -775,9 +825,12 @@ const changePassword = async (req, res) => {
 }
  
 
-const loadEditEmail=(req,res)=>{
+const loadEditEmail=async(req,res)=>{
+  const user = await userService.getUser(req.session.user)
+
   res.render("user/editEmail",{
-    user:req.user,error:null
+    user,
+    error:null
   })
 }
 
@@ -789,9 +842,11 @@ const sendEmailOtp = async (req, res) => {
     const result = await userService.sendEmailOtp(req.session.user, email, password);
 
     if (!result.success) {
+      const user = await userService.getUser(req.session.user)
+
       return res.render("user/editEmail", {
         error: result.message,
-        user: req.session.user
+        user
       });
     }
 
@@ -799,9 +854,11 @@ const sendEmailOtp = async (req, res) => {
 
   } catch (error) {
     console.log(error);
+    const user = await userService.getUser(req.session.user)
+
     res.render("user/editEmail", {
       error: "Something went wrong",
-      user: req.session.user
+      user
     });
   }
 };
@@ -813,7 +870,11 @@ const verifyEmailOtp=async (req,res)=>{
     const result =await userService.verifyEmailOtp(req.session.user,email,otp)
 
     if(!result.success){
-      return res.render("user/otppage",{email,error:result.message,user:null})
+      return res.render("user/emailotp", {
+        email,
+        error: result.message,
+        user: null
+      })
 
     }
 
@@ -822,9 +883,10 @@ const verifyEmailOtp=async (req,res)=>{
   } catch (error) {
     console.log(error)
 
-     res.render("user/otppage", {
+     res.render("user/emailotp", {
       email: req.body.email,
-      error: "Something went wrong"
+      error: "Something went wrong",
+      user: null
     });
     
 
@@ -980,19 +1042,6 @@ const loadProductDetails = async (req, res) => {
       return res.redirect("/products")
     }
 
-    if (data.product.isBlocked) {
-      return res.render("user/productDetails", {
-
-  ...data,
-
-  availableCoupons,
-
-  error:
-    "This product is currently unavailable.",
-
-  success: null
-})
-    }
     /*
 =================================
 AVAILABLE COUPONS
@@ -1009,6 +1058,20 @@ const availableCoupons =
     }
   });
 
+    if (data.product.isBlocked) {
+      return res.render("user/productDetails", {
+
+  ...data,
+
+  availableCoupons,
+
+  error:
+    "This product is currently unavailable.",
+
+  success: null
+})
+    }
+
     res.render("user/productDetails", {
 
   ...data,
@@ -1022,7 +1085,9 @@ const availableCoupons =
 
   } catch (error) {
     console.log(error)
-    res.redirect("/products")
+    res.redirect(
+      `/products?error=${encodeURIComponent("Unable to load product details")}`
+    )
   }
 }
 

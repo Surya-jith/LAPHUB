@@ -39,7 +39,8 @@
 <% } %>
 
 <%
-let lowestPrice = Math.min(...product.variants.map(v => v.price))
+let lowestPrice = product.finalPrice || Math.min(...product.variants.map(v => v.price))
+let activeOffer = product.finalOffer || 0
 
 let totalStock = 0
 product.variants.forEach(v => {
@@ -130,6 +131,15 @@ Category : <%= product.category?.name %>
 <span class="offer-price" id="offerPrice">
 ₹<%= lowestPrice %>
 </span>
+
+<% if (activeOffer > 0) { %>
+<span class="old-price">
+â‚¹<%= Math.min(...product.variants.map(v => v.price)) %>
+</span>
+<span class="discount-badge">
+<%= activeOffer %>% OFF
+</span>
+<% } %>
 
 <span class="starting-text">
 Starting Price
@@ -510,7 +520,7 @@ class="related-card"
 
 <h4><%= p.name %></h4>
 
-<p>₹<%= p.offerPrice || p.variants[0].price %></p>
+<p>₹<%= p.finalPrice || p.variants[0].price %></p>
 
 </a>
 
@@ -529,6 +539,7 @@ document.getElementById("mainImage").src = img.src
 }
 
 const variants = <%- JSON.stringify(product.variants) %>
+const activeOffer = <%= activeOffer %>
 
 function selectVariant(index){
 
@@ -555,8 +566,13 @@ if(selected){
 document.getElementById("variantId").value = selected._id
 document.getElementById("buyNowVariantId").value = selected._id
 
+const selectedPrice =
+  activeOffer > 0
+    ? (selected.price - (selected.price * activeOffer / 100)).toFixed(2)
+    : selected.price
+
 document.getElementById("offerPrice").innerText =
-"₹" + selected.price
+"₹" + selectedPrice
 
 if(selected.variantImage){
 document.getElementById("mainImage").src =

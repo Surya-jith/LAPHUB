@@ -4,6 +4,10 @@ import Product from "../../models/productModel.js"
 import Category from "../../models/category.js"
 import sendEmail from "../../utils/sendEmail.js";
 import calculateBestOffer from "../../utils/calculateBestOffer.js";
+import {
+  getActiveOfferPercentage,
+  getLowestEffectivePrice
+} from "../../utils/productPricing.js";
 
 
 
@@ -57,6 +61,10 @@ return user;
 
 const validateSignup = async ({ username, email, password, confirmPassword, phone }) => {
 
+  if (!username || !email || !password || !confirmPassword) {
+    throw new Error("All required fields must be filled");
+  }
+
   const usernameRegex = /^[A-Za-z]{3,}$/;
   if (!usernameRegex.test(username)) {
     throw new Error("Username must be at least 3 letters and contain only alphabets");
@@ -70,6 +78,10 @@ const validateSignup = async ({ username, email, password, confirmPassword, phon
   const phoneRegex = /^[0-9]{10}$/;
   if (phone && !phoneRegex.test(phone)) {
     throw new Error("Phone number must be exactly 10 digits");
+  }
+
+  if (password.length < 6) {
+    throw new Error("Password must be at least 6 characters");
   }
 
   if (password !== confirmPassword) {
@@ -367,38 +379,8 @@ BEST OFFER CALCULATION
 */
 
 products.forEach(product => {
-
-  let categoryOffer = 0;
-
-  if (
-    product.category?.categoryOffer
-      ?.expiryDate >
-
-    new Date()
-  ) {
-
-    categoryOffer =
-      product.category
-        .categoryOffer
-        .percentage || 0;
-  }
-
-  const offerData =
-    calculateBestOffer(
-
-      product.productOffer
-        ?.percentage || 0,
-
-      categoryOffer,
-
-      product.price
-    );
-
-  product.finalOffer =
-    offerData.finalOffer;
-
-  product.finalPrice =
-    offerData.finalPrice;
+  product.finalOffer = getActiveOfferPercentage(product);
+  product.finalPrice = getLowestEffectivePrice(product);
 });
 
   const totalProducts = await Product.countDocuments(query)
@@ -449,37 +431,8 @@ PRODUCT BEST OFFER
 =================================
 */
 
-let categoryOffer = 0;
-
-if (
-  product.category?.categoryOffer
-    ?.expiryDate >
-
-  new Date()
-) {
-
-  categoryOffer =
-    product.category
-      .categoryOffer
-      .percentage || 0;
-}
-
-const offerData =
-  calculateBestOffer(
-
-    product.productOffer
-      ?.percentage || 0,
-
-    categoryOffer,
-
-    product.price
-  );
-
-product.finalOffer =
-  offerData.finalOffer;
-
-product.finalPrice =
-  offerData.finalPrice;
+product.finalOffer = getActiveOfferPercentage(product);
+product.finalPrice = getLowestEffectivePrice(product);
 
 // related products
 const relatedProducts = await Product.find({
@@ -500,23 +453,8 @@ RELATED PRODUCTS OFFER
 */
 
 relatedProducts.forEach(item => {
-
-  const relatedOffer =
-    calculateBestOffer(
-
-      item.productOffer
-        ?.percentage || 0,
-
-      categoryOffer,
-
-      item.price
-    );
-
-  item.finalOffer =
-    relatedOffer.finalOffer;
-
-  item.finalPrice =
-    relatedOffer.finalPrice;
+  item.finalOffer = getActiveOfferPercentage(item);
+  item.finalPrice = getLowestEffectivePrice(item);
 });
 
 let avgRating = 0

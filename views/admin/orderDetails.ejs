@@ -113,7 +113,7 @@
         <% if (order.orderStatus === "Delivered") { %>
 
           <a
-            href="/orders/<%= order._id %>/invoice"
+            href="/admin/orders/<%= order._id %>/invoice"
             class="invoice-btn"
           >
             Download Invoice
@@ -327,22 +327,22 @@
 
           <div class="summary-row">
             <span>Subtotal</span>
-            <strong>₹<%= order.subtotal %></strong>
+            <strong>₹<%= totals ? totals.subtotal.toFixed(2) : order.subtotal %></strong>
           </div>
 
           <div class="summary-row">
             <span>Discount</span>
-            <strong>₹<%= order.discount %></strong>
+            <strong>₹<%= totals ? totals.discount.toFixed(2) : order.discount %></strong>
           </div>
 
           <div class="summary-row">
             <span>Shipping</span>
-            <strong>₹<%= order.shippingCharge %></strong>
+            <strong>₹<%= totals ? totals.shippingCharge.toFixed(2) : order.shippingCharge %></strong>
           </div>
 
           <div class="summary-row total">
             <span>Total</span>
-            <strong>₹<%= order.finalAmount %></strong>
+            <strong>₹<%= totals ? totals.finalAmount.toFixed(2) : order.finalAmount %></strong>
           </div>
 
         </div>
@@ -386,3 +386,4 @@
   </div>
 
 </div>
+

@@ -167,14 +167,27 @@
     }
   })
 
+  let orderSubtotal = order.subtotal || 0
+
   let updatedGst =
-    order.gst || 0
+    Number((updatedSubtotal * 0.02).toFixed(2))
+
+  let updatedDiscount =
+    orderSubtotal > 0
+      ? Number(((order.discount || 0) * (updatedSubtotal / orderSubtotal)).toFixed(2))
+      : 0
+
+  updatedDiscount =
+    Math.min(updatedDiscount, updatedSubtotal + updatedGst)
 
   let updatedFinalAmount =
-    updatedSubtotal +
-    updatedGst -
-    (order.discount || 0) +
-    (order.shippingCharge || 0)
+    Math.max(
+      updatedSubtotal +
+      updatedGst -
+      updatedDiscount +
+      (order.shippingCharge || 0),
+      0
+    )
 %>
 
 
@@ -438,7 +451,7 @@
 
 <div class="row">
   <span>Discount</span>
-  <span>₹<%= (order.discount || 0).toFixed(2) %></span>
+  <span>₹<%= updatedDiscount.toFixed(2) %></span>
 </div>
 
 <div class="row">
@@ -573,11 +586,23 @@ if (retryBtn) {
 
           theme: {
             color: "#2f4da3"
+          },
+
+          modal: {
+            ondismiss: function () {
+              window.location.href =
+                `/orders/${orderId}?error=${encodeURIComponent("Payment was not completed. Please try again.")}`;
+            }
           }
         };
 
         const razorpay =
           new Razorpay(options);
+
+        razorpay.on("payment.failed", function () {
+          window.location.href =
+            `/orders/${orderId}?error=${encodeURIComponent("Payment failed. Please try again.")}`;
+        });
 
         razorpay.open();
 
@@ -599,3 +624,4 @@ if (retryBtn) {
 </script>
 
 <%- include('../partials/footer') %>
+

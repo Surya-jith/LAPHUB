@@ -127,6 +127,10 @@ const createProduct = async (data, files) => {
     throw new Error("Product base price must be greater than 0")
   }
 
+  if (Number(discount || 0) < 0 || Number(discount || 0) > 90) {
+    throw new Error("Product offer must be between 0 and 90%")
+  }
+
   // Per-variant price & stock validation
   for (let i = 0; i < colors.length; i++) {
     if (!prices[i] || Number(prices[i]) <= 0) {
@@ -285,6 +289,10 @@ const updateProduct = async (id, data, files) => {
   // Base price validation
   if (!price || Number(price) <= 0) {
     throw new Error("Product base price must be greater than 0")
+  }
+
+  if (Number(discount || 0) < 0 || Number(discount || 0) > 90) {
+    throw new Error("Product offer must be between 0 and 90%")
   }
 
   // Per-variant price & stock validation

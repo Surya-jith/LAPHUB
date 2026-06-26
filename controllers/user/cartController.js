@@ -1,4 +1,5 @@
 import cartService from "../../services/user/cartService.js"
+import { getEffectiveVariantPrice } from "../../utils/productPricing.js"
 
 const loadCart = async (req, res) => {
   try {
@@ -25,7 +26,7 @@ const loadCart = async (req, res) => {
           // skip if variant missing
           if (!variant) return null
 
-          const price = variant.price
+          const price = getEffectiveVariantPrice(item.product, variant)
           const itemSubtotal = price * item.quantity
 
           subtotal += itemSubtotal
@@ -46,6 +47,7 @@ const loadCart = async (req, res) => {
             variant,
             variantId: variant._id,
             quantity: item.quantity,
+            price,
             subtotal: itemSubtotal,
             isUnavailable: false,
             stockWarning:

@@ -117,7 +117,10 @@ return cart
 const getCart = async (userId) => {
 
 const cart = await Cart.findOne({ user: userId })
-.populate("items.product")
+.populate({
+path: "items.product",
+populate: { path: "category" }
+})
 
 return cart
 

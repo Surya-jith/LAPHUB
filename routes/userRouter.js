@@ -72,7 +72,17 @@ router.get(
 router.post(
 "/profile/edit",
 authMiddleware.isUserLoggedIn,
-upload.single("profileImage"),
+(req, res, next) => {
+  upload.single("profileImage")(req, res, (err) => {
+    if (err) {
+      return res.redirect(
+        `/profile/edit?error=${encodeURIComponent(err.message || "Unable to upload profile image")}`
+      )
+    }
+
+    next()
+  })
+},
 userController.updateProfile
 );
 

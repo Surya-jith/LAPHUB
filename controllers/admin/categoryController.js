@@ -39,9 +39,17 @@ const loadAddCategory = async (req,res)=>{
 const addCategory = async (req, res) => {
   try {
 
-    const { name } = req.body;
+    const {
+      name,
+      offerPercentage,
+      offerExpiryDate
+    } = req.body;
 
-    await categoryService.createCategory(name);
+    await categoryService.createCategory(
+      name,
+      offerPercentage,
+      offerExpiryDate
+    );
 
     res.redirect("/admin/category");
 

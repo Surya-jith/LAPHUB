@@ -719,11 +719,23 @@ if (!result.success) {
 
           theme: {
             color: "#2f4da3"
+          },
+
+          modal: {
+            ondismiss: function () {
+              window.location.href =
+                `/orders/${result.order._id}?error=${encodeURIComponent("Payment was not completed. You can retry payment from here.")}`;
+            }
           }
         };
 
         const razorpay =
           new Razorpay(options);
+
+        razorpay.on("payment.failed", function () {
+          window.location.href =
+            `/orders/${result.order._id}?error=${encodeURIComponent("Payment failed. Please retry payment.")}`;
+        });
 
         razorpay.open();
       }

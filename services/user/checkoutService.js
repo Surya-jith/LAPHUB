@@ -4,6 +4,7 @@ import Product from "../../models/productModel.js";
 import Order from "../../models/order.js";
 import Coupon from "../../models/couponModel.js";
 import Wallet from "../../models/walletModel.js";
+import { getEffectiveVariantPrice } from "../../utils/productPricing.js";
 
 const getCheckoutData = async (userId, buyNow = null,sessionCoupon = null) => {
 
@@ -26,7 +27,7 @@ const getCheckoutData = async (userId, buyNow = null,sessionCoupon = null) => {
       quantity
     } = buyNow;
 
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate("category");
 
     if (!product) {
       throw new Error("Product not found");
@@ -48,7 +49,7 @@ const getCheckoutData = async (userId, buyNow = null,sessionCoupon = null) => {
       disableCheckout = true;
     }
 
-    const price = variant.price;
+    const price = getEffectiveVariantPrice(product, variant);
     const itemTotal = price * quantity;
 
     subtotal += itemTotal;
@@ -76,7 +77,10 @@ const getCheckoutData = async (userId, buyNow = null,sessionCoupon = null) => {
   else {
 
     const cart = await Cart.findOne({ user: userId })
-      .populate("items.product");
+      .populate({
+        path: "items.product",
+        populate: { path: "category" }
+      });
 
     if (!cart || cart.items.length === 0) {
       throw new Error("Cart is empty");
@@ -92,7 +96,7 @@ const getCheckoutData = async (userId, buyNow = null,sessionCoupon = null) => {
 
       if (!variant) continue;
 
-      const price = variant.price;
+      const price = getEffectiveVariantPrice(product, variant);
       const quantity = item.quantity;
       const itemTotal = price * quantity;
 
@@ -422,7 +426,7 @@ const placeOrder = async (
       quantity
     } = buyNow;
 
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate("category");
 
     if (!product) {
       throw new Error("Product not found");
@@ -448,14 +452,15 @@ const placeOrder = async (
       throw new Error("Insufficient stock available");
     }
 
+    const price = getEffectiveVariantPrice(product, variant);
     const totalPrice =
-      variant.price * quantity;
+      price * quantity;
 
     items.push({
       product: product._id,
       variantId,
       quantity,
-      price: variant.price,
+      price,
       totalPrice
     });
 
@@ -476,7 +481,10 @@ const placeOrder = async (
 
     const cart = await Cart.findOne({
       user: userId
-    }).populate("items.product");
+    }).populate({
+      path: "items.product",
+      populate: { path: "category" }
+    });
 
     if (!cart || cart.items.length === 0) {
       throw new Error("Cart is empty");
@@ -512,14 +520,15 @@ const placeOrder = async (
         );
       }
 
+      const price = getEffectiveVariantPrice(product, variant);
       const totalPrice =
-        variant.price * item.quantity;
+        price * item.quantity;
 
       items.push({
         product: product._id,
         variantId: variant._id,
         quantity: item.quantity,
-        price: variant.price,
+        price,
         totalPrice
       });
 

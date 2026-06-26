@@ -45,7 +45,7 @@
       <!-- RESEND OTP SECTION -->
       <div style="margin-top:15px; text-align:center;">
 
-        <p id="timer">Resend OTP in 60s</p>
+        <p id="timer">Resend OTP in <%= typeof remainingSeconds !== 'undefined' ? remainingSeconds : 60 %>s</p>
 
         <a href="/resend-signup-otp" id="resendBtn" style="display:none;">
           Resend OTP
@@ -60,11 +60,15 @@
 
 <script>
 
-let time = 60;
+let time = <%= typeof remainingSeconds !== 'undefined' ? remainingSeconds : 60 %>;
 
 const timer = document.getElementById("timer");
 const resendBtn = document.getElementById("resendBtn");
 
+if (time <= 0) {
+  timer.style.display = "none";
+  resendBtn.style.display = "inline";
+} else {
 const countdown = setInterval(() => {
 
   time--;
@@ -78,6 +82,7 @@ const countdown = setInterval(() => {
   }
 
 }, 1000);
+}
 
 </script>
 

@@ -1,6 +1,10 @@
 import Order from "../../models/order.js";
 import Product from "../../models/productModel.js";
 import Wallet from "../../models/walletModel.js";
+import {
+  calculateItemPaidAmount,
+  calculateItemsPaidAmount
+} from "../../utils/orderTotals.js";
 
 const generateOrderId = () => {
   const timestamp = Date.now().toString().slice(-6);
@@ -148,11 +152,16 @@ const cancelOrder = async (
       });
     }
 
-    wallet.balance += order.finalAmount;
+    const refundableItems = order.items.filter(
+      item => item.status !== "Cancelled" && item.status !== "Returned"
+    );
+    const refundAmount = calculateItemsPaidAmount(refundableItems, order);
+
+    wallet.balance += refundAmount;
 
     wallet.transactions.push({
       type: "Credit",
-      amount: order.finalAmount,
+      amount: refundAmount,
       description: `Refund for Cancelled Order ${order.orderId}`,
       orderId: order._id
     });
@@ -255,7 +264,7 @@ const cancelOrderItem = async (
   =================================
   */
 
-  const refundAmount = item.totalPrice;
+  const refundAmount = calculateItemPaidAmount(item, order);
 
   if (
     order.paymentStatus === "Paid" &&

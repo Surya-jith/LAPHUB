@@ -4,6 +4,7 @@ import {
   StandardFonts,
   rgb
 } from "pdf-lib";
+import { calculateActiveOrderTotals } from "../../utils/orderTotals.js";
 
 const loadOrders = async (req, res) => {
   try {
@@ -60,7 +61,7 @@ const loadOrderDetails = async (req, res) => {
     res.render("user/orderDetails", {
       user: req.session.user,
       order,
-      error: null
+      error: req.query.error || null
     });
 
   } catch (error) {
@@ -177,6 +178,14 @@ const downloadInvoice = async (req, res) => {
     if (order.orderStatus !== "Delivered") {
       return res.redirect(
         `/orders/${orderId}?error=${encodeURIComponent("Invoice is available only for delivered orders")}`
+      )
+    }
+
+    const totals = calculateActiveOrderTotals(order)
+
+    if (!totals.activeItems.length) {
+      return res.redirect(
+        `/orders/${orderId}?error=${encodeURIComponent("Invoice is not available because all products are cancelled or returned")}`
       )
     }
 
@@ -414,7 +423,7 @@ const downloadInvoice = async (req, res) => {
     =================================
     */
 
-   order.items.forEach(item => {
+   totals.activeItems.forEach(item => {
 
   const productName =
     item.product?.name || "Product"
@@ -506,33 +515,33 @@ const downloadInvoice = async (req, res) => {
 
     drawTotalRow(
       "Subtotal",
-      `Rs.${order.subtotal.toFixed(2)}`,
+      `Rs.${totals.subtotal.toFixed(2)}`,
       y - 20
     )
 
     drawTotalRow(
       "GST (2%)",
-      `Rs.${(order.gst || 0).toFixed(2)}`,
+      `Rs.${totals.gst.toFixed(2)}`,
       y - 40
     )
 
     drawTotalRow(
       "Discount",
-      `Rs.${(order.discount || 0).toFixed(2)}`,
+      `Rs.${totals.discount.toFixed(2)}`,
       y - 60
     )
 
     drawTotalRow(
       "Shipping",
-      order.shippingCharge > 0
-        ? `Rs.${order.shippingCharge.toFixed(2)}`
+      totals.shippingCharge > 0
+        ? `Rs.${totals.shippingCharge.toFixed(2)}`
         : "Free",
       y - 80
     )
 
     drawTotalRow(
       "Final Amount",
-      `Rs.${order.finalAmount.toFixed(2)}`,
+      `Rs.${totals.finalAmount.toFixed(2)}`,
       y - 100,
       true
     )

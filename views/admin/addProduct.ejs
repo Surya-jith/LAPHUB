@@ -53,8 +53,11 @@
 <input type="number" id="productPrice" name="price" value="<%= formData?.price || '' %>" min="1" required>
 <small id="priceError" class="error-text"></small>
 
-<label>Discount</label>
-<input type="number" name="discount" value="<%= formData?.discount || '' %>" min="0">
+<label>Product Offer (%)</label>
+<input type="number" name="discount" value="<%= formData?.discount || 0 %>" min="0" max="90">
+
+<label>Offer Expiry Date</label>
+<input type="date" name="offerExpiryDate" value="<%= formData?.offerExpiryDate || '' %>">
 </div>
 
 <div class="card">
