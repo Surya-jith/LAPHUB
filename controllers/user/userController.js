@@ -35,7 +35,7 @@ const loadAbout = (req,res)=>{
 const loadContact = (req,res)=>{
 
   res.render(
-    "user/Contact",
+    "user/contact",
     {
       title:"Contact"
     }
