@@ -169,11 +169,14 @@
       type="text"
       id="couponCode"
       placeholder="Enter coupon code"
+      value="<%= appliedCoupon?.code || '' %>"
+      <%= appliedCoupon ? 'disabled' : '' %>
     >
 
     <button
       type="button"
       id="applyCouponBtn"
+      <%= appliedCoupon ? 'disabled' : '' %>
     >
       Apply
     </button>
@@ -181,7 +184,7 @@
     <button
       type="button"
       id="removeCouponBtn"
-      style="display:none;"
+      style="display:<%= appliedCoupon ? 'inline-flex' : 'none' %>;"
     >
       Remove
     </button>
@@ -191,7 +194,7 @@
   <p
     id="couponMessage"
     class="coupon-message"
-  ></p>
+  ><%= appliedCoupon ? `Coupon ${appliedCoupon.code} is applied` : '' %></p>
 
 </div>
 
@@ -260,6 +263,8 @@
         <button
           type="button"
           class="coupon-apply-btn"
+          data-coupon-code="<%= coupon.code %>"
+          <%= appliedCoupon ? 'disabled' : '' %>
 
           onclick="
             document.getElementById(
@@ -271,7 +276,7 @@
           "
         >
 
-          Apply
+          <%= appliedCoupon?.code === coupon.code ? 'Applied' : 'Apply' %>
 
         </button>
 

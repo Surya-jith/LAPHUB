@@ -56,7 +56,7 @@
           <div class="card">
             <h4>General Information</h4>
 
-            <label>Product Name</label>
+            <label for="productName">Product Name</label>
             <input
               type="text"
               id="productName"
@@ -65,7 +65,7 @@
             >
             <small class="error-text" id="nameError"></small>
 
-            <label>Description</label>
+            <label for="productDescription">Description</label>
             <textarea
               id="productDescription"
               name="description"
@@ -77,7 +77,7 @@
           <div class="card">
             <h4>Pricing</h4>
 
-            <label>Base Price</label>
+            <label for="productPrice">Base Price (INR)</label>
             <input
               type="number"
               id="productPrice"
@@ -86,20 +86,22 @@
             >
             <small class="error-text" id="priceError"></small>
 
-            <label>Product Offer (%)</label>
+            <label for="productDiscount">Product Offer (%)</label>
 
 <input
   type="number"
+  id="productDiscount"
   name="discount"
   min="0"
   max="90"
   value="<%= product.productOffer?.percentage || 0 %>"
 >
 
-<label>Offer Expiry Date</label>
+<label for="offerExpiryDate">Offer Expiry Date</label>
 
 <input
   type="date"
+  id="offerExpiryDate"
   name="offerExpiryDate"
   value="<%=
     product.productOffer?.expiryDate
@@ -121,16 +123,20 @@
 
                 <div class="image-upload-box">
 
+                  <label for="generalImage<%= index %>">Product Image <%= index + 1 %></label>
+
                   <img
-                    src="<%= img %>"
+                    src="<%= img && (img.startsWith('http') || img.startsWith('/')) ? img : (img ? '/uploads/' + img : '/images/no-image.png') %>"
                     id="preview<%= index %>"
                     class="preview-img"
                     alt="Product Image"
                   >
 
                   <input
+                    id="generalImage<%= index %>"
                     type="file"
-                    name="images"
+                    name="generalImage_<%= index %>"
+                    accept="image/jpeg,image/png,image/webp"
                     onchange="previewImage(event, <%= index %>)"
                   >
 
@@ -142,6 +148,8 @@
 
                 <div class="image-upload-box">
 
+                  <label for="generalImage<%= i %>">Product Image <%= i + 1 %></label>
+
                   <img
                     id="preview<%= i %>"
                     class="preview-img"
@@ -149,8 +157,10 @@
                   >
 
                   <input
+                    id="generalImage<%= i %>"
                     type="file"
-                    name="images"
+                    name="generalImage_<%= i %>"
+                    accept="image/jpeg,image/png,image/webp"
                     onchange="previewImage(event, <%= i %>)"
                   >
 
@@ -169,6 +179,8 @@
           <!-- CATEGORY -->
           <div class="card">
             <h4>Category</h4>
+
+            <label for="productCategory">Product Category</label>
 
             <select
               id="productCategory"
@@ -198,7 +210,9 @@
           <div class="card">
             <h4>Brand</h4>
 
-            <select name="brand">
+            <label for="productBrand">Product Brand</label>
+
+            <select id="productBrand" name="brand">
               <option value="">
                 Select Brand
               </option>
@@ -223,32 +237,37 @@
 
             <div id="variantContainer">
 
-              <% product.variants.forEach(v => { %>
+              <% product.variants.forEach((v, variantIndex) => { %>
 
                 <div class="variant-row">
 
                   <div class="variant-fields">
 
-                    <input
+                    <label>Color<input
                       name="color[]"
                       value="<%= v.color %>"
                       placeholder="Color"
-                    >
+                    ></label>
 
-                    <input
+                    <label>RAM<input
                       name="ram[]"
                       value="<%= v.ram %>"
                       placeholder="RAM"
-                    >
+                    ></label>
 
-                    <input
+                    <label>Storage<input
                       name="rom[]"
                       value="<%= v.rom %>"
                       placeholder="ROM"
-                    >
+                    ></label>
+
+                    <input type="hidden" name="existingVariantImage[]" value="<%= v.variantImage || '' %>">
 
                     <div class="variant-field">
+                      <label>Stock Quantity</label>
                       <input
+                        type="number"
+                        min="0"
                         name="stock[]"
                         value="<%= v.stock %>"
                         placeholder="Stock"
@@ -257,7 +276,10 @@
                     </div>
 
                     <div class="variant-field">
+                      <label>Variant Price (INR)</label>
                       <input
+                        type="number"
+                        min="1"
                         name="variantPrice[]"
                         value="<%= v.price %>"
                         placeholder="Price"
@@ -281,7 +303,7 @@
 
                     <input
                       type="file"
-                      name="variantImages"
+                      name="variantImage_<%= variantIndex %>"
                       accept= ".jpg,.png,.jpeg,.webp" 
                       onchange="previewVariantImage(event, this)"
                     >
@@ -304,6 +326,7 @@
 
             <button
               type="button"
+              class="btn-add-variant"
               onclick="addVariant()"
             >
               + Add Variant
@@ -509,22 +532,24 @@ function closeCrop() {
 }
 
 function addVariant() {
+  const index = document.querySelectorAll("#variantContainer .variant-row").length;
   const html = `
     <div class="variant-row">
 
       <div class="variant-fields">
 
-        <input name="color[]" placeholder="Color">
-        <input name="ram[]" placeholder="RAM">
-        <input name="rom[]" placeholder="ROM">
+        <label>Color<input name="color[]" placeholder="e.g. Black" required></label>
+        <label>RAM<input name="ram[]" placeholder="e.g. 8 GB" required></label>
+        <label>Storage<input name="rom[]" placeholder="e.g. 256 GB" required></label>
+        <input type="hidden" name="existingVariantImage[]" value="">
 
         <div class="variant-field">
-          <input name="stock[]" placeholder="Stock">
+          <label>Stock Quantity</label><input type="number" min="0" name="stock[]" placeholder="0" required>
           <small class="error-text stock-error"></small>
         </div>
 
         <div class="variant-field">
-          <input name="variantPrice[]" placeholder="Price">
+          <label>Variant Price (INR)</label><input type="number" min="1" name="variantPrice[]" placeholder="0" required>
           <small class="error-text price-error"></small>
         </div>
 
@@ -535,7 +560,8 @@ function addVariant() {
 
         <input
           type="file"
-          name="variantImages"
+          name="variantImage_${index}"
+          accept="image/jpeg,image/png,image/webp"
           onchange="previewVariantImage(event, this)"
         >
 
@@ -565,4 +591,10 @@ function addVariant() {
 function removeVariant(button) {
   button.closest(".variant-row").remove();
 }
+
+document.getElementById("editProductForm").addEventListener("submit", () => {
+  document.querySelectorAll("#variantContainer .variant-row").forEach((row, index) => {
+    row.querySelector('input[type="file"]').name = `variantImage_${index}`;
+  });
+});
 </script>

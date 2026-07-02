@@ -35,7 +35,7 @@ const loadAbout = (req,res)=>{
 const loadContact = (req,res)=>{
 
   res.render(
-    "user/contact",
+    "user/Contact",
     {
       title:"Contact"
     }
@@ -753,11 +753,7 @@ const updateProfile = async (req, res) => {
     }
 
     if (req.file) {
-      if (req.file.path.startsWith("http")) {
-        updateData.profileImage = req.file.path
-      } else {
-        updateData.profileImage = req.file.filename
-      }
+      updateData.profileImage = req.file.path
     }
 
     await userService.updateProfile(req.session.user, updateData)
@@ -1241,7 +1237,7 @@ const loadWalletPage = async (
     =================================
     */
 
-    wallet.transactions.sort(
+    const sortedTransactions = [...wallet.transactions].sort(
 
       (a, b) =>
 
@@ -1249,6 +1245,13 @@ const loadWalletPage = async (
 
         new Date(a.createdAt)
     );
+
+    const perPage = 8;
+    const totalPages = Math.max(1, Math.ceil(sortedTransactions.length / perPage));
+    const requestedPage = Number.parseInt(req.query.page, 10) || 1;
+    const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
+    const startIndex = (currentPage - 1) * perPage;
+    const transactions = sortedTransactions.slice(startIndex, startIndex + perPage);
 
     /*
     =================================
@@ -1260,7 +1263,10 @@ const loadWalletPage = async (
       "user/wallet",
       {
         wallet,
-        user
+        user,
+        transactions,
+        currentPage,
+        totalPages
       }
     );
 

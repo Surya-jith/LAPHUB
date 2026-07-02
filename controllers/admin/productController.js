@@ -56,8 +56,8 @@ const addProduct = async(req,res)=>{
 
 try{
 
-const images = req.files?.images || []
-const variantImages = req.files?.variantImages || []
+const images = (req.files || []).filter(file => file.fieldname.startsWith("generalImage_"))
+const variantImages = (req.files || []).filter(file => file.fieldname.startsWith("variantImage_"))
 
 const data = await productService.getAddProductData()
 
@@ -84,7 +84,8 @@ formData:req.body
 }
 
 // Variant Image Validation
-if(!variantImages.length){
+const variantCount = Array.isArray(req.body.color) ? req.body.color.length : (req.body.color ? 1 : 0)
+if(variantImages.length !== variantCount){
 
 return res.render("admin/addProduct",{
 ...data,

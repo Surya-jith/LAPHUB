@@ -37,11 +37,11 @@
 <div class="card">
 <h4>General Information</h4>
 
-<label>Product Name</label>
+<label for="productName">Product Name</label>
 <input type="text" id="productName" name="name" value="<%= formData?.name || '' %>" required>
 <small id="nameError" class="error-text"></small>
 
-<label>Description</label>
+<label for="productDescription">Description</label>
 <textarea id="productDescription" name="description" required><%= formData?.description || '' %></textarea>
 <small id="descError" class="error-text"></small>
 </div>
@@ -49,15 +49,15 @@
 <div class="card">
 <h4>Pricing</h4>
 
-<label>Base Price</label>
+<label for="productPrice">Base Price (INR)</label>
 <input type="number" id="productPrice" name="price" value="<%= formData?.price || '' %>" min="1" required>
 <small id="priceError" class="error-text"></small>
 
-<label>Product Offer (%)</label>
-<input type="number" name="discount" value="<%= formData?.discount || 0 %>" min="0" max="90">
+<label for="productDiscount">Product Offer (%)</label>
+<input type="number" id="productDiscount" name="discount" value="<%= formData?.discount || 0 %>" min="0" max="90">
 
-<label>Offer Expiry Date</label>
-<input type="date" name="offerExpiryDate" value="<%= formData?.offerExpiryDate || '' %>">
+<label for="offerExpiryDate">Offer Expiry Date</label>
+<input type="date" id="offerExpiryDate" name="offerExpiryDate" value="<%= formData?.offerExpiryDate || '' %>">
 </div>
 
 <div class="card">
@@ -66,17 +66,20 @@
 <div class="image-upload-grid">
 
 <div class="image-upload-box">
-<input type="file" name="images" onchange="previewImage(event,0)">
+<label for="generalImage0">Product Image 1</label>
+<input id="generalImage0" type="file" name="generalImage_0" accept="image/jpeg,image/png,image/webp" onchange="previewImage(event,0)">
 <img id="preview0" class="preview-img">
 </div>
 
 <div class="image-upload-box">
-<input type="file" name="images" onchange="previewImage(event,1)">
+<label for="generalImage1">Product Image 2</label>
+<input id="generalImage1" type="file" name="generalImage_1" accept="image/jpeg,image/png,image/webp" onchange="previewImage(event,1)">
 <img id="preview1" class="preview-img">
 </div>
 
 <div class="image-upload-box">
-<input type="file" name="images" onchange="previewImage(event,2)">
+<label for="generalImage2">Product Image 3</label>
+<input id="generalImage2" type="file" name="generalImage_2" accept="image/jpeg,image/png,image/webp" onchange="previewImage(event,2)">
 <img id="preview2" class="preview-img">
 </div>
 
@@ -90,6 +93,7 @@
 
 <div class="card">
 <h4>Category</h4>
+<label for="productCategory">Product Category</label>
 <select id="productCategory" name="category">
 <option value="">Select Category</option>
 <% categories.forEach(cat=>{ %>
@@ -101,7 +105,8 @@
 
 <div class="card">
 <h4>Brand</h4>
-<select name="brand">
+<label for="productBrand">Product Brand</label>
+<select id="productBrand" name="brand">
 <option value="">Select Brand</option>
 <% brands.forEach(b=>{ %>
 <option value="<%= b._id %>" <%= formData?.brand == b._id.toString() ? 'selected' : '' %>><%= b.name %></option>
@@ -117,41 +122,40 @@
 <div class="variant-row">
 
 <div class="variant-fields">
-<input name="color[]" placeholder="Color" required>
-<input name="ram[]" placeholder="RAM" required>
-<input name="rom[]" placeholder="ROM" required>
+<label>Color<input name="color[]" placeholder="e.g. Black" required></label>
+<label>RAM<input name="ram[]" placeholder="e.g. 8 GB" required></label>
+<label>Storage<input name="rom[]" placeholder="e.g. 256 GB" required></label>
 
 <div class="variant-field">
-<input name="stock[]" placeholder="Stock" type="number" min="0" required>
+<label>Stock Quantity</label><input name="stock[]" placeholder="0" type="number" min="0" required>
 <small class="error-text stock-error"></small>
 </div>
 
 <div class="variant-field">
-<input name="variantPrice[]" placeholder="Price" type="number" min="1" required>
+<label>Variant Price (INR)</label><input name="variantPrice[]" placeholder="0" type="number" min="1" required>
 <small class="error-text price-error"></small>
 </div>
 </div>
 
 <div class="variant-image-box">
 <label>Variant Image</label>
-<input type="file" name="variantImages" onchange="previewVariantImage(event,this)">
+<input type="file" name="variantImage_0" accept="image/jpeg,image/png,image/webp" onchange="previewVariantImage(event,this)">
 <img class="variant-preview" style="display:none; width:80px;">
 </div>
 
-<button type="button" onclick="removeVariant(this)">Remove</button>
+<button type="button" class="variant-remove" onclick="removeVariant(this)">Remove</button>
 
 </div>
 </div>
 
-<button type="button" onclick="addVariant()">+ Add Variant</button>
-
-</div>
+<button type="button" class="btn-add-variant" onclick="addVariant()">+ Add Variant</button>
 
 </div>
 
 </div>
 
-<button>Add</button>
+</div>
+
 </form>
 
 </div>
@@ -252,20 +256,24 @@ document.getElementById("cropModal").style.display="none";
 }
 
 function addVariant(){
+const index=document.querySelectorAll("#variantContainer .variant-row").length;
 document.getElementById("variantContainer").insertAdjacentHTML("beforeend",`
 <div class="variant-row">
-<input name="color[]" placeholder="Color" required>
-<input name="ram[]" placeholder="RAM" required>
-<input name="rom[]" placeholder="ROM" required>
-<input name="stock[]" placeholder="Stock" type="number" min="0" required>
-<input name="variantPrice[]" placeholder="Price" type="number" min="1" required>
+<div class="variant-fields">
+<label>Color<input name="color[]" placeholder="e.g. Black" required></label>
+<label>RAM<input name="ram[]" placeholder="e.g. 8 GB" required></label>
+<label>Storage<input name="rom[]" placeholder="e.g. 256 GB" required></label>
+<label>Stock Quantity<input name="stock[]" placeholder="0" type="number" min="0" required></label>
+<label>Variant Price (INR)<input name="variantPrice[]" placeholder="0" type="number" min="1" required></label>
+</div>
 
 <div class="variant-image-box">
-<input type="file" name="variantImages" onchange="previewVariantImage(event,this)">
+<label>Variant Image</label>
+<input type="file" name="variantImage_${index}" accept="image/jpeg,image/png,image/webp" onchange="previewVariantImage(event,this)">
 <img class="variant-preview" style="display:none;width:80px;">
 </div>
 
-<button type="button" onclick="removeVariant(this)">Remove</button>
+<button type="button" class="variant-remove" onclick="removeVariant(this)">Remove</button>
 </div>
 `);
 }
@@ -273,5 +281,11 @@ document.getElementById("variantContainer").insertAdjacentHTML("beforeend",`
 function removeVariant(btn){
 btn.closest(".variant-row").remove();
 }
+
+document.getElementById("addProductForm").addEventListener("submit", () => {
+  document.querySelectorAll("#variantContainer .variant-row").forEach((row, index) => {
+    row.querySelector('input[type="file"]').name = `variantImage_${index}`;
+  });
+});
 
 </script>

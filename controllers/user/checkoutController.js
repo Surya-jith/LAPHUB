@@ -4,6 +4,9 @@ import crypto from "crypto";
 import Order from "../../models/order.js";
 import Coupon from "../../models/couponModel.js";
 import Wallet from "../../models/walletModel.js";
+import HTTP_STATUS from "../../constants/httpStatus.js";
+import MESSAGES from "../../constants/messages.js";
+import ROUTES from "../../constants/routes.js";
 
 
 const loadCheckout = async (req, res) => {
@@ -19,7 +22,7 @@ const loadCheckout = async (req, res) => {
 
     if (data.disableCheckout) {
       return res.redirect(
-        "/cart?error=Invalid cart items"
+        `${ROUTES.USER_CART}?error=Invalid cart items`
       );
     }
     /*
@@ -63,6 +66,7 @@ total: data.total,
       disableCheckout: data.disableCheckout,
       addresses: data.addresses,
       defaultAddress: data.defaultAddress,
+      appliedCoupon: req.session.coupon || null,
       error: null
     });
 
@@ -78,6 +82,7 @@ total: data.total,
       disableCheckout: true,
       addresses: [],
       defaultAddress: null,
+      appliedCoupon: null,
       error: error.message
     });
   }
@@ -363,9 +368,9 @@ const retryPayment = async (req, res) => {
 
     if (!order) {
 
-      return res.status(404).json({
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
-        message: "Order not found"
+        message: MESSAGES.ORDER_NOT_FOUND
       });
     }
 
@@ -379,10 +384,9 @@ const retryPayment = async (req, res) => {
       order.paymentMethod !== "Razorpay"
     ) {
 
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
-        message:
-          "Retry available only for Razorpay orders"
+        message: MESSAGES.PAYMENT_RETRY_RAZORPAY_ONLY
       });
     }
 
@@ -390,10 +394,19 @@ const retryPayment = async (req, res) => {
       order.paymentStatus === "Paid"
     ) {
 
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
-        message:
-          "Payment already completed"
+        message: MESSAGES.PAYMENT_ALREADY_COMPLETED
+      });
+    }
+
+    const isCancelled = order.orderStatus === "Cancelled" ||
+      (order.items.length > 0 && order.items.every(item => item.status === "Cancelled"));
+
+    if (isCancelled || order.finalAmount <= 0) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        message: MESSAGES.PAYMENT_RETRY_CANCELLED
       });
     }
 
@@ -433,10 +446,9 @@ const retryPayment = async (req, res) => {
       error
     );
 
-    return res.status(500).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message:
-        "Unable to retry payment"
+      message: MESSAGES.PAYMENT_RETRY_UNAVAILABLE
     });
   }
 };
@@ -501,7 +513,7 @@ const applyCoupon = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Coupon applied",
+      message: MESSAGES.COUPON_APPLIED,
       discount: result.discount,
       total: result.total
     });
@@ -529,15 +541,15 @@ const removeCoupon = async (req, res) => {
     req.session.coupon = null;
 
     return res.json({
-      success: true
+      success: true,
+      message: MESSAGES.COUPON_REMOVED
     });
 
   } catch (error) {
 
-    return res.status(500).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message:
-        "Unable to remove coupon"
+      message: MESSAGES.COUPON_REMOVE_FAILED
     });
   }
 };

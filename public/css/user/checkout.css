@@ -376,3 +376,6 @@
 .coupon-apply-btn:hover{
   background:#2f4da3;
 }
+
+.coupon-apply-btn:disabled,#applyCouponBtn:disabled{cursor:not-allowed;opacity:.55;background:#9ca3af}
+#removeCouponBtn{align-items:center;justify-content:center;border:1px solid #dc2626;background:#fff;color:#dc2626;font-weight:600}

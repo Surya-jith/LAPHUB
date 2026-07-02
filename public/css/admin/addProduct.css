@@ -565,3 +565,19 @@ gap:12px;
   max-width: 100%;
   display: block;
 }
+
+.variant-fields label{color:#4b5563;font-size:12px;font-weight:600}
+.image-upload-box{width:min(180px,100%);height:auto;min-height:170px;padding:12px;cursor:default}
+.image-upload-box input[type="file"]{padding:6px;background:#fff}
+.preview-img,.variant-preview{width:100%;max-width:150px;height:100px;object-fit:contain;background:#fff}
+.btn-add,.btn-cancel,.btn-add-variant,.variant-remove,.btn-crop,.submit-btn button{min-height:40px;display:inline-flex;align-items:center;justify-content:center;font-weight:600;border-radius:6px}
+.variant-remove{align-self:flex-end;background:#fff;color:#dc2626;border:1px solid #dc2626}
+
+@media(max-width:768px){
+  .main-content{padding:18px 14px}
+  .page-header{align-items:flex-start;gap:12px}
+  .header-actions{display:flex;flex-wrap:wrap;gap:8px}
+  .variant-fields{grid-template-columns:1fr}
+  .image-upload-grid{display:grid;grid-template-columns:1fr}
+  .image-upload-box{width:100%}
+}

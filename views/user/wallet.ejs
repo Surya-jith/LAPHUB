@@ -77,10 +77,10 @@
       </h3>
 
       <% if (
-        wallet.transactions.length > 0
+        transactions.length > 0
       ) { %>
 
-        <% wallet.transactions.forEach(txn => { %>
+        <% transactions.forEach(txn => { %>
 
           <div class="transaction-card">
 
@@ -134,6 +134,16 @@
 
         </div>
 
+      <% } %>
+
+      <% if (totalPages > 1) { %>
+        <nav class="wallet-pagination" aria-label="Wallet transaction pages">
+          <a class="page-btn <%= currentPage === 1 ? 'disabled' : '' %>" href="/wallet?page=<%= currentPage - 1 %>">Previous</a>
+          <% for (let page = 1; page <= totalPages; page++) { %>
+            <a class="page-btn <%= page === currentPage ? 'active' : '' %>" href="/wallet?page=<%= page %>"><%= page %></a>
+          <% } %>
+          <a class="page-btn <%= currentPage === totalPages ? 'disabled' : '' %>" href="/wallet?page=<%= currentPage + 1 %>">Next</a>
+        </nav>
       <% } %>
 
     </div>

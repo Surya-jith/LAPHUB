@@ -49,6 +49,10 @@
   color: white;
 }
 
+.retry-payment-btn{display:inline-flex;align-items:center;justify-content:center;margin-left:10px;padding:8px 14px;border:0;border-radius:6px;background:#3559e0;color:#fff;font-weight:600;cursor:pointer}
+.retry-payment-btn:hover{background:#2746bd}
+.retry-payment-btn:disabled{opacity:.6;cursor:not-allowed}
+
 .summary-card,
 .products-card,
 .address-card,

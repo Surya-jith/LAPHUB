@@ -423,7 +423,10 @@
 
     <% if (
       order.paymentMethod === "Razorpay" &&
-      order.paymentStatus === "Failed"
+      order.paymentStatus === "Failed" &&
+      order.orderStatus !== "Cancelled" &&
+      order.finalAmount > 0 &&
+      !order.items.every(item => item.status === "Cancelled")
     ) { %>
 
       <button

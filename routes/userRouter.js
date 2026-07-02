@@ -3,6 +3,7 @@ import userController from "../controllers/user/userController.js";
 import passport from "passport";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import upload from "../middlewares/uploadMiddleware.js";
+import ROUTES from "../constants/routes.js";
 import cartController from "../controllers/user/cartController.js"
 import checkoutController from "../controllers/user/checkoutController.js";
 import orderController from "../controllers/user/orderController.js";
@@ -63,7 +64,7 @@ router.get(
 
  router.get("/profile",authMiddleware.isUserLoggedIn,userController.loadProfile)
  router.get(
-  "/wallet",
+  ROUTES.USER_WALLET,
   authMiddleware.isUserLoggedIn,
   userController.loadWalletPage
 );
@@ -124,7 +125,7 @@ router.post(
   checkoutController.verifyPayment
 );
 router.post(
-  "/retry-payment/:id",
+  ROUTES.RETRY_PAYMENT,
   authMiddleware.isUserLoggedIn,
   checkoutController.retryPayment
 );
@@ -179,13 +180,13 @@ router.post("/wishlist/move-to-cart/:productId", authMiddleware.isUserLoggedIn,w
 
 
 router.post(
-  "/apply-coupon",
+  ROUTES.APPLY_COUPON,
   authMiddleware.isUserLoggedIn,
   checkoutController.applyCoupon
 );
 
 router.post(
-  "/remove-coupon",
+  ROUTES.REMOVE_COUPON,
   authMiddleware.isUserLoggedIn,
   checkoutController.removeCoupon
 );

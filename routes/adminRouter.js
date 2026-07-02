@@ -9,6 +9,7 @@ import couponController from "../controllers/admin/couponController.js";
 import reportController from "../controllers/admin/reportController.js";
 const router=express.Router();
 import upload from "../config/multerCloudinary.js"
+import MESSAGES from "../constants/messages.js";
 
 router.get("/login",authMiddleware.redirectIfLoggedadmin,adminController.loadLogin);
 router.post("/login",authMiddleware.redirectIfLoggedadmin,adminController.login);
@@ -39,13 +40,10 @@ router.post(
 "/add-product",
 authMiddleware.adminAuth,
 (req,res,next)=>{
-upload.fields([
-{ name:"images", maxCount:3 },
-{ name:"variantImages", maxCount:10 }
-])(req,res,(err)=>{
+upload.any()(req,res,(err)=>{
 if(err){
 console.log("Multer Error:",err)
-return res.redirect(`/admin/add-product?error=${encodeURIComponent(err.message || "Unable to upload product images")}`)
+return res.redirect(`/admin/add-product?error=${encodeURIComponent(err.message || MESSAGES.PRODUCT_IMAGE_UPLOAD_FAILED)}`)
 }
 next()
 })
@@ -53,7 +51,14 @@ next()
 
 
 router.get("/edit-product/:id",authMiddleware.adminAuth,productController.loadEditProduct)
-router.post("/edit-product/:id",authMiddleware.adminAuth,upload.fields([{ name:"images", maxCount:3 },{ name:"variantImages", maxCount:10 }]),productController.editProduct)
+router.post("/edit-product/:id",authMiddleware.adminAuth,(req,res,next)=>{
+  upload.any()(req,res,(err)=>{
+    if(err){
+      return res.redirect(`/admin/edit-product/${req.params.id}?error=${encodeURIComponent(err.message || MESSAGES.PRODUCT_IMAGE_UPLOAD_FAILED)}`)
+    }
+    next()
+  })
+},productController.editProduct)
 router.post("/delete-product/:id",authMiddleware.adminAuth,productController.deleteProduct)
 router.post(
   "/toggle-product-block/:id",

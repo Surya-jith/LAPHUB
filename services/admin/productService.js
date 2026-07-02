@@ -3,19 +3,6 @@ import Category from "../../models/category.js"
 import Brand from "../../models/brandModel.js"
 import calculateBestOffer from "../../utils/calculateBestOffer.js"
 
-function normalizeImagePath(filePath) {
-  if (!filePath) return "";
-  if (filePath.startsWith("http")) return filePath;
-  let clean = filePath.replace(/\\/g, "/");
-  if (clean.startsWith("public/")) {
-    clean = clean.substring(7);
-  }
-  if (!clean.startsWith("/")) {
-    clean = "/" + clean;
-  }
-  return clean;
-}
-
 
 // Get Products (Pagination + Brands)
 const getProducts = async ({
@@ -163,7 +150,8 @@ const createProduct = async (data, files) => {
     throw new Error("Duplicate variant found. Each Color + RAM + ROM combination must be unique")
   }
 
-  const variantImages = files.variantImages || []
+  const uploadedFiles = Array.isArray(files) ? files : []
+  const fileByField = new Map(uploadedFiles.map(file => [file.fieldname, file]))
 
   // Create Variants
   const variants = colors.map((c, index) => ({
@@ -172,18 +160,17 @@ const createProduct = async (data, files) => {
     rom: roms[index],
     stock: stocks[index],
     price: prices[index],
-    variantImage: normalizeImagePath(variantImages[index]?.path)
+    variantImage: fileByField.get(`variantImage_${index}`)?.path || ""
   }))
 
   const brandValue = brand && brand !== "" ? brand : null
 
   // General Images
   let images = []
-  const mainImages = files.images || []
-
-  mainImages.forEach(file => {
-    images.push(normalizeImagePath(file.path))
-  })
+  for (let index = 0; index < 3; index++) {
+    const file = fileByField.get(`generalImage_${index}`)
+    if (file?.path) images.push(file.path)
+  }
 
   /*
   =================================
@@ -284,7 +271,8 @@ const updateProduct = async (id, data, files) => {
     ram,
     rom,
     stock,
-    variantPrice
+    variantPrice,
+    existingVariantImage
   } = data
 
   const brandValue = brand && brand !== "" ? brand : null
@@ -294,6 +282,9 @@ const updateProduct = async (id, data, files) => {
   const roms = Array.isArray(rom) ? rom : [rom]
   const stocks = Array.isArray(stock) ? stock : [stock]
   const prices = Array.isArray(variantPrice) ? variantPrice : [variantPrice]
+  const existingVariantImages = Array.isArray(existingVariantImage)
+    ? existingVariantImage
+    : [existingVariantImage || ""]
 
   // =================================
   // VALIDATIONS
@@ -327,7 +318,8 @@ const updateProduct = async (id, data, files) => {
     throw new Error("Duplicate variant found. Each Color + RAM + ROM combination must be unique")
   }
 
-  const variantImages = files?.variantImages || []
+  const uploadedFiles = Array.isArray(files) ? files : []
+  const fileByField = new Map(uploadedFiles.map(file => [file.fieldname, file]))
 
   const existingProduct = await Product.findById(id)
 
@@ -338,9 +330,9 @@ const updateProduct = async (id, data, files) => {
     rom: roms[index],
     stock: stocks[index],
     price: prices[index],
-    variantImage: variantImages[index]?.path
-      ? normalizeImagePath(variantImages[index].path)
-      : (existingProduct.variants[index]?.variantImage || "")
+    variantImage: fileByField.get(`variantImage_${index}`)?.path
+      || existingVariantImages[index]
+      || ""
   }))
 
   /*
@@ -397,16 +389,11 @@ const updateProduct = async (id, data, files) => {
   }
 
   // General Images (replace only if new uploaded)
-  const mainImages = files?.images || []
-
   let updatedImages = [...existingProduct.images]
 
-  if (mainImages.length > 0) {
-    mainImages.forEach((file, index) => {
-      if (file?.path) {
-        updatedImages[index] = normalizeImagePath(file.path)
-      }
-    })
+  for (let index = 0; index < 3; index++) {
+    const file = fileByField.get(`generalImage_${index}`)
+    if (file?.path) updatedImages[index] = file.path
   }
 
   updateData.images = updatedImages
